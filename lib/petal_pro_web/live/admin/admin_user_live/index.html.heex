@@ -1,0 +1,89 @@
+<.admin_layout current_page={:admin_users} current_user={@current_user}>
+  <.page_header title={gettext("Users")}>
+    <.button size="sm" link_type="live_patch" to={~p"/admin/users/new"}>
+      <.icon name="hero-plus" class="w-4 h-4 mr-2" />
+      {gettext("New %{model}", model: gettext("User"))}
+    </.button>
+  </.page_header>
+
+  <.form for={@base_filters_form} phx-change="toggle_base_filters" class="flex gap-5 mb-3">
+    <.field type="checkbox" field={@base_filters_form[:show_is_suspended]} />
+    <.field type="checkbox" field={@base_filters_form[:show_is_deleted]} />
+    <.field type="checkbox" field={@base_filters_form[:online]} />
+  </.form>
+
+  <.data_table
+    :if={@index_params}
+    meta={@meta}
+    items={@users}
+    page_size_options={[50, 100, 250, 500]}
+  >
+    <:col field={:id} sortable filterable={[:==]} class="w-28" />
+    <:col :let={user} field={:name} sortable filterable={[:=~]} label={gettext("Name")}>
+      <.link patch={~p"/admin/users/#{user}"} class="hover:underline">
+        {user_name(user)}
+      </.link>
+    </:col>
+    <:col :let={user} field={:email} sortable filterable={[:=~]} label={gettext("E-Mail")}>
+      <.link patch={~p"/admin/users/#{user}"} class="hover:underline">
+        {user.email}
+      </.link>
+    </:col>
+    <:col :let={user} field={:role} label={gettext("Role")}>
+      {user.role}
+    </:col>
+    <:col :let={user} field={:last_signed_in_datetime} label={gettext("Last login at")}>
+      <%= if user.last_signed_in_datetime do %>
+        <span title={Calendar.strftime(user.last_signed_in_datetime, "%I:%M %p %Y-%m-%d")}>
+          {Timex.from_now(user.last_signed_in_datetime)}
+        </span>
+      <% end %>
+    </:col>
+    <:col
+      :if={Phoenix.HTML.Form.input_value(@base_filters_form, :show_is_suspended)}
+      field={:is_suspended}
+      type={:boolean}
+      sortable
+      filterable={[:==]}
+      renderer={:checkbox}
+    />
+    <:col
+      :if={Phoenix.HTML.Form.input_value(@base_filters_form, :show_is_deleted)}
+      field={:is_deleted}
+      type={:boolean}
+      sortable
+      filterable={[:==]}
+      renderer={:checkbox}
+    />
+    <:col :let={user} label={gettext("Online")}>
+      <span :if={user.is_online} class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success-400 opacity-75" />
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-success-500" />
+      </span>
+      <span
+        :if={not user.is_online}
+        class="relative inline-flex rounded-full h-3 w-3 bg-gray-500"
+      />
+    </:col>
+    <:col :let={user} label={gettext("Actions")}>
+      <.user_actions
+        socket={@socket}
+        user={user}
+        current_user={@current_user}
+        billing_provider={@billing_provider}
+      />
+    </:col>
+  </.data_table>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title} max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminUserLive.FormComponent}
+        id={@user.id || :new}
+        action={@live_action}
+        user={@user}
+        return_to={current_index_path(@index_params)}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>

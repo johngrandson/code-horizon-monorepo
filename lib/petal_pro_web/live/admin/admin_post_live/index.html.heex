@@ -1,0 +1,113 @@
+<.admin_layout current_page={:admin_posts} current_user={@current_user}>
+  <.page_header icon="hero-signal" title="Posts">
+    <.button size="sm" color="white" link_type="live_redirect" to={~p"/blog"}>
+      <.icon name="hero-signal" class="w-4 h-4 mr-2" />
+      {gettext("Blog")}
+    </.button>
+
+    <.button
+      size="sm"
+      link_type="live_patch"
+      label={gettext("New Post")}
+      to={~p"/admin/posts/new"}
+    />
+  </.page_header>
+
+  <.table
+    id="posts"
+    rows={@streams.posts}
+    row_click={fn {_id, post} -> JS.navigate(~p"/admin/posts/#{post}") end}
+  >
+    <:col :let={{_id, post}} label="Item" class="">
+      <div class="flex gap-2">
+        <img :if={post.cover} src={post.cover} class="object-cover w-24 h-16 rounded-sm" />
+        <div
+          :if={!post.cover}
+          class="flex items-center justify-center w-24 h-16 rounded-sm dark:bg-gray-700"
+        >
+          <.icon name="hero-photo" class="w-10 h-10" />
+        </div>
+        <div class="grid">
+          <div class="m-0 pc-card__category pc-card__category--primary">{post.category}</div>
+          <div class="m-0 line-clamp-2">{post.title}</div>
+          <div class="hidden m-0 text-xs font-normal md:block">{post.slug}</div>
+        </div>
+      </div>
+    </:col>
+    <:col
+      :let={{_id, post}}
+      label="Published"
+      class="hidden xl:table-cell"
+      row_class="hidden xl:table-cell"
+    >
+      <div :if={post.last_published} id={"processed-#{post.id}"} class="flex items-center">
+        {post.last_published |> Timex.from_now()}
+      </div>
+    </:col>
+    <:col :let={{_id, post}} label="Live">
+      <div :if={post.go_live} id={"published-#{post.id}"} class="flex items-center gap-2 text-sm">
+        <div class="relative flex w-3 h-3 place-self-center">
+          <span class={[
+            "absolute inline-flex h-full w-full rounded-full opacity-75",
+            if(is_live(post), do: "animate-ping bg-green-500", else: "bg-gray-500")
+          ]} />
+          <span class={[
+            "relative inline-flex rounded-full h-3 w-3",
+            if(is_live(post), do: "bg-green-500", else: "bg-gray-500")
+          ]} />
+        </div>
+        <div>{post.go_live |> Timex.from_now()}</div>
+      </div>
+    </:col>
+    <:col :let={{_id, post}} class="hidden lg:table-cell" row_class="hidden lg:table-cell">
+      <div class="flex items-center justify-end gap-2">
+        <.button
+          size="sm"
+          color="white"
+          variant="outline"
+          link_type="live_patch"
+          to={~p"/blog/#{post.slug}"}
+          class="flex items-center gap-2"
+          disabled={!is_live(post)}
+        >
+          <.icon name="hero-eye" class="w-4 h-4" />
+          {gettext("Read")}
+        </.button>
+        <.button
+          size="sm"
+          color="white"
+          variant="outline"
+          label={gettext("Edit")}
+          link_type="live_patch"
+          to={~p"/admin/posts/#{post}/show/edit"}
+        />
+        <.button
+          size="sm"
+          color="danger"
+          variant="outline"
+          class="flex items-center gap-2"
+          phx-click={
+            JS.hide(to: "#post_options_#{post.id}")
+            |> JS.push("delete")
+          }
+          phx-value-id={post.id}
+          data-confirm={gettext("Are you sure?")}
+        >
+          <.icon name="hero-trash" class="w-4 h-4" />
+        </.button>
+      </div>
+    </:col>
+  </.table>
+
+  <%= if @live_action in [:new] do %>
+    <.modal title="New Post" max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminPostLive.NewComponent}
+        id={@post.id || :new}
+        action={@live_action}
+        post={@post}
+        return_to={~p"/admin/posts"}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>

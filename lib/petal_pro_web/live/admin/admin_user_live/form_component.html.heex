@@ -1,0 +1,32 @@
+<div>
+  <.form
+    for={@form}
+    id="user-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+    class=""
+  >
+    <.field type="email" field={@form[:email]} label={gettext("E-Mail")} required />
+    <.field type="text" field={@form[:name]} label={gettext("Name")} required />
+    <.field type="password" field={@form[:password]} label={gettext("Password")} />
+
+    <.field
+      type="select"
+      field={@form[:role]}
+      label={gettext("Role")}
+      required
+      options={@roles}
+      placeholder={gettext("Pick a role!")}
+    />
+
+    <.field type="checkbox" field={@form[:is_onboarded]} label="Onboarded?" />
+
+    <div class="flex justify-end gap-2">
+      <.button phx-disable-with={gettext("Saving...")}>
+        <.icon name="hero-check-circle" class="w-5 h-5 mr-2" />
+        {gettext("Save")}
+      </.button>
+    </div>
+  </.form>
+</div>

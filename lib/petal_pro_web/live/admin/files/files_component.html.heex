@@ -1,0 +1,34 @@
+<div class="grid gap-6">
+  <.live_component module={PetalProWeb.AdminFilesLive.FormComponent} id={:new_file} />
+  <div class="grid gap-3 sm:grid-cols-2">
+    <div :for={file <- @files} class="relative flex">
+      <div class="absolute flex items-center right-1 top-0 bottom-0">
+        <.icon_button
+          size="md"
+          tooltip="Archive"
+          phx-click="archive"
+          phx-value-id={file.id}
+          phx-target={@myself}
+          data-confirm={gettext("Archive this file?")}
+        >
+          <.icon name="hero-archive-box" class="w-5 h-5" />
+        </.icon_button>
+      </div>
+      <.link
+        class="w-full flex items-center gap-3 overflow-hidden border rounded-lg shadow-sm dark:border-gray-600 hover:bg-gray-100 dark:bg-gray-800 hover:dark:bg-gray-600"
+        phx-click="select_file"
+        phx-value-id={file.id}
+        phx-value-url={file.url}
+        phx-value-name={file.name}
+        phx-value-image-target={@image_target}
+        phx-target={@parent_target}
+      >
+        <img src={file.url} class="object-cover w-24 h-16 rounded-l" />
+        <div class="grow">
+          <div>{file.name}</div>
+          <div class="text-xs">{Timex.from_now(file.inserted_at)}</div>
+        </div>
+      </.link>
+    </div>
+  </div>
+</div>

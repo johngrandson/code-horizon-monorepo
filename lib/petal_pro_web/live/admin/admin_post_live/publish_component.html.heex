@@ -1,0 +1,39 @@
+<div>
+  <.form
+    for={@form}
+    id="publish-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+  >
+    <.alert color="warning" variant="soft" with_icon class="mb-4">
+      Published document will be overwritten
+    </.alert>
+
+    <.field
+      type="datetime-local"
+      field={@form[:last_published]}
+      disabled
+      label={gettext("Last published")}
+    />
+
+    <.field
+      type="datetime-local"
+      field={@form[:go_live]}
+      label={gettext("Go live")}
+      help_text="Time is in UTC"
+    />
+
+    <div class="flex justify-between">
+      <.button
+        link_type="a"
+        label={gettext("Remove")}
+        color="light"
+        phx-click="unpublish"
+        phx-target={@myself}
+        disabled={!@post.go_live}
+      />
+      <.button label={gettext("Publish")} />
+    </div>
+  </.form>
+</div>

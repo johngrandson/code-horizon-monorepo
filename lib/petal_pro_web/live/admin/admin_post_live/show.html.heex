@@ -1,0 +1,145 @@
+<.admin_layout current_page={:admin_posts} current_user={@current_user}>
+  <%= if @live_action in [:new, :edit, :files] do %>
+    <.live_component
+      module={PetalProWeb.AdminPostLive.FormComponent}
+      id={@post.id || :new}
+      action={@live_action}
+      post={@post}
+      image_target={@image_target}
+      files={@files}
+      return_to={~p"/admin/posts/#{@post}"}
+    />
+  <% else %>
+    <.container max_width="sm">
+      <div class="grid gap-8">
+        <div class="flex justify-between">
+          <.breadcrumbs
+            separator="chevron"
+            links={[
+              %{
+                to: ~p"/admin/posts",
+                icon: "hero-signal",
+                label: gettext("Posts"),
+                link_type: "live_redirect"
+              },
+              %{
+                label: @post.category || gettext("This post"),
+                to: "/admin/posts/#{@post.id}",
+                link_type: "live_patch"
+              }
+            ]}
+          />
+
+          <div class="flex items-center gap-2">
+            <.button
+              link_type="live_patch"
+              size="sm"
+              color="light"
+              label={gettext("Edit Post")}
+              to={~p"/admin/posts/#{@post}/show/edit"}
+            />
+            <.button
+              link_type="live_patch"
+              size="sm"
+              to={~p"/admin/posts/#{@post}/show/publish"}
+              class="flex items-center gap-2"
+            >
+              {gettext("Publish")}
+              <.icon name="hero-sparkles" class="w-4 h-4" />
+            </.button>
+
+            <.dropdown
+              class="dark:shadow-lg"
+              options_container_id={"post_options_#{@post.id}"}
+              menu_items_wrapper_class="dark:border dark:border-gray-600"
+            >
+              <.dropdown_menu_item
+                link_type="live_patch"
+                to={~p"/blog/#{@post.slug}"}
+                disabled={!is_live(@post)}
+                class={if !is_live(@post), do: "text-gray-400 dark:text-gray-600"}
+              >
+                <.icon :if={@post.go_live} name="hero-eye" class="w-5 h-5" />
+                <.icon :if={!@post.go_live} name="hero-eye-slash" class="w-5 h-5" />
+                <span :if={is_live(@post)}>{gettext("Read")}</span>
+                <span :if={not_live_yet(@post)}>
+                  Live {@post.go_live |> Timex.from_now()}
+                </span>
+                <span :if={!@post.go_live}>Unpublished</span>
+              </.dropdown_menu_item>
+
+              <.dropdown_menu_item
+                phx-click={
+                  JS.hide(to: "#post_options_#{@post.id}")
+                  |> JS.push("delete_post")
+                }
+                phx-value-id={@post.id}
+                data-confirm={gettext("Are you sure?")}
+              >
+                <.icon name="hero-trash" class="w-5 h-5" />
+                {gettext("Delete")}
+              </.dropdown_menu_item>
+            </.dropdown>
+          </div>
+        </div>
+
+        <div class="flex justify-between text-sm">
+          <div :if={@post.go_live} class="flex items-center gap-2">
+            <div class="relative flex w-3 h-3">
+              <span class={[
+                "absolute inline-flex h-full w-full rounded-full opacity-75",
+                if(is_live(@post), do: "animate-ping bg-green-500", else: "bg-gray-500")
+              ]} />
+              <span class={[
+                "relative inline-flex rounded-full h-3 w-3",
+                if(is_live(@post), do: "bg-green-500", else: "bg-gray-500")
+              ]} />
+            </div>
+            <div>Live {@post.go_live |> Timex.from_now()}</div>
+          </div>
+          <.p :if={!@post.go_live} class="flex items-center gap-2 text-sm">
+            <.icon name="hero-eye-slash" class="w-4 h-4" /> Unpublished
+          </.p>
+          <div :if={@post.last_published} class="flex items-center">
+            Published {@post.last_published |> Timex.from_now()}
+          </div>
+        </div>
+
+        <.p :if={@post.duration} class="-mb-8 text-xs uppercase">
+          Reading Time - {formatted_duration(@post)}
+        </.p>
+
+        <.page_header title={@post.title} class="!mb-0" />
+
+        <div class="grid gap-3 -mx-8">
+          <.p class="m-0">
+            <img :if={@post.cover} src={@post.cover} class="w-full rounded-3xl" />
+          </.p>
+          <.p :if={@post.cover_caption} class="m-0 text-sm text-center text-gray-500">
+            {@post.cover_caption}
+          </.p>
+        </div>
+
+        <.p :if={@post.summary} class="mb-0 font-semibold">{@post.summary}</.p>
+
+        <.pretty_content json={@post.content} />
+
+        <div class="flex items-center gap-4 mt-16">
+          <.avatar size="xl" src={user_avatar_url(@post.author)} /> {user_name(@post.author)}
+        </div>
+      </div>
+    </.container>
+  <% end %>
+
+  <%= if @live_action == :publish do %>
+    <.modal title="Publish" max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminPostLive.PublishComponent}
+        id={@post.id}
+        action={@live_action}
+        post={@post}
+        return_to={~p"/admin/posts/#{@post}"}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>

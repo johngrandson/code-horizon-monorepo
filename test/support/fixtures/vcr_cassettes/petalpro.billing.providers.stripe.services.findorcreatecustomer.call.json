@@ -1,0 +1,52 @@
+[
+  {
+    "request": {
+      "options": {
+        "pool": "Elixir.Stripe.API",
+        "with_body": "true"
+      },
+      "body": "email=user-576460752303418303%40example.com",
+      "url": "https://api.stripe.com/v1/customers",
+      "headers": {
+        "Accept": "application/json; charset=utf8",
+        "Accept-Encoding": "gzip",
+        "Authorization": "***",
+        "Connection": "keep-alive",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Idempotency-Key": "2uia6q3o767i86o3sc000562",
+        "Stripe-Version": "2022-11-15",
+        "User-Agent": "Stripe/v1 stripe-elixir/2022-11-15"
+      },
+      "method": "post",
+      "request_body": ""
+    },
+    "response": {
+      "binary": false,
+      "type": "ok",
+      "body": "{\n  \"id\": \"cus_PGPQm0LyB96O9K\",\n  \"object\": \"customer\",\n  \"address\": null,\n  \"balance\": 0,\n  \"created\": 1703666228,\n  \"currency\": null,\n  \"default_source\": null,\n  \"delinquent\": false,\n  \"description\": null,\n  \"discount\": null,\n  \"email\": \"user-576460752303418303@example.com\",\n  \"invoice_prefix\": \"8901DF49\",\n  \"invoice_settings\": {\n    \"custom_fields\": null,\n    \"default_payment_method\": null,\n    \"footer\": null,\n    \"rendering_options\": null\n  },\n  \"livemode\": false,\n  \"metadata\": {},\n  \"name\": null,\n  \"next_invoice_sequence\": 1,\n  \"phone\": null,\n  \"preferred_locales\": [],\n  \"shipping\": null,\n  \"tax_exempt\": \"none\",\n  \"test_clock\": null\n}",
+      "headers": {
+        "Server": "nginx",
+        "Date": "Wed, 27 Dec 2023 08:37:08 GMT",
+        "Content-Type": "application/json",
+        "Content-Length": "647",
+        "Connection": "keep-alive",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Expose-Headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+        "Access-Control-Max-Age": "300",
+        "Cache-Control": "no-cache, no-store",
+        "Content-Security-Policy": "report-uri https://q.stripe.com/csp-report?p=v1%2Fcustomers; block-all-mixed-content; default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'",
+        "Idempotency-Key": "2uia6q3o767i86o3sc000562",
+        "Original-Request": "req_C7Fb0O4B3Lq0Er",
+        "Request-Id": "req_C7Fb0O4B3Lq0Er",
+        "Stripe-Should-Retry": "false",
+        "Stripe-Version": "2022-11-15",
+        "Vary": "Origin",
+        "X-Stripe-Routing-Context-Priority-Tier": "api-testmode",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload"
+      },
+      "status_code": 200
+    }
+  }
+]

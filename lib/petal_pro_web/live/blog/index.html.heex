@@ -1,0 +1,46 @@
+<.container class="py-16">
+  <.page_header icon="hero-signal" title="Blog">
+    <.button
+      :if={@current_user && @current_user.role == :admin}
+      link_type="live_patch"
+      color="white"
+      to={~p"/admin/posts"}
+      class="flex gap-2 items-center"
+    >
+      <.icon name="hero-signal" class="w-5 h-5" />
+      {gettext("Posts")}
+    </.button>
+    <.button
+      :if={@current_user && @current_user.role == :admin}
+      link_type="live_patch"
+      label="New Post"
+      to={~p"/admin/posts/new"}
+    />
+  </.page_header>
+
+  <div id="posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" phx-update="stream">
+    <%= for {id, post} <- @streams.posts do %>
+      <.link id={id} navigate={~p"/blog/#{post.published_slug}"} class="flex">
+        <.card class="hover:drop-shadow-lg w-full">
+          <.card_media src={post.published_cover} />
+
+          <.card_content category={post.published_category}>
+            <p class="pc-card__heading line-clamp-2">{post.published_title}</p>
+            <p class="line-clamp-3">{post.published_summary}</p>
+          </.card_content>
+
+          <.card_footer class="flex justify-between text-xs uppercase">
+            <p>By {user_name(post.author)}</p>
+            <p :if={post.published_duration}>{post.published_duration} minute read</p>
+          </.card_footer>
+        </.card>
+      </.link>
+    <% end %>
+  </div>
+
+  <%= if Enum.count(@streams.posts) == 0 do %>
+    <div class="grid gap-3 justify-center items-center text-center">
+      <.waiting_for_you class="fill-primary-500 w-96 h-80 sm:-translate-x-10" /> No blog posts!
+    </div>
+  <% end %>
+</.container>

@@ -1,0 +1,43 @@
+<.container class="py-16">
+  <.page_header title="Listing <%= schema.human_plural %>">
+    <.button
+      link_type="a"
+      label="New <%= schema.human_singular %>"
+      to={~p"<%= schema.route_prefix %>/new"}
+    />
+  </.page_header>
+
+  <.table id="<%= schema.plural %>" rows={@<%= schema.collection %>}><%= for {col, _} <- schema.attrs do %>
+    <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(col)) %>"><%%= <%= schema.singular %>.<%= col %> %></:col><% end %>
+    <:col :let={<%= schema.singular %>} label="Actions" class="text-right whitespace-nowrap" row_class="text-right whitespace-nowrap">
+      <.button
+        color="primary"
+        variant="outline"
+        size="xs"
+        link_type="a"
+        label="Show"
+        to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}"}
+      />
+
+      <.button
+        color="white"
+        variant="outline"
+        size="xs"
+        link_type="a"
+        label="Edit"
+        to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
+      />
+
+      <.button
+        color="danger"
+        variant="outline"
+        link_type="a"
+        size="xs"
+        label="Delete"
+        to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}"}
+        method={:delete}
+        data-confirm="Are you sure?"
+      />
+    </:col>
+  </.table>
+</.container>

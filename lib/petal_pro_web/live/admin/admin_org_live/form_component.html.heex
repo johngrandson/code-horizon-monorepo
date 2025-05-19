@@ -1,0 +1,27 @@
+<div>
+  <.form
+    for={@form}
+    id="org-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+    class=""
+  >
+    <.field
+      type="text"
+      field={@form[:name]}
+      label={gettext("Name")}
+      required
+      {alpine_autofocus()}
+      phx-debounce="500"
+    />
+    <.field disabled field={@form[:slug]} />
+
+    <div class="flex justify-end gap-2">
+      <.button phx-disable-with={gettext("Saving...")}>
+        <.icon name="hero-check-circle" class="w-5 h-5 mr-2" />
+        {gettext("Save")}
+      </.button>
+    </div>
+  </.form>
+</div>

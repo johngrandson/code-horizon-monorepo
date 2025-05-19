@@ -1,0 +1,2101 @@
+## "msgid"s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove "msgid"s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use "mix gettext.extract --merge" or "mix gettext.merge"
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:40
+#, elixir-autogen, elixir-format
+msgid "Adapt this landing page template to your own web application. Now you can make your next great web app in record time."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "The secret of"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "getting ahead"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:14
+#, elixir-autogen, elixir-format
+msgid "is getting started"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:18
+#, elixir-autogen, elixir-format
+msgid "Get started"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:220
+#: lib/petal_pro_web/menus.ex:14
+#, elixir-autogen, elixir-format
+msgid "Features"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:323
+#: lib/petal_pro_web/menus.ex:16
+#, elixir-autogen, elixir-format
+msgid "Pricing"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:15
+#, elixir-autogen, elixir-format
+msgid "Testimonials"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:6
+#, elixir-autogen, elixir-format
+msgid "Trusted by brands all over the world"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_email_live.ex:30
+#: lib/petal_pro_web/menus.ex:110
+#: lib/petal_pro_web/notifications/email.ex:43
+#: lib/petal_pro_web/templates/email/change_email.html.heex:6
+#, elixir-autogen, elixir-format
+msgid "Change email"
+msgstr ""
+
+#: lib/petal_pro_web/live/dashboard_live.ex:7
+#: lib/petal_pro_web/menus.ex:155
+#, elixir-autogen, elixir-format
+msgid "Dashboard"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:119
+#, elixir-autogen, elixir-format
+msgid "Edit notifications"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:128
+#, elixir-autogen, elixir-format
+msgid "Edit password"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:101
+#, elixir-autogen, elixir-format
+msgid "Edit profile"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.html.heex:13
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:21
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:45
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:11
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:22
+#: lib/petal_pro_web/live/admin/files/form_component.html.heex:20
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:23
+#: lib/petal_pro_web/live/user_settings/edit_profile_live.ex:54
+#, elixir-autogen, elixir-format
+msgid "Name"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_settings_layout_component.ex:16
+#: lib/petal_pro_web/menus.ex:92
+#, elixir-autogen, elixir-format
+msgid "Settings"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_profile_live.ex:57
+#, elixir-autogen, elixir-format
+msgid "Update profile"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_profile_live.ex:54
+#, elixir-autogen, elixir-format
+msgid "eg. John Smith"
+msgstr ""
+
+#: lib/petal_pro_api/controllers/profile_controller.ex:94
+#: lib/petal_pro_web/live/user_settings/edit_email_live.ex:56
+#, elixir-autogen, elixir-format
+msgid "A link to confirm your e-mail change has been sent to the new address."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_notifications_live.ex:21
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:63
+#, elixir-autogen, elixir-format
+msgid "Allow marketing notifications"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:57
+#, elixir-autogen, elixir-format
+msgid "Change password"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_email_live.ex:24
+#: lib/petal_pro_web/templates/email/change_email.html.heex:1
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Change your email"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:25
+#, elixir-autogen, elixir-format
+msgid "Current password"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:38
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:32
+#, elixir-autogen, elixir-format, fuzzy
+msgid "New password"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:39
+#, elixir-autogen, elixir-format
+msgid "New password confirmation"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_notifications_live.ex:35
+#: lib/petal_pro_web/live/user_settings/edit_profile_live.ex:92
+#, elixir-autogen, elixir-format
+msgid "Profile updated"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:70
+#, elixir-autogen, elixir-format
+msgid "Submit"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:90
+#, elixir-autogen, elixir-format
+msgid "Thank you!"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:46
+#, elixir-autogen, elixir-format
+msgid "To join our community, help us improve by completing your profile."
+msgstr ""
+
+#: lib/petal_pro_api/controllers/profile_controller.ex:62
+#: lib/petal_pro_web/live/admin/files/form_component.ex:93
+#: lib/petal_pro_web/live/user_settings/edit_notifications_live.ex:44
+#: lib/petal_pro_web/live/user_settings/edit_profile_live.ex:101
+#, elixir-autogen, elixir-format
+msgid "Update failed. Please check the form for issues"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:70
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:85
+#, elixir-autogen, elixir-format
+msgid "User confirmation link is invalid or it has expired."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:51
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:55
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:70
+#, elixir-autogen, elixir-format
+msgid "User confirmed successfully."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:42
+#, elixir-autogen, elixir-format
+msgid "Welcome!"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:55
+#, elixir-autogen, elixir-format
+msgid "What is your name?*"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_auth.ex:275
+#, elixir-autogen, elixir-format
+msgid "You do not have access to this page."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_auth.ex:288
+#, elixir-autogen, elixir-format
+msgid "Your account is not accessible."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:56
+#, elixir-autogen, elixir-format, fuzzy
+msgid "eg. John"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:31
+#: lib/petal_pro_web/live/orgs/org/team_live/org_team_invite_form_component.ex:23
+#: lib/petal_pro_web/live/user_settings/edit_email_live.ex:25
+#, elixir-autogen, elixir-format
+msgid "eg. john@gmail.com"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_settings_layout_component.ex:29
+#, elixir-autogen, elixir-format
+msgid "%{org_name} settings"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:60
+#, elixir-autogen, elixir-format
+msgid "Accept"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "Are you sure you want to leave this team?"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:53
+#, elixir-autogen, elixir-format
+msgid "Are you sure you want to reject this invitation?"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/team_live/org_membership_form_component.ex:21
+#, elixir-autogen, elixir-format
+msgid "Be careful"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/team_live/org_membership_form_component.ex:22
+#, elixir-autogen, elixir-format
+msgid "By removing yourself from admin you won't be able to regain access."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:41
+#, elixir-autogen, elixir-format
+msgid "Can't find it? Check your spam folder."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:25
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:88
+#, elixir-autogen, elixir-format
+msgid "Cancel"
+msgstr ""
+
+#: lib/petal_pro_web/components/core_components.ex:292
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:2
+#, elixir-autogen, elixir-format
+msgid "Continue with passwordless"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:87
+#, elixir-autogen, elixir-format
+msgid "Create a new organization"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:60
+#, elixir-autogen, elixir-format
+msgid "Create your first organization by clicking the button below."
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:143
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:80
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:372
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:90
+#, elixir-autogen, elixir-format
+msgid "Delete"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:76
+#, elixir-autogen, elixir-format
+msgid "E-mail"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:124
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:11
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:103
+#: lib/petal_pro_web/live/admin/admin_post_live/index.html.heex:80
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:300
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:29
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:125
+#: lib/petal_pro_web/live/orgs/org/org_settings_layout_component.ex:45
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:60
+#, elixir-autogen, elixir-format
+msgid "Edit"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:30
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:25
+#: lib/petal_pro_web/live/orgs/org/team_live/org_team_invite_form_component.ex:22
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_controller.ex:49
+#, elixir-autogen, elixir-format
+msgid "Email change link is invalid or it has expired."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_controller.ex:44
+#, elixir-autogen, elixir-format
+msgid "Email changed successfully."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:15
+#, elixir-autogen, elixir-format
+msgid "Enter the email with to register or sign in with and we'll email you a pin code."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:27
+#, elixir-autogen, elixir-format
+msgid "Get pin code"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:221
+#, elixir-autogen, elixir-format
+msgid "Here are some features you can use to get started with your web app."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_session_controller.ex:31
+#, elixir-autogen, elixir-format
+msgid "Invalid email or password"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_controller.ex:92
+#, elixir-autogen, elixir-format
+msgid "Invalid link"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:36
+#, elixir-autogen, elixir-format
+msgid "Invitation"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/team_live/org_team_invite_form_component.ex:74
+#, elixir-autogen, elixir-format
+msgid "Invitation sent successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:97
+#, elixir-autogen, elixir-format
+msgid "Invitation was accepted"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:112
+#, elixir-autogen, elixir-format
+msgid "Invitation was rejected"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:70
+#: lib/petal_pro_web/menus.ex:137
+#, elixir-autogen, elixir-format
+msgid "Invitations"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/team_live/org_team_invite_form_component.ex:28
+#, elixir-autogen, elixir-format
+msgid "Invite"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:32
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:16
+#, elixir-autogen, elixir-format
+msgid "Invite new member"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/team_live/org_team_invite_form_component.ex:28
+#, elixir-autogen, elixir-format
+msgid "Inviting..."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "Leave"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:65
+#, elixir-autogen, elixir-format
+msgid "Member deleted successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:9
+#, elixir-autogen, elixir-format
+msgid "Members"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/team_live/org_membership_form_component.ex:70
+#, elixir-autogen, elixir-format
+msgid "Membership updated successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:52
+#, elixir-autogen, elixir-format
+msgid "My organizations"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:41
+#, elixir-autogen, elixir-format
+msgid "New invitations"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:101
+#, elixir-autogen, elixir-format
+msgid "No pending invitations."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.ex:194
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.ex:202
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.ex:209
+#, elixir-autogen, elixir-format
+msgid "Not a valid pin. Sure you typed it correctly?"
+msgstr ""
+
+#: lib/petal_pro_api/controllers/profile_controller.ex:117
+#: lib/petal_pro_web/controllers/user_settings_controller.ex:21
+#, elixir-autogen, elixir-format
+msgid "Password updated successfully."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:52
+#, elixir-autogen, elixir-format
+msgid "Reject"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:94
+#: lib/petal_pro_web/live/admin/admin_post_live/publish_component.html.heex:30
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:116
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:45
+#, elixir-autogen, elixir-format
+msgid "Remove"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:99
+#, elixir-autogen, elixir-format
+msgid "Resend pin code"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:95
+#, elixir-autogen, elixir-format
+msgid "Resending new pin code..."
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.html.heex:22
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:17
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:32
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.html.heex:22
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:68
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:24
+#: lib/petal_pro_web/live/orgs/org/team_live/org_membership_form_component.ex:18
+#, elixir-autogen, elixir-format
+msgid "Role"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.html.heex:23
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.html.heex:31
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:28
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.html.heex:31
+#: lib/petal_pro_web/live/orgs/org/org_form_component.ex:16
+#: lib/petal_pro_web/live/orgs/org/team_live/org_membership_form_component.ex:27
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.html.heex:21
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.html.heex:29
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:26
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.html.heex:29
+#: lib/petal_pro_web/live/admin/files/form_component.html.heex:27
+#: lib/petal_pro_web/live/orgs/org/org_form_component.ex:16
+#: lib/petal_pro_web/live/orgs/org/team_live/org_membership_form_component.ex:27
+#, elixir-autogen, elixir-format
+msgid "Saving..."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:27
+#: lib/petal_pro_web/live/auth/user_forgot_password_live.ex:29
+#, elixir-autogen, elixir-format
+msgid "Sending..."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_session_controller.ex:74
+#, elixir-autogen, elixir-format
+msgid "Sign in failed."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:47
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:37
+#, elixir-autogen, elixir-format
+msgid "Signing in..."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:324
+#, elixir-autogen, elixir-format
+msgid "Simple, transparent pricing that adapts to the size of your company."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:74
+#, elixir-autogen, elixir-format
+msgid "Something went wrong. Please try again or contact support if it keeps happening."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_auth.ex:60
+#, elixir-autogen, elixir-format
+msgid "There is a problem with your account. Please contact support."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.ex:182
+#, elixir-autogen, elixir-format
+msgid "Too many incorrect attempts."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:92
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:70
+#, elixir-autogen, elixir-format
+msgid "Unconfirmed account"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.ex:136
+#, elixir-autogen, elixir-format
+msgid "Unknown error."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:47
+#, elixir-autogen, elixir-format
+msgid "View invitations"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:39
+#, elixir-autogen, elixir-format
+msgid "We've sent a 6 digit sign in pin code to"
+msgstr ""
+
+#: lib/petal_pro_web/live/dashboard_live.html.heex:3
+#, elixir-autogen, elixir-format
+msgid "Welcome, %{name}"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/org_plugs.ex:16
+#: lib/petal_pro_web/controllers/org_plugs.ex:37
+#: lib/petal_pro_web/controllers/org_plugs.ex:51
+#: lib/petal_pro_web/live/orgs/hooks/org_on_mount_hooks.ex:28
+#: lib/petal_pro_web/live/orgs/hooks/org_on_mount_hooks.ex:39
+#, elixir-autogen, elixir-format, fuzzy
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:58
+#, elixir-autogen, elixir-format
+msgid "You don't belong to any organizations"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:40
+#, elixir-autogen, elixir-format
+msgid "You have been invited to join %{org_name}"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:58
+#, elixir-autogen, elixir-format
+msgid "You have left %{org_name}"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:24
+#, elixir-autogen, elixir-format
+msgid "You have no pending invitations."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:43
+#, elixir-autogen, elixir-format
+msgid "You have pending invitations."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:71
+#, elixir-autogen, elixir-format
+msgid "You may have pending invitations. To see them please confirm your account by clicking the link in the e-mail we sent you. If you didn't receive an e-mail,"
+msgstr ""
+
+#: lib/petal_pro_web/live/hooks/user_on_mount_hooks.ex:65
+#, elixir-autogen, elixir-format
+msgid "You must confirm your email to access this page."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:123
+#, elixir-autogen, elixir-format
+msgid "You will receive an e-mail with instructions shortly."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:74
+#, elixir-autogen, elixir-format
+msgid "You will receive instructions to reset your password shortly."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "Your sign in pin code"
+msgstr ""
+
+#: lib/petal_pro/orgs/membership.ex:87
+#, elixir-autogen, elixir-format
+msgid "cannot remove last admin of the organization"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:75
+#, elixir-autogen, elixir-format
+msgid "click here to resend it"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:10
+#: lib/petal_pro_web/live/auth/user_forgot_password_live.ex:23
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:57
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:30
+#, elixir-autogen, elixir-format, fuzzy
+msgid "eg. sarah@gmail.com"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:37
+#, elixir-autogen, elixir-format
+msgid "Listing organizations for %{name}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:28
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:52
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:2
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:15
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:28
+#: lib/petal_pro_web/menus.ex:164
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Organizations"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:101
+#, elixir-autogen, elixir-format
+msgid "Please confirm your account to create an organization."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:95
+#, elixir-autogen, elixir-format, fuzzy
+msgid "You have been invited to join %{org_names}. To create an organization or accept any invitations, please confirm your account first."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:37
+#, elixir-autogen, elixir-format
+msgid "Edit member"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:96
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Invitation deleted successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/orgs_live.ex:22
+#, elixir-autogen, elixir-format, fuzzy
+msgid "New organization"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_form_component.ex:66
+#, elixir-autogen, elixir-format
+msgid "Organization created successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_form_component.ex:53
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Organization updated successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_settings_layout_component.ex:48
+#: lib/petal_pro_web/live/orgs/org/org_team_live.ex:28
+#, elixir-autogen, elixir-format
+msgid "Team"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_controller.ex:28
+#, elixir-autogen, elixir-format
+msgid "backup code"
+msgid_plural "backup codes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: lib/petal_pro_web/menus.ex:146
+#, elixir-autogen, elixir-format
+msgid "2FA"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_totp_live.ex:33
+#, elixir-autogen, elixir-format
+msgid "2FA Enabled"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:29
+#, elixir-autogen, elixir-format
+msgid "A new email has been sent to %{user_email}"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:24
+#, elixir-autogen, elixir-format
+msgid "Already registered?"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_html.ex:21
+#, elixir-autogen, elixir-format
+msgid "Code"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:13
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Confirm account"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:35
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Confirm my account"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:38
+#, elixir-autogen, elixir-format
+msgid "Confirm unsubscribe from %{subscription}"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/mailbluster_unsubscribed_confirmation.html.heex:44
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:118
+#, elixir-autogen, elixir-format
+msgid "Continue"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:71
+#, elixir-autogen, elixir-format
+msgid "Create account"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_html.ex:12
+#, elixir-autogen, elixir-format
+msgid "Enter the six-digit code from your device or any of your eight-character backup codes to finish logging in."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_forgot_password_live.ex:13
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:45
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:54
+#, elixir-autogen, elixir-format
+msgid "Forgot your password?"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_controller.ex:46
+#, elixir-autogen, elixir-format
+msgid "Invalid two-factor authentication code"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_html.ex:34
+#, elixir-autogen, elixir-format
+msgid "Keep me logged in for 60 days"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:19
+#, elixir-autogen, elixir-format
+msgid "Not yet registered?"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:43
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:32
+#, elixir-autogen, elixir-format
+msgid "Oops, something went wrong! Please check the errors below."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:48
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:99
+#, elixir-autogen, elixir-format
+msgid "Or, manage your"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:48
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:49
+#: lib/petal_pro_web/live/auth/user_forgot_password_live.ex:37
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:63
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:21
+#: lib/petal_pro_web/menus.ex:54
+#, elixir-autogen, elixir-format
+msgid "Register"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:35
+#, elixir-autogen, elixir-format
+msgid "Resend confirmation instructions"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:24
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:55
+#: lib/petal_pro_web/notifications/email.ex:35
+#: lib/petal_pro_web/templates/email/reset_password.html.heex:1
+#: lib/petal_pro_web/templates/email/reset_password.html.heex:6
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Reset password"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_forgot_password_live.ex:28
+#, elixir-autogen, elixir-format
+msgid "Send instructions to reset password"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.ex:30
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:51
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:52
+#: lib/petal_pro_web/live/auth/user_forgot_password_live.ex:40
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:26
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:66
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:9
+#: lib/petal_pro_web/live/auth/user_sign_in_live.ex:37
+#: lib/petal_pro_web/menus.ex:63
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Sign in"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:42
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:43
+#: lib/petal_pro_web/live/user_settings/user_onboarding_live.ex:68
+#: lib/petal_pro_web/menus.ex:81
+#, elixir-autogen, elixir-format
+msgid "Sign out"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_session_controller.ex:39
+#, elixir-autogen, elixir-format
+msgid "Signed out successfully"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:19
+#, elixir-autogen, elixir-format
+msgid "Touch the button below to confirm your account."
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_totp_live.ex:26
+#, elixir-autogen, elixir-format
+msgid "Two-factor authentication"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:85
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Unconfirmed email"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:116
+#, elixir-autogen, elixir-format
+msgid "Undo"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:91
+#, elixir-autogen, elixir-format
+msgid "Unsubscribed from %{subscription}"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/mailbluster_unsubscribed_confirmation.html.heex:36
+#, elixir-autogen, elixir-format
+msgid "Unsubscribed successfully"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_html.ex:41
+#, elixir-autogen, elixir-format
+msgid "Verify code and sign in"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:67
+#, elixir-autogen, elixir-format
+msgid "Yes, unsubscribe"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:18
+#, elixir-autogen, elixir-format
+msgid "You are already confirmed."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_totp_controller.ex:34
+#, elixir-autogen, elixir-format
+msgid "You have %{remaining} %{plural} left. You can generate new ones under the Two-factor authentication section in the Settings page"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_confirmation_controller.ex:13
+#, elixir-autogen, elixir-format
+msgid "You must be signed in to resend confirmation instructions."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/mailbluster_unsubscribed_confirmation.html.heex:39
+#, elixir-autogen, elixir-format
+msgid "You will no longer recieve marketing related notifications."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:50
+#, elixir-autogen, elixir-format, fuzzy
+msgid "eg. Sarah Smith"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:53
+#: lib/petal_pro_web/controllers/user_settings_html/unsubscribe_from_notification_subscription.html.heex:104
+#, elixir-autogen, elixir-format
+msgid "notification preferences"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_dashboard_live.ex:34
+#, elixir-autogen, elixir-format
+msgid "Organisation dashboard"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_password_live.ex:48
+#, elixir-autogen, elixir-format
+msgid "This will send a reset password link to the email '%{email}'. Continue?"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:18
+#, elixir-autogen, elixir-format
+msgid "A confirmation email should be in your inbox. If you can't find it then try clicking the button below."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_session_controller.ex:12
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Account created successfully!"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:47
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Confirm new password"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_live.ex:34
+#, elixir-autogen, elixir-format
+msgid "Confirming..."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_registration_live.ex:72
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Creating account..."
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/edit_org_live.ex:16
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Editing %{org_name}"
+msgstr ""
+
+#: lib/petal_pro_api/controllers/registration_controller.ex:52
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:77
+#, elixir-autogen, elixir-format
+msgid "If your email is in our system and it has not been confirmed yet, you will receive an email with instructions shortly."
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_confirmation_instructions_live.ex:13
+#, elixir-autogen, elixir-format
+msgid "Please confirm your email"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:55
+#, elixir-autogen, elixir-format
+msgid "Resetting..."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_session_controller.ex:16
+#, elixir-autogen, elixir-format
+msgid "You are now signed in"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_auth.ex:233
+#: lib/petal_pro_web/live/hooks/user_on_mount_hooks.ex:49
+#, elixir-autogen, elixir-format, fuzzy
+msgid "You must sign in to access this page."
+msgstr ""
+
+#: lib/petal_pro_web/notifications/email.ex:59
+#, elixir-autogen, elixir-format, fuzzy
+msgid "%{pin} is your pin code"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:136
+#, elixir-autogen, elixir-format
+msgid "Action"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:206
+#, elixir-autogen, elixir-format
+msgid "Admin"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:159
+#, elixir-autogen, elixir-format
+msgid "Amount:"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:91
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Are you sure you want to remove this invitation?"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_team_live.html.heex:53
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Are you sure you want to remove this user?"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:131
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:141
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:23
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:91
+#: lib/petal_pro_web/live/admin/admin_post_live/index.html.heex:94
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:77
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:307
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:325
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:359
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:370
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:41
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:112
+#: lib/petal_pro_web/live/billing/billing_live.ex:178
+#, elixir-autogen, elixir-format
+msgid "Are you sure?"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_settings/edit_profile_live.ex:47
+#, elixir-autogen, elixir-format
+msgid "Avatar"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:92
+#: lib/petal_pro_web/live/billing/billing_live.ex:108
+#: lib/petal_pro_web/live/orgs/org/org_settings_layout_component.ex:59
+#: lib/petal_pro_web/menus.ex:185
+#, elixir-autogen, elixir-format
+msgid "Billing"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:164
+#, elixir-autogen, elixir-format
+msgid "Billing cycle:"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:267
+#, elixir-autogen, elixir-format
+msgid "Build out your web application by navigating to unused routes and creating pages out of thin air!"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:174
+#, elixir-autogen, elixir-format
+msgid "Cancel subscription"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/passwordless_auth_live.html.heex:34
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Check your email"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_live.ex:56
+#, elixir-autogen, elixir-format
+msgid "Choose a plan"
+msgstr ""
+
+#: lib/petal_pro_web/notifications/email.ex:27
+#, elixir-autogen, elixir-format
+msgid "Confirm instructions"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:189
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Contains"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:152
+#, elixir-autogen, elixir-format
+msgid "Current plan:"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:292
+#, elixir-autogen, elixir-format
+msgid "Dev"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:303
+#, elixir-autogen, elixir-format
+msgid "Email templates"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:179
+#, elixir-autogen, elixir-format
+msgid "Equals"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:73
+#, elixir-autogen, elixir-format
+msgid "Exit impersonation"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:155
+#, elixir-autogen, elixir-format
+msgid "Extra details"
+msgstr ""
+
+#: lib/petal_pro_web/components/file_upload_components.ex:277
+#, elixir-autogen, elixir-format
+msgid "File is too large"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:13
+#, elixir-autogen, elixir-format
+msgid "Filter"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:187
+#, elixir-autogen, elixir-format
+msgid "Greater than"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:186
+#, elixir-autogen, elixir-format
+msgid "Greater than or equals"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_controller.ex:5
+#, elixir-autogen, elixir-format
+msgid "Home"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_impersonation_controller.ex:16
+#, elixir-autogen, elixir-format
+msgid "Impersonating %{name}"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_impersonation_controller.ex:20
+#, elixir-autogen, elixir-format
+msgid "Invalid user or not permitted"
+msgstr ""
+
+#: lib/petal_pro_web/notifications/email.ex:51
+#, elixir-autogen, elixir-format
+msgid "Invitation to join %{org_name}"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:182
+#, elixir-autogen, elixir-format
+msgid "Is empty"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:288
+#, elixir-autogen, elixir-format
+msgid "Layouts"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:291
+#, elixir-autogen, elixir-format
+msgid "Layouts can be tricky to build. Petal Pro makes it easy with it's stacked and sidebar layouts."
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:32
+#, elixir-autogen, elixir-format
+msgid "Learn more"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:185
+#, elixir-autogen, elixir-format
+msgid "Less than"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:184
+#, elixir-autogen, elixir-format
+msgid "Less than or equals"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_controller.ex:9
+#, elixir-autogen, elixir-format
+msgid "License"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_layout_component.ex:49
+#, elixir-autogen, elixir-format
+msgid "Live dashboard"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:32
+#, elixir-autogen, elixir-format
+msgid "Live logs"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:177
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Loading..."
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:2
+#: lib/petal_pro_web/menus.ex:259
+#, elixir-autogen, elixir-format
+msgid "Logs"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:168
+#, elixir-autogen, elixir-format
+msgid "Next charge:"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:137
+#, elixir-autogen, elixir-format
+msgid "No active subscriptions."
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:183
+#, elixir-autogen, elixir-format
+msgid "Not empty"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:180
+#, elixir-autogen, elixir-format
+msgid "Not equal"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_layout_component.ex:53
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Org Dashboard"
+msgstr ""
+
+#: lib/petal_pro_web/live/orgs/org/org_layout_component.ex:62
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Org Settings"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:237
+#, elixir-autogen, elixir-format
+msgid "Orgs"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:264
+#, elixir-autogen, elixir-format
+msgid "Page builder"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_controller.ex:13
+#, elixir-autogen, elixir-format
+msgid "Privacy"
+msgstr ""
+
+#: lib/petal_pro_web/live/auth/user_reset_password_live.ex:104
+#, elixir-autogen, elixir-format
+msgid "Reset password link is invalid or it has expired."
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:325
+#, elixir-autogen, elixir-format
+msgid "Resources"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:181
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:193
+#, elixir-autogen, elixir-format
+msgid "Search (case insensitive)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:194
+#, elixir-autogen, elixir-format
+msgid "Search (case insensitive) (and)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:195
+#, elixir-autogen, elixir-format
+msgid "Search (case insensitive) (or)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:190
+#, elixir-autogen, elixir-format
+msgid "Search (case sensitive)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:191
+#, elixir-autogen, elixir-format
+msgid "Search (case sensitive) (and)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:192
+#, elixir-autogen, elixir-format
+msgid "Search (case sensitive) (or)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table_header.ex:188
+#, elixir-autogen, elixir-format
+msgid "Search in"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Select an activity type..."
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:314
+#, elixir-autogen, elixir-format
+msgid "Sent emails"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table.ex:338
+#, elixir-autogen, elixir-format
+msgid "Showing"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/subscribe_controller.ex:62
+#: lib/petal_pro_web/live/billing/subscribe_live.ex:170
+#, elixir-autogen, elixir-format
+msgid "Something went wrong with our payment portal. "
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:130
+#, elixir-autogen, elixir-format
+msgid "Something went wrong with our payment provider. Please contact support."
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:52
+#, elixir-autogen, elixir-format
+msgid "Something went wrong."
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_live.ex:22
+#: lib/petal_pro_web/live/billing/subscribe_live.ex:93
+#: lib/petal_pro_web/live/orgs/org/org_layout_component.ex:72
+#: lib/petal_pro_web/menus.ex:174
+#, elixir-autogen, elixir-format
+msgid "Subscribe"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_success_live.ex:13
+#, elixir-autogen, elixir-format
+msgid "Subscribed"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_success_live.ex:93
+#, elixir-autogen, elixir-format
+msgid "Subscription failed. Please contact support."
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:281
+#, elixir-autogen, elixir-format
+msgid "Subscriptions"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_live.ex:95
+#, elixir-autogen, elixir-format
+msgid "Switch"
+msgstr ""
+
+#: lib/petal_pro_web/notifications/email.ex:19
+#, elixir-autogen, elixir-format
+msgid "Template for showing how to do headings, buttons etc in emails"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_success_live.ex:95
+#, elixir-autogen, elixir-format
+msgid "Thank you for joining us!"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/subscribe_controller.ex:39
+#, elixir-autogen, elixir-format
+msgid "There is an existing active subscription."
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:52
+#, elixir-autogen, elixir-format
+msgid "Time"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/email_testing_html/sent.html.heex:9
+#, elixir-autogen, elixir-format
+msgid "To see emails here, you must peform an action e.g change email"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:155
+#, elixir-autogen, elixir-format
+msgid "Trial"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/page_html/landing_page.html.heex:279
+#, elixir-autogen, elixir-format
+msgid "Try it out now"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.html.heex:11
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:82
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:83
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.ex:48
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.ex:63
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:73
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:85
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:122
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:128
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:5
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:43
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:49
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:81
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:83
+#: lib/petal_pro_web/live/admin/dashboard/admin_dashboard_live.html.heex:67
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:55
+#, elixir-autogen, elixir-format
+msgid "User"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:23
+#, elixir-autogen, elixir-format
+msgid "User ID"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:64
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:36
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:61
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:2
+#: lib/petal_pro_web/menus.ex:226
+#, elixir-autogen, elixir-format
+msgid "Users"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/billing_live.ex:140
+#: lib/petal_pro_web/live/billing/billing_live.ex:182
+#, elixir-autogen, elixir-format
+msgid "View plans"
+msgstr ""
+
+#: lib/petal_pro_web/components/file_upload_components.ex:278
+#, elixir-autogen, elixir-format
+msgid "You have selected an unacceptable file type"
+msgstr ""
+
+#: lib/petal_pro_web/components/file_upload_components.ex:279
+#, elixir-autogen, elixir-format
+msgid "You have selected too many files"
+msgstr ""
+
+#: lib/petal_pro_web/plugs/subscription_plugs.ex:30
+#: lib/petal_pro_web/plugs/subscription_plugs.ex:45
+#: lib/petal_pro_web/plugs/subscription_plugs.ex:58
+#, elixir-autogen, elixir-format, fuzzy
+msgid "You must have a subscription to access this page"
+msgstr ""
+
+#: lib/petal_pro_web/controllers/user_impersonation_controller.ex:43
+#, elixir-autogen, elixir-format
+msgid "You're back as %{name}"
+msgstr ""
+
+#: lib/petal_pro_web/components/billing_components.ex:139
+#, elixir-autogen, elixir-format
+msgid "month"
+msgstr ""
+
+#: lib/petal_pro_web/components/billing_components.ex:141
+#, elixir-autogen, elixir-format
+msgid "month (paid yearly)"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table.ex:338
+#, elixir-autogen, elixir-format
+msgid "of"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table.ex:340
+#, elixir-autogen, elixir-format
+msgid "rows"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:79
+#, elixir-autogen, elixir-format
+msgid "%{model} - %{org}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:81
+#, elixir-autogen, elixir-format
+msgid "%{model} - %{user}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:91
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:42
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:122
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:43
+#, elixir-autogen, elixir-format
+msgid "%{model} billing synced"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.ex:49
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.ex:69
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.ex:63
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.ex:68
+#, elixir-autogen, elixir-format
+msgid "%{model} successfully created"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:75
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:59
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:60
+#, elixir-autogen, elixir-format
+msgid "%{model} successfully deleted"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.ex:36
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.ex:52
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.ex:48
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.ex:51
+#, elixir-autogen, elixir-format
+msgid "%{model} successfully updated"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:30
+#, elixir-autogen, elixir-format
+msgid "%{name} invited you to join the %{org_name} organisation."
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:81
+#, elixir-autogen, elixir-format
+msgid "%{no_of_days} days ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "%{no_of_hours} hours ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:67
+#, elixir-autogen, elixir-format
+msgid "%{no_of_minutes} minutes ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:88
+#, elixir-autogen, elixir-format
+msgid "%{no_of_weeks} weeks ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:80
+#, elixir-autogen, elixir-format
+msgid "1 day ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:73
+#, elixir-autogen, elixir-format
+msgid "1 hour ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:66
+#, elixir-autogen, elixir-format
+msgid "1 minute ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:87
+#, elixir-autogen, elixir-format
+msgid "1 week ago"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:26
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:68
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Actions"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:82
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:85
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:90
+#, elixir-autogen, elixir-format
+msgid "Add %{model}"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:114
+#, elixir-autogen, elixir-format
+msgid "All"
+msgstr ""
+
+#: lib/petal_pro_web/live/billing/subscribe_live.ex:94
+#, elixir-autogen, elixir-format
+msgid "Current Plan - Cancel"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:10
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:27
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:63
+#, elixir-autogen, elixir-format, fuzzy
+msgid "E-Mail"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:40
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:80
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:83
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:73
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:83
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:86
+#, elixir-autogen, elixir-format
+msgid "Edit %{model}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:40
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "ID"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:348
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:19
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Impersonate"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:61
+#, elixir-autogen, elixir-format
+msgid "Just now"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:35
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:73
+#, elixir-autogen, elixir-format
+msgid "Last login at"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:193
+#, elixir-autogen, elixir-format
+msgid "Load more"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:94
+#, elixir-autogen, elixir-format
+msgid "Mark all as read"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.ex:52
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.ex:69
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:59
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.ex:51
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.ex:68
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:60
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:85
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:86
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:90
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Membership"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:86
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Memberships"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:78
+#, elixir-autogen, elixir-format
+msgid "Never"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:46
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:5
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:85
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:5
+#, elixir-autogen, elixir-format
+msgid "New %{model}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:15
+#, elixir-autogen, elixir-format
+msgid "No %{models} found"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:97
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:48
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:128
+#: lib/petal_pro_web/live/admin/admin_user_live/show.ex:49
+#, elixir-autogen, elixir-format
+msgid "No %{model} billing found"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:73
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:95
+#, elixir-autogen, elixir-format
+msgid "No memberships"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:154
+#, elixir-autogen, elixir-format
+msgid "Nothing to see here"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:61
+#, elixir-autogen, elixir-format
+msgid "Notification Drawer"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:87
+#, elixir-autogen, elixir-format
+msgid "Notifications"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:5
+#: lib/petal_pro_web/live/admin/logs/logs_live.html.heex:100
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Org"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.ex:36
+#: lib/petal_pro_web/live/admin/admin_org_live/form_component.ex:49
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:40
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:46
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:75
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:91
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:97
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:42
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:48
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:79
+#: lib/petal_pro_web/live/admin/admin_org_live/show.ex:80
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.html.heex:11
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Organization"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:12
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Password"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.html.heex:25
+#: lib/petal_pro_web/live/admin/admin_user_live/form_component.html.heex:20
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.html.heex:25
+#, elixir-autogen, elixir-format
+msgid "Pick a role!"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/membership_component.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Pick a user!"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/membership_component.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Pick an organization!"
+msgstr ""
+
+#: lib/petal_pro_web/components/pro_components/data_table/data_table.ex:343
+#, elixir-autogen, elixir-format
+msgid "Rows per page"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:175
+#, elixir-autogen, elixir-format
+msgid "Showing %{limit} of %{total}"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:184
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Showing all"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.html.heex:16
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:50
+#, elixir-autogen, elixir-format
+msgid "Slug"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notifications_components.ex:48
+#, elixir-autogen, elixir-format
+msgid "Someone"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:342
+#, elixir-autogen, elixir-format
+msgid "Suspend"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:336
+#, elixir-autogen, elixir-format
+msgid "Swagger UI"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:133
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:33
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:310
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:51
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Sync Billing"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/show.html.heex:27
+#: lib/petal_pro_web/live/admin/admin_user_live/show.html.heex:45
+#, elixir-autogen, elixir-format
+msgid "Sync subscriptions from Stripe. (This only is needed if your webhook had a bug or was down for a period of time)."
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:142
+#, elixir-autogen, elixir-format
+msgid "There are no new notifications at the moment."
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:361
+#, elixir-autogen, elixir-format
+msgid "Undo delete"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:328
+#, elixir-autogen, elixir-format
+msgid "Undo suspend"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:106
+#, elixir-autogen, elixir-format
+msgid "Unread"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:180
+#, elixir-autogen, elixir-format
+msgid "User deleted"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:198
+#, elixir-autogen, elixir-format
+msgid "User no longer deleted"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:160
+#, elixir-autogen, elixir-format
+msgid "User no longer suspended"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:142
+#, elixir-autogen, elixir-format
+msgid "User suspended"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_org_live/index.ex:120
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:295
+#, elixir-autogen, elixir-format
+msgid "View"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.ex:315
+#, elixir-autogen, elixir-format, fuzzy
+msgid "View logs"
+msgstr ""
+
+#: lib/petal_pro/notifications/user_notification_attrs.ex:20
+#, elixir-autogen, elixir-format, fuzzy
+msgid "You have been invited to join the %{org_name} organisation!"
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:157
+#, elixir-autogen, elixir-format
+msgid "You haven't received any notifications yet."
+msgstr ""
+
+#: lib/petal_pro_web/live/notifications/notification_bell_component.ex:139
+#, elixir-autogen, elixir-format
+msgid "You're all up to date"
+msgstr ""
+
+#: lib/petal_pro_web/menus.ex:195
+#, elixir-autogen, elixir-format
+msgid "AI Chat"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/files/form_component.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Add"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_ai_chat_live/admin_ai_chat_live.ex:25
+#: lib/petal_pro_web/live/admin/admin_ai_chat_live/admin_ai_chat_live.html.heex:2
+#: lib/petal_pro_web/menus.ex:270
+#, elixir-autogen, elixir-format
+msgid "Admin AI Chat"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/files/files_component.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Archive this file?"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/index.html.heex:5
+#: lib/petal_pro_web/live/blog/show.html.heex:21
+#: lib/petal_pro_web/menus.ex:17
+#, elixir-autogen, elixir-format
+msgid "Blog"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/dashboard/admin_dashboard_live.html.heex:68
+#, elixir-autogen, elixir-format
+msgid "Confirmed"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/email_layout.html.heex:532
+#, elixir-autogen, elixir-format
+msgid "Contact us"
+msgstr ""
+
+#: lib/petal_pro_web/components/billing_components.ex:74
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Current Plan"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/form_component.html.heex:56
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Details"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:38
+#: lib/petal_pro_web/live/blog/show.html.heex:35
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Edit Post"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/files/form_component.html.heex:11
+#, elixir-autogen, elixir-format, fuzzy
+msgid "File"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/files/files_component.ex:20
+#, elixir-autogen, elixir-format
+msgid "File archived"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/publish_component.html.heex:23
+#, elixir-autogen, elixir-format
+msgid "Go live"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/confirm_register_email.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "If you didn't create an account with us, please ignore this."
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/change_email.html.heex:10
+#: lib/petal_pro_web/templates/email/reset_password.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "If you didn't request this change, please ignore this."
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/org_invitation.html.heex:1
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Invitation to join %{org}"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/org_invitation.html.heex:13
+#, elixir-autogen, elixir-format
+msgid "Join %{org}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/publish_component.html.heex:17
+#, elixir-autogen, elixir-format
+msgid "Last published"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/confirm_register_email.html.heex:1
+#, elixir-autogen, elixir-format
+msgid "Let's verify your account"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/passwordless_pin.html.heex:1
+#, elixir-autogen, elixir-format
+msgid "Let’s get you signed in."
+msgstr ""
+
+#: lib/petal_pro_web/components/billing_components.ex:72
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Most Popular ✨"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/index.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "New Post"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_layout_component.ex:55
+#, elixir-autogen, elixir-format
+msgid "Oban Web"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/dashboard/admin_dashboard_live.html.heex:69
+#, elixir-autogen, elixir-format
+msgid "Onboarded"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_user_live/index.html.heex:58
+#, elixir-autogen, elixir-format
+msgid "Online"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/passwordless_pin.html.heex:18
+#, elixir-autogen, elixir-format
+msgid "Please note this code is only valid for 15 minutes. If you didn't try to sign in, please ignore this."
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/show.ex:69
+#, elixir-autogen, elixir-format
+msgid "Post deleted"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/form_component.html.heex:18
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:22
+#: lib/petal_pro_web/live/blog/index.html.heex:11
+#: lib/petal_pro_web/menus.ex:248
+#, elixir-autogen, elixir-format
+msgid "Posts"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/files/files_component.ex:23
+#, elixir-autogen, elixir-format
+msgid "Problem archiving file"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/publish_component.html.heex:36
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:47
+#, elixir-autogen, elixir-format
+msgid "Publish"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/index.html.heex:74
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:64
+#, elixir-autogen, elixir-format
+msgid "Read"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/org_invitation.html.heex:15
+#, elixir-autogen, elixir-format
+msgid "Register and join %{org}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/new_component.html.heex:35
+#, elixir-autogen, elixir-format
+msgid "Save and Continue"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/form_component.html.heex:37
+#, elixir-autogen, elixir-format
+msgid "Save and Finish"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/email_layout.html.heex:525
+#, elixir-autogen, elixir-format
+msgid "Sent with ❤️ by %{project_name}"
+msgstr ""
+
+#: lib/petal_pro_web/live/admin/admin_post_live/form_component.html.heex:22
+#: lib/petal_pro_web/live/admin/admin_post_live/show.html.heex:26
+#: lib/petal_pro_web/live/blog/show.html.heex:25
+#, elixir-autogen, elixir-format
+msgid "This post"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/change_email.html.heex:3
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Touch the button below to change your email."
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/reset_password.html.heex:3
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Touch the button below to reset your password."
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/confirm_register_email.html.heex:3
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Touch the button below to verify your account"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/email_layout.html.heex:538
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Unsubscribe"
+msgstr ""
+
+#: lib/petal_pro_web/live/user_ai_chat_live/user_ai_chat_live.ex:18
+#: lib/petal_pro_web/live/user_ai_chat_live/user_ai_chat_live.html.heex:3
+#, elixir-autogen, elixir-format
+msgid "User AI Chat"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/confirm_register_email.html.heex:6
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Verify account"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/passwordless_pin.html.heex:4
+#, elixir-autogen, elixir-format
+msgid "We use this easy sign in code so you don’t have to remember or type in yet another long password."
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/org_invitation.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "You can join the organization by registering an account using the button below:"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/org_invitation.html.heex:4
+#, elixir-autogen, elixir-format
+msgid "You can join the organization by using the button below:"
+msgstr ""
+
+#: lib/petal_pro_web/templates/email/passwordless_pin.html.heex:9
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Your sign in code is:"
+msgstr ""

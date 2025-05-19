@@ -1,0 +1,104 @@
+<.layout current_page={:user_ai_chat} current_user={@current_user} type="sidebar">
+  <.container max_width="xl" class="my-10">
+    <.page_header title={gettext("User AI Chat")} />
+    <div class="flex flex-col flex-auto h-full">
+      <div class="flex flex-col flex-auto shrink-0 p-4 mb-4 bg-gray-100 sm:mb-6 md:mb-8 lg:mb-12 rounded-2xl dark:bg-gray-800">
+        <div class="flex flex-col h-full mb-4 overflow-x-auto">
+          <div class="flex flex-col h-full">
+            <div class="grid grid-cols-12 gap-y-2">
+              <%= for message <- @messages do %>
+                <%= if message.role == :assistant do %>
+                  <div class="col-start-1 col-end-13 p-3 rounded-lg">
+                    <div class="flex flex-row items-center">
+                      <.avatar name="IA" size="md" random_color class="shrink-0" />
+                      <div class="relative px-4 py-2 ml-3 text-sm bg-white shadow-sm dark:bg-gray-700 rounded-xl">
+                        <.unsafe_markdown
+                          content={message.content}
+                          class="text-black dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                <% else %>
+                  <div class="col-start-1 col-end-13 p-3 rounded-lg">
+                    <div class="flex flex-row-reverse items-center justify-start">
+                      <.avatar name={@current_user.name} size="md" random_color class="shrink-0" />
+                      <div class="relative px-4 py-2 mr-3 text-sm bg-indigo-100 shadow-sm rounded-xl">
+                        <.pretty_markdown content={message.content} class="text-black" />
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+              <div :if={@loading} class="col-start-1 col-end-13 p-3 rounded-lg">
+                <div class="flex flex-row items-center">
+                  <.avatar name="IA" size="md" random_color class="shrink-0" />
+                  <div class="relative flex px-4 py-2 ml-3 text-sm bg-white shadow-sm dark:bg-gray-700 rounded-xl">
+                    <%= if @response in [nil, ""] do %>
+                      <.pretty_markdown
+                        content="."
+                        class="text-black [animation-delay:-0.3s] animate-bounce"
+                      />
+                      <.pretty_markdown
+                        content="."
+                        class="text-black [animation-delay:-0.15s] animate-bounce"
+                      />
+                      <.pretty_markdown content="." class="text-black animate-bounce" />
+                    <% end %>
+                    <.pretty_markdown content={@response} class="text-black dark:text-white" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <.form
+          for={@form}
+          class="flex flex-row items-center grow w-full h-auto px-4"
+          phx-change="validate"
+          phx-submit="submit"
+        >
+          <div class="mr-4">
+            <.button
+              type="button"
+              id="microphone"
+              phx-hook="MicrophoneHook"
+              class="p-2 text-sm text-gray-600 bg-white rounded-full shadow-sm focus:bg-white dark:text-white hover:bg-gray-100 ring-gray-300 dark:bg-gray-700 ring-1 dark:ring-gray-500 group dark:hover:bg-gray-600 active:ring-4 active:ring-blue-300 dark:focus:bg-gray-700 active:animate-pulse active:bg-red-400 dark:active:bg-red-500"
+            >
+              <.icon name="hero-microphone-solid" class="w-4 h-4" />
+            </.button>
+          </div>
+          <div class="grow" id="chat-box" phx-hook="FocusBySelectorHook">
+            <div class="relative w-full">
+              <.live_file_input upload={@uploads.audio} class="hidden" />
+              <.input
+                id="chat-message"
+                field={@form[:content]}
+                type="textarea"
+                disabled={@loading}
+                rows="1"
+                phx-hook="ResizeTextareaHook"
+                class="flex w-full pl-4 border min-h-10 rounded-xl focus:outline-hidden focus:border-indigo-300"
+                {alpine_autofocus()}
+              />
+            </div>
+          </div>
+          <div class="ml-4">
+            <.button
+              type="submit"
+              id="submit-button"
+              class={"p-2 text-sm text-gray-600 rounded-full shadow-sm dark:text-white ring-gray-300 hover:bg-gray-100 focus:bg-white ring-1 dark:ring-gray-300 group dark:hover:bg-gray-400 #{submit_button_class(@form.source.valid?)}"}
+              disabled={@loading == true or @form.source.valid? == false}
+            >
+              <.icon
+                id="icon"
+                name="hero-paper-airplane-solid"
+                class={["w-4 h-4", submit_icon_class(@form.source.valid?)]}
+              />
+            </.button>
+          </div>
+        </.form>
+      </div>
+    </div>
+  </.container>
+</.layout>

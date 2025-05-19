@@ -1,0 +1,11 @@
+<.container class="py-16">
+  <.page_header title="New <%= schema.human_singular %>">
+    <.button
+      link_type="a"
+      label="Back"
+      to={~p"<%= schema.route_prefix %>"}
+    />
+  </.page_header>
+
+  <._form action={~p"<%= schema.route_prefix %>"} form={@form} />
+</.container>

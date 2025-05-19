@@ -1,0 +1,33 @@
+<div>
+  <.form
+    for={@form}
+    id="new-file-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+  >
+    <FileUploadComponents.image_browser
+      upload={@uploads.new_file}
+      label={gettext("File")}
+      on_delete="cancel-upload"
+      phx-target={@myself}
+      automatic_help_text
+    />
+
+    <.field
+      type="text"
+      field={@form[:name]}
+      label={gettext("Name")}
+      required
+      label_class={if Enum.count(@uploads.new_file.entries) == 0, do: "hidden"}
+      class={if Enum.count(@uploads.new_file.entries) == 0, do: "hidden"}
+    />
+
+    <div :if={Enum.count(@uploads.new_file.entries) > 0} class="flex justify-end gap-2">
+      <.button phx-disable-with={gettext("Saving...")}>
+        <.icon name="hero-check-circle" class="w-5 h-5 mr-2" />
+        {gettext("Add")}
+      </.button>
+    </div>
+  </.form>
+</div>

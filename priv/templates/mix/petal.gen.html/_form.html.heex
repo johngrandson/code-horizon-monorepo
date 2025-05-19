@@ -1,0 +1,12 @@
+<div>
+  <.form for={@form} id="<%= schema.singular %>-form" action={@action}>
+<%= Mix.Tasks.Petal.Gen.Html.indent_inputs(inputs, 4) %>
+    <div class="flex justify-end">
+      <.button
+        type="submit"
+        phx-disable-with="Saving..."
+        label="Save"
+      />
+    </div>
+  </.form>
+</div>

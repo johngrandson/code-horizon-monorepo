@@ -1,0 +1,94 @@
+[
+  {
+    "request": {
+      "options": {
+        "pool": "Elixir.Stripe.API",
+        "with_body": "true"
+      },
+      "body": "",
+      "url": "https://api.stripe.com/v1/subscriptions/sub_1OQrGyIWVkWpNCp709Y6qtlO",
+      "headers": {
+        "Accept": "application/json; charset=utf8",
+        "Accept-Encoding": "gzip",
+        "Authorization": "***",
+        "Connection": "keep-alive",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": "2022-11-15",
+        "User-Agent": "Stripe/v1 stripe-elixir/2022-11-15"
+      },
+      "method": "get",
+      "request_body": ""
+    },
+    "response": {
+      "binary": false,
+      "type": "ok",
+      "body": "{\n  \"id\": \"sub_1OQrGyIWVkWpNCp709Y6qtlO\",\n  \"object\": \"subscription\",\n  \"application\": null,\n  \"application_fee_percent\": null,\n  \"automatic_tax\": {\n    \"enabled\": true\n  },\n  \"billing_cycle_anchor\": 1703422756,\n  \"billing_thresholds\": null,\n  \"cancel_at\": null,\n  \"cancel_at_period_end\": false,\n  \"canceled_at\": null,\n  \"cancellation_details\": {\n    \"comment\": null,\n    \"feedback\": null,\n    \"reason\": null\n  },\n  \"collection_method\": \"charge_automatically\",\n  \"created\": 1703422756,\n  \"currency\": \"aud\",\n  \"current_period_end\": 1706101156,\n  \"current_period_start\": 1703422756,\n  \"customer\": \"cus_PFDXVnCJHqastp\",\n  \"days_until_due\": null,\n  \"default_payment_method\": null,\n  \"default_source\": null,\n  \"default_tax_rates\": [],\n  \"description\": null,\n  \"discount\": null,\n  \"ended_at\": null,\n  \"items\": {\n    \"object\": \"list\",\n    \"data\": [\n      {\n        \"id\": \"si_PFLyQcSVGgyLvO\",\n        \"object\": \"subscription_item\",\n        \"billing_thresholds\": null,\n        \"created\": 1703422756,\n        \"metadata\": {},\n        \"plan\": {\n          \"id\": \"price_1OQj8TIWVkWpNCp7ZlUSOaI9\",\n          \"object\": \"plan\",\n          \"active\": true,\n          \"aggregate_usage\": null,\n          \"amount\": 199,\n          \"amount_decimal\": \"199\",\n          \"billing_scheme\": \"per_unit\",\n          \"created\": 1703391477,\n          \"currency\": \"aud\",\n          \"interval\": \"month\",\n          \"interval_count\": 1,\n          \"livemode\": false,\n          \"metadata\": {},\n          \"nickname\": null,\n          \"product\": \"prod_PFDZyFfhgGUNOg\",\n          \"tiers_mode\": null,\n          \"transform_usage\": null,\n          \"trial_period_days\": null,\n          \"usage_type\": \"licensed\"\n        },\n        \"price\": {\n          \"id\": \"price_1OQj8TIWVkWpNCp7ZlUSOaI9\",\n          \"object\": \"price\",\n          \"active\": true,\n          \"billing_scheme\": \"per_unit\",\n          \"created\": 1703391477,\n          \"currency\": \"aud\",\n          \"custom_unit_amount\": null,\n          \"livemode\": false,\n          \"lookup_key\": null,\n          \"metadata\": {},\n          \"nickname\": null,\n          \"product\": \"prod_PFDZyFfhgGUNOg\",\n          \"recurring\": {\n            \"aggregate_usage\": null,\n            \"interval\": \"month\",\n            \"interval_count\": 1,\n            \"trial_period_days\": null,\n            \"usage_type\": \"licensed\"\n          },\n          \"tax_behavior\": \"inclusive\",\n          \"tiers_mode\": null,\n          \"transform_quantity\": null,\n          \"type\": \"recurring\",\n          \"unit_amount\": 199,\n          \"unit_amount_decimal\": \"199\"\n        },\n        \"quantity\": 1,\n        \"subscription\": \"sub_1OQrGyIWVkWpNCp709Y6qtlO\",\n        \"tax_rates\": []\n      }\n    ],\n    \"has_more\": false,\n    \"total_count\": 1,\n    \"url\": \"/v1/subscription_items?subscription=sub_1OQrGyIWVkWpNCp709Y6qtlO\"\n  },\n  \"latest_invoice\": \"in_1OQrGyIWVkWpNCp7Of1uSwJe\",\n  \"livemode\": false,\n  \"metadata\": {},\n  \"next_pending_invoice_item_invoice\": null,\n  \"on_behalf_of\": null,\n  \"pause_collection\": null,\n  \"payment_settings\": {\n    \"payment_method_options\": null,\n    \"payment_method_types\": null,\n    \"save_default_payment_method\": \"off\"\n  },\n  \"pending_invoice_item_interval\": null,\n  \"pending_setup_intent\": null,\n  \"pending_update\": null,\n  \"plan\": {\n    \"id\": \"price_1OQj8TIWVkWpNCp7ZlUSOaI9\",\n    \"object\": \"plan\",\n    \"active\": true,\n    \"aggregate_usage\": null,\n    \"amount\": 199,\n    \"amount_decimal\": \"199\",\n    \"billing_scheme\": \"per_unit\",\n    \"created\": 1703391477,\n    \"currency\": \"aud\",\n    \"interval\": \"month\",\n    \"interval_count\": 1,\n    \"livemode\": false,\n    \"metadata\": {},\n    \"nickname\": null,\n    \"product\": \"prod_PFDZyFfhgGUNOg\",\n    \"tiers_mode\": null,\n    \"transform_usage\": null,\n    \"trial_period_days\": null,\n    \"usage_type\": \"licensed\"\n  },\n  \"quantity\": 1,\n  \"schedule\": null,\n  \"start_date\": 1703422756,\n  \"status\": \"active\",\n  \"test_clock\": null,\n  \"transfer_data\": null,\n  \"trial_end\": null,\n  \"trial_settings\": {\n    \"end_behavior\": {\n      \"missing_payment_method\": \"create_invoice\"\n    }\n  },\n  \"trial_start\": null\n}",
+      "headers": {
+        "Server": "nginx",
+        "Date": "Wed, 27 Dec 2023 08:37:02 GMT",
+        "Content-Type": "application/json",
+        "Content-Length": "4011",
+        "Connection": "keep-alive",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Expose-Headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+        "Access-Control-Max-Age": "300",
+        "Cache-Control": "no-cache, no-store",
+        "Content-Security-Policy": "report-uri https://q.stripe.com/csp-report?p=v1%2Fsubscriptions%2F%3Asubscription_exposed_id; block-all-mixed-content; default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'",
+        "Request-Id": "req_I3i82GfWeqUjh2",
+        "Stripe-Version": "2022-11-15",
+        "Vary": "Origin",
+        "X-Stripe-Routing-Context-Priority-Tier": "api-testmode",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload"
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "request": {
+      "options": {
+        "pool": "Elixir.Stripe.API",
+        "with_body": "true"
+      },
+      "body": "",
+      "url": "https://api.stripe.com/v1/products/prod_PFDZyFfhgGUNOg",
+      "headers": {
+        "Accept": "application/json; charset=utf8",
+        "Accept-Encoding": "gzip",
+        "Authorization": "***",
+        "Connection": "keep-alive",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": "2022-11-15",
+        "User-Agent": "Stripe/v1 stripe-elixir/2022-11-15"
+      },
+      "method": "get",
+      "request_body": ""
+    },
+    "response": {
+      "binary": false,
+      "type": "ok",
+      "body": "{\n  \"id\": \"prod_PFDZyFfhgGUNOg\",\n  \"object\": \"product\",\n  \"active\": true,\n  \"attributes\": [],\n  \"created\": 1703391477,\n  \"default_price\": \"price_1OQj8TIWVkWpNCp7ZlUSOaI9\",\n  \"description\": null,\n  \"features\": [],\n  \"images\": [],\n  \"livemode\": false,\n  \"metadata\": {},\n  \"name\": \"<DO NOT DELETE> Petal Pro Test Plan A\",\n  \"package_dimensions\": null,\n  \"shippable\": null,\n  \"statement_descriptor\": null,\n  \"tax_code\": \"txcd_10202000\",\n  \"type\": \"service\",\n  \"unit_label\": null,\n  \"updated\": 1703391809,\n  \"url\": null\n}",
+      "headers": {
+        "Server": "nginx",
+        "Date": "Wed, 27 Dec 2023 08:37:02 GMT",
+        "Content-Type": "application/json",
+        "Content-Length": "516",
+        "Connection": "keep-alive",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Expose-Headers": "Request-Id, Stripe-Manage-Version, Stripe-Should-Retry, X-Stripe-External-Auth-Required, X-Stripe-Privileged-Session-Required",
+        "Access-Control-Max-Age": "300",
+        "Cache-Control": "no-cache, no-store",
+        "Content-Security-Policy": "report-uri https://q.stripe.com/csp-report?p=v1%2Fproducts%2F%3Aid; block-all-mixed-content; default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; img-src 'self'; script-src 'self' 'report-sample'; style-src 'self'",
+        "Request-Id": "req_pADqLqiUGWVgTn",
+        "Stripe-Version": "2022-11-15",
+        "Vary": "Origin",
+        "X-Stripe-Routing-Context-Priority-Tier": "api-testmode",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload"
+      },
+      "status_code": 200
+    }
+  }
+]

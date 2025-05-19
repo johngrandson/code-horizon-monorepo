@@ -1,0 +1,17 @@
+<h1>{gettext("Invitation to join %{org}", org: @org.name)}</h1>
+
+<%= if @invitation.user_id do %>
+  <p>{gettext("You can join the organization by using the button below:")}</p>
+<% else %>
+  <p>
+    {gettext("You can join the organization by registering an account using the button below:")}
+  </p>
+<% end %>
+
+<EmailComponents.button_centered to={@url}>
+  <%= if @invitation.user_id do %>
+    {gettext("Join %{org}", org: @org.name)}
+  <% else %>
+    {gettext("Register and join %{org}", org: @org.name)}
+  <% end %>
+</EmailComponents.button_centered>

@@ -1,0 +1,156 @@
+<.admin_layout current_page={:admin_users} current_user={@current_user}>
+  <.breadcrumbs
+    separator="chevron"
+    links={[
+      %{label: "Users", to: ~p"/admin/users", link_type: "live_patch", icon: "hero-users"}
+    ]}
+  />
+
+  <.page_header title={user_name(@user)} class="mt-4">
+    <%= if PetalPro.Accounts.Permissions.can_impersonate?(@user, @current_user) do %>
+      <.button
+        color="primary"
+        size="sm"
+        link_type="a"
+        to={~p"/auth/impersonate?id=#{@user.id}"}
+        method="post"
+      >
+        <.icon name="hero-user" class="w-4 h-4 mr-2" />
+        {gettext("Impersonate")}
+      </.button>
+    <% end %>
+
+    <.button
+      color="white"
+      size="sm"
+      link_type="live_patch"
+      to={~p"/admin/users/#{@user}/show/edit"}
+    >
+      <.icon name="hero-pencil" class="h-4 w-4 mr-2" /> {gettext("Edit")}
+    </.button>
+
+    <.dropdown
+      :if={@billing_provider}
+      class="dark:shadow-lg ml-1.5"
+      options_container_id={"user_options_#{@user.id}"}
+      menu_items_wrapper_class="dark:border dark:border-gray-600"
+    >
+      <.dropdown_menu_item
+        phx-click={JS.push("sync_user_billing")}
+        phx-value-id={@user.id}
+        data-confirm={gettext("Are you sure?")}
+        phx-hook="TippyHook"
+        id={"sync-user-#{@user.id}"}
+        data-tippy-content={
+          gettext(
+            "Sync subscriptions from Stripe. (This only is needed if your webhook had a bug or was down for a period of time)."
+          )
+        }
+      >
+        <.icon name="hero-arrow-path" class="w-5 h-5" />
+        {gettext("Sync Billing")}
+      </.dropdown_menu_item>
+    </.dropdown>
+  </.page_header>
+
+  <div class="space-y-2 text-sm text-gray-800 dark:text-gray-100">
+    <div>
+      <div class="font-semibold">{gettext("ID")}</div>
+      <div>{@user.id}</div>
+    </div>
+
+    <div>
+      <div class="font-semibold">{gettext("E-Mail")}</div>
+      <div><a href={"mailto:#{@user.email}"} class="underline">{@user.email}</a></div>
+    </div>
+
+    <div>
+      <div class="font-semibold">{gettext("Role")}</div>
+      <div>{Phoenix.Naming.humanize(@user.role)}</div>
+    </div>
+
+    <div>
+      <div class="font-semibold">{gettext("Last login at")}</div>
+      <div>
+        <%= if @user.last_signed_in_datetime do %>
+          {Calendar.strftime(@user.last_signed_in_datetime, "%I:%M %p %Y-%m-%d")}
+        <% else %>
+          {gettext("Never")}
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-gray-200 mt-8 pt-8">
+    <div class="flex items-center justify-between mb-5">
+      <.h4 class="mb-0">{gettext("Memberships")}</.h4>
+
+      <.button phx-click="membership_add" size="sm" color="primary">
+        <.icon name="hero-plus" class="h-4 w-4 mr-2" />
+        {gettext("Add %{model}", model: gettext("Membership"))}
+      </.button>
+    </div>
+
+    <.p :if={@user.memberships == []} class="text-sm">
+      {gettext("No memberships")}
+    </.p>
+
+    <.table :if={length(@user.memberships) > 0} rows={@user.memberships}>
+      <:col :let={membership} label="Organisation">
+        <.link patch={~p"/admin/orgs/#{membership.org}"} class="hover:underline">
+          {membership.org.name}
+        </.link>
+      </:col>
+      <:col :let={membership} label="Role">{Phoenix.Naming.humanize(membership.role)}</:col>
+      <:col :let={membership} class="w-4" label="Action">
+        <div class="flex gap-2 items-center justify-end">
+          <.button
+            color="danger"
+            size="sm"
+            phx-click="membership_delete"
+            phx-value-id={membership.id}
+            data-confirm={gettext("Are you sure?")}
+            id={"delete-#{membership.id}"}
+          >
+            <.icon name="hero-x-mark" class="h-4 w-4" />
+            <span class="ml-2 hidden sm:inline">{gettext("Remove")}</span>
+          </.button>
+          <.button
+            color="white"
+            size="sm"
+            phx-click="membership_edit"
+            phx-value-id={membership.id}
+          >
+            <.icon name="hero-pencil" class="h-4 w-4" />
+            <span class="ml-2 hidden sm:inline">{gettext("Edit")}</span>
+          </.button>
+        </div>
+      </:col>
+    </.table>
+  </div>
+
+  <%= if @live_action in [:new_membership, :edit_membership] do %>
+    <.modal title={membership_title(@live_action)} max_width="lg">
+      <.live_component
+        module={PetalProWeb.AdminUserLive.MembershipComponent}
+        id={@membership.id || :new}
+        action={@live_action}
+        user={@user}
+        membership={@membership}
+        return_to={~p"/admin/users/#{@user}"}
+      />
+    </.modal>
+  <% end %>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title} max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminUserLive.FormComponent}
+        id={@user.id || :new}
+        action={@live_action}
+        user={@user}
+        return_to={~p"/admin/users/#{@user}"}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>

@@ -1,0 +1,53 @@
+<.container class="py-16">
+  <.page_header title="Listing <%= schema.human_plural %>">
+    <.button link_type="live_patch" label="New <%= schema.human_singular %>" to={~p"<%= schema.route_prefix %>/new"} />
+  </.page_header>
+
+  <%%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title}>
+      <.live_component
+        module={<%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Live.FormComponent}
+        id={@<%= schema.singular %>.id || :new}
+        action={@live_action}
+        <%= schema.singular %>={@<%= schema.singular %>}
+        return_to={current_index_path(@index_params)}
+      />
+    </.modal>
+  <%% end %>
+
+  <.data_table :if={@index_params} meta={@meta} items={@<%= schema.plural %>}>
+    <:if_empty>No <%= schema.plural %> found</:if_empty><%= for {col, _} <- schema.attrs do %>
+    <:col field={:<%= col %>} sortable /><% end %>
+    <:col label="Actions" :let={<%= schema.singular %>} align_right>
+      <.button
+        color="primary"
+        variant="outline"
+        size="xs"
+        link_type="live_redirect"
+        label="Show"
+        to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}"}
+      />
+
+      <.button
+        color="white"
+        variant="outline"
+        size="xs"
+        link_type="live_patch"
+        label="Edit"
+        to={~p"<%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
+      />
+
+      <.button
+        color="danger"
+        variant="outline"
+        link_type="a"
+        to="#"
+        size="xs"
+        label="Delete"
+        phx-click="delete"
+        phx-value-id={<%= schema.singular %>.id}
+        data-confirm="Are you sure?"
+      />
+    </:col>
+  </.data_table>
+</.container>

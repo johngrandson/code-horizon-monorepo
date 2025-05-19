@@ -1,0 +1,66 @@
+<%= if @live_action in [:new, :edit, :publish] do %>
+  <.container max_width="md" class="py-16">
+    <.live_component
+      module={PetalProWeb.AdminPostLive.FormComponent}
+      id={@post.id || :new}
+      action={@live_action}
+      post={@post}
+      return_to={~p"/blog/#{@post.slug}"}
+    />
+  </.container>
+<% else %>
+  <.container max_width="sm" class="py-16">
+    <div class="grid gap-8">
+      <div class="flex justify-between">
+        <.breadcrumbs
+          separator="chevron"
+          links={[
+            %{
+              to: ~p"/blog",
+              icon: "hero-signal",
+              label: gettext("Blog"),
+              link_type: "live_redirect"
+            },
+            %{
+              label: @post.published_category || gettext("This post"),
+              to: ~p"/blog/#{@post.published_slug}",
+              link_type: "live_redirect"
+            }
+          ]}
+        />
+
+        <.button
+          :if={@current_user && @current_user.role == :admin}
+          link_type="live_redirect"
+          label={gettext("Edit Post")}
+          to={~p"/admin/posts/#{@post}/show/edit"}
+        />
+      </div>
+
+      <.p :if={@post.published_duration} class="text-xs uppercase -mb-8">
+        Reading Time - {formatted_duration(@post)}
+      </.p>
+
+      <.page_header title={@post.published_title} class="!mb-0" />
+
+      <div class="grid gap-3 -mx-8">
+        <.p class="m-0">
+          <img :if={@post.published_cover} src={@post.published_cover} class="w-full rounded-3xl" />
+        </.p>
+        <.p :if={@post.published_cover_caption} class="text-sm text-gray-500 text-center m-0">
+          {@post.published_cover_caption}
+        </.p>
+      </div>
+
+      <.p :if={@post.published_summary} class="font-semibold mb-0">
+        {@post.published_summary}
+      </.p>
+
+      <.pretty_content json={@post.published_content} />
+
+      <div class="flex gap-4 items-center mt-16">
+        <.avatar size="xl" src={user_avatar_url(@post.author)} /> {user_name(@post.author)}
+      </div>
+    </div>
+  </.container>
+<% end %>

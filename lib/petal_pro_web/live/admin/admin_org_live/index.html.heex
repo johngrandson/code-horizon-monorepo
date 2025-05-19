@@ -1,0 +1,42 @@
+<.admin_layout current_page={:admin_orgs} current_user={@current_user}>
+  <.page_header title={gettext("Organizations")}>
+    <.button size="sm" link_type="live_patch" to={~p"/admin/orgs/new"}>
+      <.icon name="hero-plus" class="h-4 w-4 mr-2" />
+      {gettext("New %{model}", model: gettext("Org"))}
+    </.button>
+  </.page_header>
+
+  <.data_table
+    :if={@index_params}
+    meta={@meta}
+    items={@orgs}
+    page_size_options={[50, 100, 250, 500]}
+  >
+    <:if_empty>{gettext("No %{models} found", models: gettext("Organizations"))}</:if_empty>
+    <:col :let={org} field={:slug} sortable label={gettext("Slug")} filterable={[:=~]}>
+      <.link patch={~p"/admin/orgs/#{org}"} class="hover:underline">
+        {org.slug}
+      </.link>
+    </:col>
+    <:col :let={org} field={:name} sortable label={gettext("Name")} filterable={[:=~]}>
+      <.link patch={~p"/admin/orgs/#{org}"} class="hover:underline">
+        {org.name}
+      </.link>
+    </:col>
+    <:col :let={org} label={gettext("Actions")}>
+      <.org_actions socket={@socket} org={org} billing_provider={@billing_provider} />
+    </:col>
+  </.data_table>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title} max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminOrgLive.FormComponent}
+        id={@org.id || :new}
+        action={@live_action}
+        org={@org}
+        return_to={current_index_path(@index_params)}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>

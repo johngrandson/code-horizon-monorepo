@@ -1,0 +1,134 @@
+<.admin_layout current_page={:admin_orgs} current_user={@current_user}>
+  <.breadcrumbs
+    separator="chevron"
+    links={[
+      %{label: "Orgs", to: ~p"/admin/orgs", link_type: "live_patch", icon: "hero-users"}
+    ]}
+  />
+
+  <.page_header title={@org.name} class="mt-4">
+    <.button color="white" size="sm" link_type="live_patch" to={~p"/admin/orgs/#{@org}/show/edit"}>
+      <.icon name="hero-pencil" class="h-4 w-4 mr-2" /> {gettext("Edit")}
+    </.button>
+
+    <.dropdown
+      :if={@billing_provider}
+      class="dark:shadow-lg ml-1.5"
+      options_container_id={"org_options_#{@org.id}"}
+      menu_items_wrapper_class="dark:border dark:border-gray-600"
+    >
+      <.dropdown_menu_item
+        phx-click={JS.push("sync_org_billing")}
+        phx-value-id={@org.id}
+        data-confirm={gettext("Are you sure?")}
+        phx-hook="TippyHook"
+        id={"sync-org-#{@org.id}"}
+        data-tippy-content={
+          gettext(
+            "Sync subscriptions from Stripe. (This only is needed if your webhook had a bug or was down for a period of time)."
+          )
+        }
+      >
+        <.icon name="hero-arrow-path" class="w-5 h-5" />
+        {gettext("Sync Billing")}
+      </.dropdown_menu_item>
+    </.dropdown>
+  </.page_header>
+
+  <div class="space-y-2 text-sm text-gray-800 dark:text-gray-100">
+    <div>
+      <div class="font-semibold">{gettext("ID")}</div>
+      <div>{@org.id}</div>
+    </div>
+
+    <div>
+      <div class="font-semibold">{gettext("Name")}</div>
+      <div>{@org.name}</div>
+    </div>
+
+    <div>
+      <div class="font-semibold">{gettext("Slug")}</div>
+      <div>
+        <.link
+          navigate={~p"/app/org/#{@org.slug}"}
+          class="underline text-blue-600 dark:text-blue-400"
+        >
+          /app/orgs/<span class="font-bold"><%= @org.slug %></span>
+        </.link>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-gray-200 mt-8 pt-8">
+    <div class="flex items-center justify-between mb-5">
+      <.h4 class="mb-0">{gettext("Users")}</.h4>
+
+      <.button phx-click="membership_add" size="sm">
+        <.icon name="hero-plus" class="h-4 w-4 mr-2" />
+        {membership_title(:new_membership)}
+      </.button>
+    </div>
+
+    <.p :if={@org.memberships == []} class="text-sm">
+      {gettext("No memberships")}
+    </.p>
+
+    <.table :if={length(@org.memberships) > 0} rows={@org.memberships}>
+      <:col :let={membership} label="User">
+        <.link patch={~p"/admin/users/#{membership.user}"} class="hover:underline">
+          {user_name(membership.user)}
+        </.link>
+      </:col>
+      <:col :let={membership} label="Role">{Phoenix.Naming.humanize(membership.role)}</:col>
+      <:col :let={membership} class="w-4" label="Action">
+        <div class="flex gap-2 items-center justify-end">
+          <.button
+            color="danger"
+            size="sm"
+            phx-click="membership_delete"
+            phx-value-id={membership.id}
+            id={"delete-#{membership.id}"}
+            data-confirm={gettext("Are you sure?")}
+          >
+            <.icon name="hero-x-mark" class="h-4 w-4" />
+            <span class="ml-2 hidden sm:inline">{gettext("Remove")}</span>
+          </.button>
+          <.button
+            color="white"
+            size="sm"
+            phx-click="membership_edit"
+            phx-value-id={membership.id}
+          >
+            <.icon name="hero-pencil" class="h-4 w-4" />
+            <span class="ml-2 hidden sm:inline">{gettext("Edit")}</span>
+          </.button>
+        </div>
+      </:col>
+    </.table>
+  </div>
+
+  <%= if @live_action in [:new_membership, :edit_membership] do %>
+    <.modal title={membership_title(@live_action)} max_width="lg">
+      <.live_component
+        module={PetalProWeb.AdminOrgLive.MembershipComponent}
+        id={@membership.id || :new}
+        action={@live_action}
+        org={@org}
+        membership={@membership}
+        return_to={~p"/admin/orgs/#{@org}"}
+      />
+    </.modal>
+  <% end %>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title} max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminOrgLive.FormComponent}
+        id={@org.id || :new}
+        action={@live_action}
+        org={@org}
+        return_to={~p"/admin/orgs/#{@org}"}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>
