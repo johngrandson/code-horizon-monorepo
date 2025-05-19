@@ -216,7 +216,7 @@ defmodule PetalProWeb.CoreComponents do
       <% "sidebar" -> %>
         <.sidebar_layout {assigns}>
           <:logo>
-            <.logo class="h-8 transition-transform duration-300 ease-out transform hover:scale-105" />
+            <.logo class="h-18 transition-transform duration-300 ease-out transform hover:scale-105" />
           </:logo>
           <:logo_icon>
             <.logo_icon />

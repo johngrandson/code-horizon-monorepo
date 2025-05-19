@@ -26,7 +26,7 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
         <% else %>
           <div class="grid grid-cols-1 mt-6 md:grid-cols-2 xl:grid-cols-3">
             <%= for invitation <- @invitations do %>
-              <.box padded id={"invitation-#{invitation.id}"}>
+              <.box padded id={"invitation-#{invitation.id}"} class="mr-5 mt-5">
                 <div>
                   <div class="flex items-center justify-center w-12 h-12 mx-auto bg-blue-100 rounded-full">
                     <.icon name="hero-envelope" class="w-6 h-6 text-blue-600" />
