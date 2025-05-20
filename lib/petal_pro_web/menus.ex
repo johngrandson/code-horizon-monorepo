@@ -263,6 +263,17 @@ defmodule PetalProWeb.Menus do
     end
   end
 
+  def get_link(:admin_settings = name, current_user) do
+    if Helpers.admin?(current_user) do
+      %{
+        name: name,
+        label: gettext("Settings"),
+        path: ~p"/admin/settings",
+        icon: "hero-cog"
+      }
+    end
+  end
+
   def get_link(:admin_interactive = name, current_user) do
     if Helpers.admin?(current_user) do
       %{

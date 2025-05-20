@@ -2,6 +2,7 @@ defmodule PetalPro.Settings do
   @moduledoc """
   The Settings context handles all global application settings.
   """
+  import Ecto.Query, only: [from: 2]
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
@@ -164,5 +165,128 @@ defmodule PetalPro.Settings do
   def user_reached_org_limit?(user) do
     org_count = length(Orgs.list_orgs(user))
     org_count >= max_orgs_for_free_user()
+  end
+
+  @doc """
+  Returns the list of settings.
+
+  ## Examples
+
+      iex> list_settings()
+      [%Setting{}, ...]
+
+  """
+  @spec list_settings_query() :: Ecto.Query.t()
+  def list_settings_query do
+    from(s in Setting, order_by: [asc: s.key])
+  end
+
+  @spec list_settings() :: [Setting.t()]
+  def list_settings do
+    Repo.all(list_settings_query())
+  end
+
+  @doc """
+  Gets a single setting.
+
+  Raises `Ecto.NoResultsError` if the Setting does not exist.
+
+  ## Examples
+
+      iex> get_setting!(123)
+      %Setting{}
+
+      iex> get_setting!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  @spec get_setting!(integer()) :: Setting.t()
+  def get_setting!(id), do: Repo.get!(Setting, id)
+
+  @doc """
+  Creates a setting.
+
+  ## Examples
+
+      iex> create_setting(%{field: value})
+      {:ok, %Setting{}}
+
+      iex> create_setting(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec create_setting(map()) :: {:ok, Setting.t()} | {:error, Ecto.Changeset.t()}
+  def create_setting(attrs \\ %{}) do
+    # Ensure the value is properly formatted as a map with a "value" key
+    attrs = 
+      case attrs do
+        %{"value" => %{"value" => _}} -> attrs
+        %{"value" => value} when is_map(value) -> attrs
+        %{"value" => value} -> Map.put(attrs, "value", %{"value" => value})
+        _ -> attrs
+      end
+
+    %Setting{}
+    |> Setting.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a setting.
+
+  ## Examples
+
+      iex> update_setting(setting, %{field: new_value})
+      {:ok, %Setting{}}
+
+      iex> update_setting(setting, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec update_setting(Setting.t(), map()) :: {:ok, Setting.t()} | {:error, Ecto.Changeset.t()}
+  def update_setting(%Setting{} = setting, attrs) do
+    # Ensure the value is properly formatted as a map with a "value" key
+    attrs = 
+      case attrs do
+        %{"value" => %{"value" => _}} -> attrs
+        %{"value" => value} when is_map(value) -> attrs
+        %{"value" => value} -> Map.put(attrs, "value", %{"value" => value})
+        _ -> attrs
+      end
+
+    setting
+    |> Setting.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a setting.
+
+  ## Examples
+
+      iex> delete_setting(setting)
+      {:ok, %Setting{}}
+
+      iex> delete_setting(setting)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec delete_setting(Setting.t()) :: {:ok, Setting.t()} | {:error, Ecto.Changeset.t()}
+  def delete_setting(%Setting{} = setting) do
+    Repo.delete(setting)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking setting changes.
+
+  ## Examples
+
+      iex> change_setting(setting)
+      %Ecto.Changeset{data: %Setting{}}
+
+  """
+  @spec change_setting(Setting.t(), map()) :: Ecto.Changeset.t()
+  def change_setting(%Setting{} = setting, attrs \\ %{}) do
+    Setting.changeset(setting, attrs)
   end
 end

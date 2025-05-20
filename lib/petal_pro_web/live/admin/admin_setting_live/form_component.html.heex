@@ -1,0 +1,76 @@
+<div>
+  <.form
+    for={@form}
+    id="setting-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+  >
+    <.field type="text" field={@form[:key]} disabled={@action == :edit} />
+
+    <%= if @action == :new do %>
+      <.field
+        type="select"
+        field={@form[:value_type]}
+        label="Value Type"
+        options={[
+          {"String", "string"},
+          {"Number", "number"},
+          {"Boolean", "boolean"}
+        ]}
+        value={@value_type}
+        phx-change="change_value_type"
+      />
+    <% else %>
+      <input type="hidden" name="setting[value_type]" value={@value_type} />
+    <% end %>
+
+    <%= case @value_type do %>
+      <% "boolean" -> %>
+        <div class="form-group">
+          <label class="form-label">Value</label>
+          <div class="mt-2">
+            <label class="inline-flex items-center">
+              <input 
+                type="hidden" 
+                name={@form[:value].name} 
+                value="false" 
+              />
+              <input 
+                type="checkbox" 
+                name={@form[:value].name} 
+                value="true" 
+                class="form-checkbox"
+                phx-debounce="blur"
+                checked={@current_value == true or @current_value == "true"}
+                id={@form[:value].id}
+              />
+              <span class="ml-2">Enabled</span>
+            </label>
+          </div>
+        </div>
+      <% "number" -> %>
+        <.field 
+          type="number" 
+          field={@form[:value]} 
+          label="Value" 
+          step="any"
+          value={@current_value}
+        />
+      <% _ -> %>
+        <.field 
+          type="text" 
+          field={@form[:value]} 
+          label="Value"
+          value={@current_value}
+        />
+    <% end %>
+
+    <.field type="text" field={@form[:description]} />
+    <.field type="checkbox" field={@form[:is_public]} label="Public" />
+
+    <div class="flex justify-end">
+      <.button type="submit" phx-disable-with="Saving...">Save</.button>
+    </div>
+  </.form>
+</div>

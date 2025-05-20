@@ -11,6 +11,7 @@ defmodule PetalProWeb.OrgLayoutComponent do
   attr :current_org, :map, required: true
   attr :current_membership, :map, required: true
   attr :current_page, :atom
+
   slot(:inner_block)
 
   def org_layout(assigns) do

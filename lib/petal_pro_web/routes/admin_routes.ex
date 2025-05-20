@@ -44,6 +44,13 @@ defmodule PetalProWeb.AdminRoutes do
           live "/posts/:id/show/edit", AdminPostLive.Show, :edit
           live "/posts/:id/show/edit/files/:image_target", AdminPostLive.Show, :files
           live "/posts/:id/show/publish", AdminPostLive.Show, :publish
+
+          live "/settings", AdminSettingLive.Index, :index
+          live "/settings/new", AdminSettingLive.Index, :new
+          live "/settings/:id/edit", AdminSettingLive.Index, :edit
+
+          live "/settings/:id", AdminSettingLive.Show, :show
+          live "/settings/:id/show/edit", AdminSettingLive.Show, :edit
         end
       end
     end

@@ -1,0 +1,89 @@
+<.admin_layout current_page={:admin_settings} current_user={@current_user}>
+  <.page_header icon="hero-cog" title={gettext("Global App Settings")}>
+    <.button size="sm" link_type="live_patch" to={~p"/admin/settings/new"} data-phx-link="patch">
+      <.icon name="hero-plus" class="w-4 h-4 mr-2" />
+      {gettext("New Setting")}
+    </.button>
+  </.page_header>
+
+  <.data_table
+    :if={@index_params}
+    meta={@meta}
+    items={@settings}
+    page_size_options={[10, 20, 50, 100]}
+  >
+    <:if_empty>{gettext("No settings found")}</:if_empty>
+    <:col :let={setting} field={:key} label={gettext("Key")} sortable filterable={[:=~]}>
+      <div class="font-medium text-gray-900 dark:text-white">
+        {setting.key}
+      </div>
+    </:col>
+    <:col :let={setting} field={:value} label={gettext("Value")} filterable={[:=~]}>
+      <div class="text-gray-600 dark:text-gray-300">
+        {format_setting_value(setting.value)}
+      </div>
+    </:col>
+    <:col :let={setting} field={:description} label={gettext("Description")} filterable={[:=~]}>
+      <div class="text-gray-600 dark:text-gray-300">
+        {setting.description}
+      </div>
+    </:col>
+    <:col :let={setting} field={:inserted_at} label={gettext("Created")} sortable>
+      <div class="text-gray-600 dark:text-gray-300">
+        <%= if setting.inserted_at do %>
+          <span title={Calendar.strftime(setting.inserted_at, "%I:%M %p %Y-%m-%d")}>
+            {Timex.from_now(setting.inserted_at)}
+          </span>
+        <% end %>
+      </div>
+    </:col>
+    <:col :let={setting} label={gettext("Actions")} align_right>
+      <div class="flex items-center justify-end space-x-2">
+        <.button
+          color="primary"
+          variant="outline"
+          size="xs"
+          link_type="live_redirect"
+          to={~p"/admin/settings/#{setting}"}
+          aria-label={gettext("View")}
+        >
+          <.icon name="hero-eye" class="w-4 h-4" />
+        </.button>
+        <.button
+          color="white"
+          variant="outline"
+          size="xs"
+          link_type="live_patch"
+          to={~p"/admin/settings/#{setting}/edit"}
+          aria-label={gettext("Edit")}
+        >
+          <.icon name="hero-pencil" class="w-4 h-4" />
+        </.button>
+        <.button
+          color="danger"
+          variant="outline"
+          size="xs"
+          link_type="a"
+          to="#"
+          phx-click={JS.push("delete", value: %{id: setting.id})}
+          data-confirm={gettext("Are you sure?")}
+          aria-label={gettext("Delete")}
+        >
+          <.icon name="hero-trash" class="w-4 h-4" />
+        </.button>
+      </div>
+    </:col>
+  </.data_table>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title} max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminSettingLive.FormComponent}
+        id={@setting.id || :new}
+        action={@live_action}
+        setting={@setting}
+        return_to={~p"/admin/settings"}
+      />
+    </.modal>
+  <% end %>
+</.admin_layout>

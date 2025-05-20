@@ -1,0 +1,56 @@
+<.layout current_page={:settings} current_user={@current_user} type="sidebar">
+  <.container class="py-16">
+    <.page_header title={gettext("Show Setting")}>
+      <.button
+        link_type="live_patch"
+        label={gettext("Edit Setting")}
+        to={~p"/admin/settings/#{@setting}/show/edit"}
+      />
+
+      <.button link_type="live_redirect" label={gettext("Back")} to={~p"/admin/settings"} />
+    </.page_header>
+
+    <%= if @live_action in [:new, :edit] do %>
+      <.modal title={gettext("Edit Setting")}>
+        <.live_component
+          module={PetalProWeb.AdminSettingLive.FormComponent}
+          id={@setting.id || :new}
+          action={@live_action}
+          setting={@setting}
+          return_to={~p"/admin/settings/#{@setting}"}
+        />
+      </.modal>
+    <% end %>
+
+    <div class="max-w-lg">
+      <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+        <div class="sm:col-span-1">
+          <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {gettext("Key")}
+          </div>
+          <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+            {@setting.key}
+          </div>
+        </div>
+
+        <div class="sm:col-span-1">
+          <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {gettext("Value")}
+          </div>
+          <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+            {format_setting_value(@setting.value)}
+          </div>
+        </div>
+
+        <div class="sm:col-span-1">
+          <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {gettext("Description")}
+          </div>
+          <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+            {@setting.description}
+          </div>
+        </div>
+      </div>
+    </div>
+  </.container>
+</.layout>

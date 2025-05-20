@@ -2099,3 +2099,62 @@ msgstr ""
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Your sign in code is:"
 msgstr "Seu código PIN de acesso"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/index.html.heex:6
+#, elixir-autogen, elixir-format
+msgid "New Setting"
+msgstr "Nova configuração"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/index.html.heex:6
+#, elixir-autogen, elixir-format
+msgid "Global App Settings"
+msgstr "Configurações globais da aplicação"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/form_component.html.heex:22
+#, elixir-autogen, elixir-format
+msgid "Value Type"
+msgstr "Tipo de valor"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/form_component.html.heex:46
+#, elixir-autogen, elixir-format
+msgid "Value"
+msgstr "Valor"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/form_component.html.heex:60
+#, elixir-autogen, elixir-format
+msgid "Description"
+msgstr "Descrição"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/form_component.html.heex:74
+#, elixir-autogen, elixir-format
+msgid "Key"
+msgstr "Chave"
+
+#: lib/petal_pro_web/live/admin/admin_setting_live/form_component.html.heex:88
+#, elixir-autogen, elixir-format
+msgid "Public (visible to all users)"
+msgstr "Público (visível a todos os usuários)"
+
+msgid "String"
+msgstr "String"
+
+msgid "Number"
+msgstr "Número"
+
+msgid "Boolean"
+msgstr "Booleano"
+
+msgid "Enabled"
+msgstr "Habilitado"
+
+msgid "Enter a number"
+msgstr "Insira um número"
+
+msgid "Enter a value"
+msgstr "Insira um valor"
+
+msgid "A brief description of this setting"
+msgstr "Uma breve descrição da configuração"
+
+msgid "No settings found"
+msgstr "Nenhuma configuração encontrada"
