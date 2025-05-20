@@ -66,7 +66,7 @@ defmodule PetalProWeb.AdminSettingLive.Index do
     setting = %Setting{
       key: "",
       value: "",
-      type: "string",
+      type: "boolean",
       description: "",
       is_public: false
     }
