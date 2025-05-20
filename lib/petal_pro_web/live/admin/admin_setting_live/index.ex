@@ -29,7 +29,7 @@ defmodule PetalProWeb.AdminSettingLive.Index do
   @impl true
   def mount(params, _session, socket) do
     index_params = Map.get(params, "index", %{})
-    
+
     socket =
       assign(socket,
         meta: nil,
@@ -63,9 +63,18 @@ defmodule PetalProWeb.AdminSettingLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
+    setting = %Setting{
+      key: "",
+      value: "",
+      type: "string",
+      description: "",
+      is_public: false
+    }
+
     socket
     |> assign(:page_title, gettext("New Setting"))
-    |> assign(:setting, %Setting{})
+    |> assign(:setting, setting)
+    |> assign(:action, :new)
   end
 
   @impl true
@@ -74,30 +83,30 @@ defmodule PetalProWeb.AdminSettingLive.Index do
       socket
       |> put_flash(:info, gettext("Setting saved successfully"))
       |> push_patch(to: ~p"/admin/settings")
-      |> assign(:setting, setting)  # Atualiza o setting no estado
-      
-    # Recarrega a lista de configurações
-    {settings, meta} = DataTable.search(
-      Settings.list_settings_query(), 
-      socket.assigns.index_params, 
-      @data_table_opts
-    )
-    
+      |> assign(:setting, setting)
+
+    {settings, meta} =
+      DataTable.search(
+        Settings.list_settings_query(),
+        socket.assigns.index_params,
+        @data_table_opts
+      )
+
     {:noreply, assign(socket, settings: settings, meta: meta)}
   end
 
   @impl true
   def handle_params(params, _url, socket) do
     live_action = socket.assigns.live_action || :index
-    
-    socket = 
+
+    socket =
       case live_action do
         :index -> apply_action(socket, :index, params)
         :new -> apply_action(socket, :new, params)
         :edit -> apply_action(socket, :edit, params)
         _ -> socket
       end
-    
+
     {:noreply, assign(socket, live_action: live_action)}
   end
 
@@ -109,35 +118,31 @@ defmodule PetalProWeb.AdminSettingLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    try do
-      setting = Settings.get_setting!(id)
-      
-      case Settings.delete_setting(setting) do
-        {:ok, _setting} ->
-          # Recarrega a lista de configurações
-          {settings, meta} = DataTable.search(
-            Settings.list_settings_query(), 
-            socket.assigns.index_params, 
+    setting = Settings.get_setting!(id)
+
+    case Settings.delete_setting(setting) do
+      {:ok, _setting} ->
+        {settings, meta} =
+          DataTable.search(
+            Settings.list_settings_query(),
+            socket.assigns.index_params,
             @data_table_opts
           )
-          
-          {:noreply,
-           socket
-           |> assign(settings: settings, meta: meta)
-           |> put_flash(:info, gettext("Setting deleted successfully"))}
 
-        {:error, _changeset} ->
-          {:noreply,
-           socket
-           |> put_flash(:error, gettext("Failed to delete setting"))}
-      end
-    rescue
-      Ecto.NoResultsError ->
         {:noreply,
          socket
-         |> put_flash(:error, gettext("Setting not found"))
-         |> push_patch(to: ~p"/admin/settings")}
+         |> assign(settings: settings, meta: meta)
+         |> put_flash(:info, gettext("Setting deleted successfully"))}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, gettext("Failed to delete setting"))}
     end
+  rescue
+    Ecto.NoResultsError ->
+      {:noreply,
+       socket
+       |> put_flash(:error, gettext("Setting not found"))
+       |> push_patch(to: ~p"/admin/settings")}
   end
 
   @impl true

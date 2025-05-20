@@ -30,6 +30,6 @@ defmodule PetalProWeb.AdminSettingLive.Show do
     end
   end
 
-  defp page_title(:show), do: "Show Setting"
-  defp page_title(:edit), do: "Edit Setting"
+  defp page_title(:show), do: gettext("Show Setting")
+  defp page_title(:edit), do: gettext("Edit Setting")
 end

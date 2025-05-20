@@ -1,12 +1,4 @@
-<div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-2xl mx-auto border border-gray-200 dark:border-gray-700">
-  <!-- Header -->
-  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-      {if @action == :edit, do: "Edit", else: "New"} Setting
-    </h3>
-  </div>
-  
-<!-- Form -->
+<div class="bg-white rounded-lg overflow-hidden w-full max-w-2xl dark:bg-gray-800 mx-auto border border-gray-200 dark:border-gray-700">
   <div class="p-6">
     <.form
       for={@form}
@@ -21,22 +13,21 @@
           <.field
             type="text"
             field={@form[:key]}
-            label="Key"
+            label={gettext("Key")}
             disabled={@action == :edit}
-            placeholder="Enter setting key"
+            placeholder={gettext("Enter setting key")}
             wrapper_class="mb-4"
           />
         </div>
 
         <div>
-          <.combo_box
-            create
-            selected={@type}
-            disabled={@action == :edit}
-            label="Type"
-            options={@setting_types}
+          <.field
+            type="select"
             field={@form[:type]}
-            wrapper_class="mb-4"
+            label={gettext("Value Type")}
+            options={@setting_types}
+            value={@type}
+            phx-change="change_value_type"
           />
         </div>
 
@@ -46,7 +37,7 @@
               <.field
                 type="checkbox"
                 field={@form[:value]}
-                label="Enabled"
+                label={gettext("Enabled")}
                 value="true"
                 checked={@value == true}
                 wrapper_class="mb-0"
@@ -56,9 +47,9 @@
             <.field
               type="number"
               field={@form[:value]}
-              label="Value"
+              label={gettext("Value")}
               step="any"
-              placeholder="Enter a number"
+              placeholder={gettext("Enter a number")}
               wrapper_class="mb-4"
             />
           <% type when type in ["map", "list"] -> %>
@@ -81,8 +72,8 @@
             <.field
               type="text"
               field={@form[:value]}
-              label="Value"
-              placeholder="Enter value"
+              label={gettext("Value")}
+              placeholder={gettext("Enter value")}
               wrapper_class="mb-4"
             />
         <% end %>
@@ -90,8 +81,8 @@
         <.field
           type="text"
           field={@form[:description]}
-          label="Description"
-          placeholder="Enter description"
+          label={gettext("Description")}
+          placeholder={gettext("Enter description")}
           wrapper_class="mb-4"
         />
 
@@ -99,7 +90,7 @@
           <.field
             type="checkbox"
             field={@form[:is_public]}
-            label="Public"
+            label={gettext("Public")}
             value="true"
             checked={@setting.is_public}
             wrapper_class="mb-0"
@@ -116,7 +107,7 @@
       phx-click={JS.patch(~p"/admin/settings")}
       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
     >
-      Cancel
+      {gettext("Cancel")}
     </button>
     <button
       type="submit"
@@ -134,7 +125,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
         </path>
       </svg>
-      Save Setting
+      {gettext("Save Setting")}
     </button>
   </div>
 </div>

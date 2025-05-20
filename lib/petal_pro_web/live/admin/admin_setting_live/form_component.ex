@@ -22,10 +22,9 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
 
   @impl true
   def update(%{setting: setting} = assigns, socket) do
-    # Initialize with a blank changeset
+    setting = ensure_default_values(setting)
     changeset = Setting.changeset(setting, %{})
 
-    # Get initial type and value
     type = setting.type || "string"
     value = extract_value(setting.value)
 
@@ -41,44 +40,51 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
      |> assign_form(changeset)}
   end
 
-  @impl true
-  def handle_event("validate", params, socket) do
-    # Extract form data
-    form_data = params["setting"] || %{}
+  defp ensure_default_values(setting) do
+    Map.merge(setting, %{
+      value: Map.get(setting, :value) || "",
+      type: Map.get(setting, :type) || "string"
+    })
+  end
 
+  @impl true
+  def handle_event("validate", %{"setting" => form_data}, socket) do
     # Check if type has changed
     current_type = socket.assigns.type
     new_type = form_data["type"] || current_type
 
-    # Get value from form
-    value = form_data["value"]
+    # Prepare params for validation
+    params = %{
+      "key" => form_data["key"],
+      "type" => new_type,
+      "value" => form_data["value"],
+      "description" => form_data["description"],
+      "is_public" => form_data["is_public"]
+    }
 
     # Handle type change
     socket =
       if new_type != current_type do
         # Format value for the new type
-        formatted_value = format_value_for_display(convert_value(value, current_type, new_type), new_type)
+        formatted_value = format_value_for_display(convert_value(form_data["value"], current_type, new_type), new_type)
         assign(socket, type: new_type, value: formatted_value)
       else
         # Just update the value
-        assign(socket, value: value)
+        assign(socket, value: form_data["value"])
       end
 
-    # Don't validate yet, just update form
-    changeset = Setting.changeset(socket.assigns.setting, %{})
+    # Validate with the form data
+    changeset = Setting.changeset(socket.assigns.setting, params)
+    socket = assign_form(socket, changeset)
 
-    {:noreply, assign_form(socket, changeset)}
+    {:noreply, socket}
   end
 
   @impl true
   def handle_event("save", %{"setting" => form_data}, socket) do
-    # Prepare final data for saving
     type = form_data["type"] || socket.assigns.type
-
-    # Process value based on type
     processed_value = process_value_for_save(form_data["value"], type)
 
-    # Final params for saving
     params = %{
       "key" => form_data["key"],
       "type" => type,
@@ -87,7 +93,6 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
       "is_public" => form_data["is_public"] == "true"
     }
 
-    # Save to database
     save_result =
       case socket.assigns.action do
         :edit -> Settings.update_setting(socket.assigns.setting, params)
@@ -96,7 +101,6 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
 
     case save_result do
       {:ok, setting} ->
-        # Send message to parent to avoid redirect
         send(self(), {:saved_setting, setting})
         {:noreply, put_flash(socket, :info, "Setting saved successfully")}
 
@@ -105,9 +109,6 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
     end
   end
 
-  # --- Helper functions ---
-
-  # Extract raw value from various formats
   defp extract_value(value) do
     cond do
       is_map(value) && Map.has_key?(value, "value") -> value["value"]
@@ -116,7 +117,6 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
     end
   end
 
-  # Format value for display based on type
   defp format_value_for_display(value, "boolean") when is_boolean(value), do: value
   defp format_value_for_display(value, "boolean") when value in ["true", true], do: true
   defp format_value_for_display(_, "boolean"), do: false
@@ -148,9 +148,7 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
   defp format_value_for_display(value, "string"), do: to_string(value)
   defp format_value_for_display(value, _), do: value
 
-  # Convert value when changing types
   defp convert_value(value, from_type, to_type) do
-    # First normalize to raw value
     raw_value =
       case from_type do
         "boolean" when value in ["true", true] ->
@@ -181,7 +179,6 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
           value
       end
 
-    # Then convert to target type
     case to_type do
       "boolean" -> !!raw_value
       "number" when is_number(raw_value) -> raw_value
@@ -195,7 +192,6 @@ defmodule PetalProWeb.AdminSettingLive.FormComponent do
     end
   end
 
-  # Process value for saving to database
   defp process_value_for_save(value, "boolean") when value in ["true", true], do: true
   defp process_value_for_save(_, "boolean"), do: false
 

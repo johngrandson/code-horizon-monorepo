@@ -2158,3 +2158,9 @@ msgstr "Uma breve descrição da configuração"
 
 msgid "No settings found"
 msgstr "Nenhuma configuração encontrada"
+
+msgid "Edit Setting"
+msgstr "Editar configuração"
+
+msgid "Public"
+msgstr "Público"

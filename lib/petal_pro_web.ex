@@ -100,14 +100,16 @@ defmodule PetalProWeb do
       # Core UI components and translation
       use PetalComponents
       use PetalProComponents
+      use PrelineComponents
       use Gettext, backend: PetalProWeb.Gettext
 
       import PetalProWeb.CoreComponents
       import PetalProWeb.Helpers
       import Phoenix.HTML
 
-      # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
+
+      # Shortcut for generating JS commands
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

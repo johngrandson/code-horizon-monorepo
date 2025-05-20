@@ -112,25 +112,33 @@ defmodule PetalPro.Settings do
     default_settings = [
       %{
         key: "maintenance_mode",
-        value: false,
+        value: %{
+          "value" => false
+        },
         description: "When enabled, shows maintenance page to non-admin users",
         is_public: true
       },
       %{
         key: "max_orgs_free_user",
-        value: 1,
+        value: %{
+          "value" => 1
+        },
         description: "Maximum number of organizations a free user can create",
         is_public: true
       },
       %{
         key: "allow_signups",
-        value: true,
+        value: %{
+          "value" => true
+        },
         description: "Whether new user signups are allowed",
         is_public: true
       },
       %{
         key: "enable_public_api",
-        value: false,
+        value: %{
+          "value" => false
+        },
         description: "Whether the public API is enabled",
         is_public: true
       }
