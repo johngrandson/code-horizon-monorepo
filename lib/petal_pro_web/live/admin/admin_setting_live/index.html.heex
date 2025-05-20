@@ -63,14 +63,23 @@
           color="danger"
           variant="outline"
           size="xs"
-          link_type="a"
-          to="#"
           phx-click={JS.push("delete", value: %{id: setting.id})}
+          phx-hook="LogClick"
           data-confirm={gettext("Are you sure?")}
           aria-label={gettext("Delete")}
         >
           <.icon name="hero-trash" class="w-4 h-4" />
         </.button>
+        <script>
+          window.logClick = {
+            mounted() {
+              this.el.addEventListener("click", (e) => {
+                console.log("Delete button clicked", e);
+                console.log("Setting ID:", this.el.getAttribute("phx-value-id") || "No ID found");
+              });
+            }
+          }
+        </script>
       </div>
     </:col>
   </.data_table>

@@ -109,33 +109,34 @@ defmodule PetalProWeb.AdminSettingLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    case Settings.get_setting(id) do
-      nil ->
+    try do
+      setting = Settings.get_setting!(id)
+      
+      case Settings.delete_setting(setting) do
+        {:ok, _setting} ->
+          # Recarrega a lista de configurações
+          {settings, meta} = DataTable.search(
+            Settings.list_settings_query(), 
+            socket.assigns.index_params, 
+            @data_table_opts
+          )
+          
+          {:noreply,
+           socket
+           |> assign(settings: settings, meta: meta)
+           |> put_flash(:info, gettext("Setting deleted successfully"))}
+
+        {:error, _changeset} ->
+          {:noreply,
+           socket
+           |> put_flash(:error, gettext("Failed to delete setting"))}
+      end
+    rescue
+      Ecto.NoResultsError ->
         {:noreply,
          socket
          |> put_flash(:error, gettext("Setting not found"))
          |> push_patch(to: ~p"/admin/settings")}
-        
-      setting ->
-        case Settings.delete_setting(setting) do
-          {:ok, _setting} ->
-            # Recarrega a lista de configurações
-            {settings, meta} = DataTable.search(
-              Settings.list_settings_query(), 
-              socket.assigns.index_params, 
-              @data_table_opts
-            )
-            
-            {:noreply,
-             socket
-             |> assign(settings: settings, meta: meta)
-             |> put_flash(:info, gettext("Setting deleted successfully"))}
-
-          {:error, _changeset} ->
-            {:noreply,
-             socket
-             |> put_flash(:error, gettext("Failed to delete setting"))}
-        end
     end
   end
 

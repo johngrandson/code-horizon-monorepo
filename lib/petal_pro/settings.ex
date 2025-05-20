@@ -2,7 +2,6 @@ defmodule PetalPro.Settings do
   @moduledoc """
   The Settings context handles all global application settings.
   """
-  import Ecto.Query, only: [from: 2]
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
@@ -15,7 +14,7 @@ defmodule PetalPro.Settings do
 
   @type setting_key :: String.t() | atom()
   @type setting_value :: any()
-  @type setting_attrs :: %{required(atom()) => any()}
+  @type setting_type :: :string | :integer | :boolean | :map | :list
 
   @doc """
   Gets a setting by key. Returns nil if not found.
@@ -28,14 +27,49 @@ defmodule PetalPro.Settings do
   end
 
   @doc """
-  Gets a setting value by key. Returns the default if not found.
+  Gets a setting value by key with proper typing.
+  Returns the default if not found.
   """
   @spec get_setting_value(setting_key(), setting_value()) :: setting_value()
   def get_setting_value(key, default \\ nil) do
     case get_setting(key) do
       nil -> default
+      # Handle legacy format
       %Setting{value: %{"value" => value}} -> value
       %Setting{value: value} -> value
+    end
+  end
+
+  @doc """
+  Gets a boolean setting value.
+  """
+  @spec get_boolean(setting_key(), boolean()) :: boolean()
+  def get_boolean(key, default \\ false) do
+    case get_setting_value(key, default) do
+      value when is_boolean(value) -> value
+      "true" -> true
+      "false" -> false
+      _ -> default
+    end
+  end
+
+  @doc """
+  Gets an integer setting value.
+  """
+  @spec get_integer(setting_key(), integer()) :: integer()
+  def get_integer(key, default \\ 0) do
+    case get_setting_value(key, default) do
+      value when is_integer(value) ->
+        value
+
+      value when is_binary(value) ->
+        case Integer.parse(value) do
+          {int, _} -> int
+          :error -> default
+        end
+
+      _ ->
+        default
     end
   end
 
@@ -67,39 +101,36 @@ defmodule PetalPro.Settings do
   """
   @spec list_public_settings() :: [Setting.t()]
   def list_public_settings do
-    Setting
-    |> where([s], s.is_public == true)
-    |> Repo.all()
+    Repo.all(from(s in Setting, where: s.is_public == true))
   end
 
   @doc """
   Initializes default settings if they don't exist.
-  This should be called during application startup.
   """
   @spec init_default_settings() :: :ok | :error
   def init_default_settings do
     default_settings = [
       %{
         key: "maintenance_mode",
-        value: %{"value" => false},
+        value: false,
         description: "When enabled, shows maintenance page to non-admin users",
         is_public: true
       },
       %{
         key: "max_orgs_free_user",
-        value: %{"value" => 1},
+        value: 1,
         description: "Maximum number of organizations a free user can create",
         is_public: true
       },
       %{
         key: "allow_signups",
-        value: %{"value" => true},
+        value: true,
         description: "Whether new user signups are allowed",
         is_public: true
       },
       %{
         key: "enable_public_api",
-        value: %{"value" => false},
+        value: false,
         description: "Whether the public API is enabled",
         is_public: true
       }
@@ -138,25 +169,25 @@ defmodule PetalPro.Settings do
   Checks if maintenance mode is active.
   """
   @spec maintenance_mode?() :: boolean()
-  def maintenance_mode?, do: get_setting_value("maintenance_mode", false)
+  def maintenance_mode?, do: get_boolean("maintenance_mode", false)
 
   @doc """
   Gets the maximum number of organizations a free user can create.
   """
   @spec max_orgs_for_free_user() :: integer()
-  def max_orgs_for_free_user, do: get_setting_value("max_orgs_free_user", 1)
+  def max_orgs_for_free_user, do: get_integer("max_orgs_free_user", 1)
 
   @doc """
   Checks if signups are allowed.
   """
   @spec allow_signups?() :: boolean()
-  def allow_signups?, do: get_setting_value("allow_signups", true)
+  def allow_signups?, do: get_boolean("allow_signups", true)
 
   @doc """
   Checks if public API is enabled.
   """
   @spec public_api_enabled?() :: boolean()
-  def public_api_enabled?, do: get_setting_value("enable_public_api", false)
+  def public_api_enabled?, do: get_boolean("enable_public_api", false)
 
   @doc """
   Checks if a user has reached the maximum number of organizations.
@@ -169,12 +200,6 @@ defmodule PetalPro.Settings do
 
   @doc """
   Returns the list of settings.
-
-  ## Examples
-
-      iex> list_settings()
-      [%Setting{}, ...]
-
   """
   @spec list_settings_query() :: Ecto.Query.t()
   def list_settings_query do
@@ -187,44 +212,18 @@ defmodule PetalPro.Settings do
   end
 
   @doc """
-  Gets a single setting.
-
-  Raises `Ecto.NoResultsError` if the Setting does not exist.
-
-  ## Examples
-
-      iex> get_setting!(123)
-      %Setting{}
-
-      iex> get_setting!(456)
-      ** (Ecto.NoResultsError)
-
+  Gets a single setting by ID.
   """
   @spec get_setting!(integer()) :: Setting.t()
   def get_setting!(id), do: Repo.get!(Setting, id)
 
   @doc """
   Creates a setting.
-
-  ## Examples
-
-      iex> create_setting(%{field: value})
-      {:ok, %Setting{}}
-
-      iex> create_setting(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
   @spec create_setting(map()) :: {:ok, Setting.t()} | {:error, Ecto.Changeset.t()}
   def create_setting(attrs \\ %{}) do
-    # Ensure the value is properly formatted as a map with a "value" key
-    attrs = 
-      case attrs do
-        %{"value" => %{"value" => _}} -> attrs
-        %{"value" => value} when is_map(value) -> attrs
-        %{"value" => value} -> Map.put(attrs, "value", %{"value" => value})
-        _ -> attrs
-      end
+    # Handle direct values without nested structure
+    attrs = normalize_value(attrs)
 
     %Setting{}
     |> Setting.changeset(attrs)
@@ -233,26 +232,11 @@ defmodule PetalPro.Settings do
 
   @doc """
   Updates a setting.
-
-  ## Examples
-
-      iex> update_setting(setting, %{field: new_value})
-      {:ok, %Setting{}}
-
-      iex> update_setting(setting, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
   @spec update_setting(Setting.t(), map()) :: {:ok, Setting.t()} | {:error, Ecto.Changeset.t()}
   def update_setting(%Setting{} = setting, attrs) do
-    # Ensure the value is properly formatted as a map with a "value" key
-    attrs = 
-      case attrs do
-        %{"value" => %{"value" => _}} -> attrs
-        %{"value" => value} when is_map(value) -> attrs
-        %{"value" => value} -> Map.put(attrs, "value", %{"value" => value})
-        _ -> attrs
-      end
+    # Handle direct values without nested structure
+    attrs = normalize_value(attrs)
 
     setting
     |> Setting.changeset(attrs)
@@ -261,15 +245,6 @@ defmodule PetalPro.Settings do
 
   @doc """
   Deletes a setting.
-
-  ## Examples
-
-      iex> delete_setting(setting)
-      {:ok, %Setting{}}
-
-      iex> delete_setting(setting)
-      {:error, %Ecto.Changeset{}}
-
   """
   @spec delete_setting(Setting.t()) :: {:ok, Setting.t()} | {:error, Ecto.Changeset.t()}
   def delete_setting(%Setting{} = setting) do
@@ -277,16 +252,19 @@ defmodule PetalPro.Settings do
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking setting changes.
-
-  ## Examples
-
-      iex> change_setting(setting)
-      %Ecto.Changeset{data: %Setting{}}
-
+  Returns a changeset for tracking setting changes.
   """
   @spec change_setting(Setting.t(), map()) :: Ecto.Changeset.t()
   def change_setting(%Setting{} = setting, attrs \\ %{}) do
     Setting.changeset(setting, attrs)
+  end
+
+  # Normalize value from various formats to a direct value
+  defp normalize_value(attrs) do
+    case attrs do
+      %{"value" => %{"value" => value}} -> Map.put(attrs, "value", value)
+      %{"value" => _value} -> attrs
+      _ -> attrs
+    end
   end
 end

@@ -8,14 +8,17 @@ defmodule PetalPro.SettingsFixtures do
   Generate a setting.
   """
   def setting_fixture(attrs \\ %{}) do
-    attrs =
-      Enum.into(attrs, %{
+    {:ok, setting} =
+      attrs
+      |> Enum.into(%{
+        value: %{"value" => "some value"},
         description: "some description",
-        key: "some key",
-        value: %{"value" => "some value"}
+        key: "test_key_#{System.unique_integer([:positive])}",
+        type: "string",
+        is_public: true
       })
+      |> PetalPro.Settings.create_setting()
 
-    {:ok, setting} = PetalPro.Settings.create_setting(attrs)
     setting
   end
 end

@@ -1,76 +1,140 @@
-<div>
-  <.form
-    for={@form}
-    id="setting-form"
-    phx-target={@myself}
-    phx-change="validate"
-    phx-submit="save"
-  >
-    <.field type="text" field={@form[:key]} disabled={@action == :edit} />
-
-    <%= if @action == :new do %>
-      <.field
-        type="select"
-        field={@form[:value_type]}
-        label="Value Type"
-        options={[
-          {"String", "string"},
-          {"Number", "number"},
-          {"Boolean", "boolean"}
-        ]}
-        value={@value_type}
-        phx-change="change_value_type"
-      />
-    <% else %>
-      <input type="hidden" name="setting[value_type]" value={@value_type} />
-    <% end %>
-
-    <%= case @value_type do %>
-      <% "boolean" -> %>
-        <div class="form-group">
-          <label class="form-label">Value</label>
-          <div class="mt-2">
-            <label class="inline-flex items-center">
-              <input 
-                type="hidden" 
-                name={@form[:value].name} 
-                value="false" 
-              />
-              <input 
-                type="checkbox" 
-                name={@form[:value].name} 
-                value="true" 
-                class="form-checkbox"
-                phx-debounce="blur"
-                checked={@current_value == true or @current_value == "true"}
-                id={@form[:value].id}
-              />
-              <span class="ml-2">Enabled</span>
-            </label>
-          </div>
+<div class="bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-2xl mx-auto border border-gray-200 dark:border-gray-700">
+  <!-- Header -->
+  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+      {if @action == :edit, do: "Edit", else: "New"} Setting
+    </h3>
+  </div>
+  
+<!-- Form -->
+  <div class="p-6">
+    <.form
+      for={@form}
+      id="setting-form"
+      phx-target={@myself}
+      phx-change="validate"
+      phx-submit="save"
+      class="space-y-6"
+    >
+      <div class="space-y-4">
+        <div>
+          <.field
+            type="text"
+            field={@form[:key]}
+            label="Key"
+            disabled={@action == :edit}
+            placeholder="Enter setting key"
+            wrapper_class="mb-4"
+          />
         </div>
-      <% "number" -> %>
-        <.field 
-          type="number" 
-          field={@form[:value]} 
-          label="Value" 
-          step="any"
-          value={@current_value}
-        />
-      <% _ -> %>
-        <.field 
-          type="text" 
-          field={@form[:value]} 
-          label="Value"
-          value={@current_value}
-        />
-    <% end %>
 
-    <.field type="text" field={@form[:description]} />
-    <.field type="checkbox" field={@form[:is_public]} label="Public" />
+        <div>
+          <.combo_box
+            create
+            selected={@type}
+            disabled={@action == :edit}
+            label="Type"
+            options={@setting_types}
+            field={@form[:type]}
+            wrapper_class="mb-4"
+          />
+        </div>
 
-    <div class="flex justify-end">
-      <.button type="submit" phx-disable-with="Saving...">Save</.button>
-    </div>
-  </.form>
+        <%= case @type do %>
+          <% "boolean" -> %>
+            <div class="mb-4">
+              <.field
+                type="checkbox"
+                field={@form[:value]}
+                label="Enabled"
+                value="true"
+                checked={@value == true}
+                wrapper_class="mb-0"
+              />
+            </div>
+          <% "number" -> %>
+            <.field
+              type="number"
+              field={@form[:value]}
+              label="Value"
+              step="any"
+              placeholder="Enter a number"
+              wrapper_class="mb-4"
+            />
+          <% type when type in ["map", "list"] -> %>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {if type == "map", do: "JSON Object", else: "JSON Array"}
+              </label>
+              <textarea
+                name="setting[value]"
+                rows="6"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white"
+                placeholder={
+                  if type == "map",
+                    do: "{\n  \"key\": \"value\"\n}",
+                    else: "[\n  \"value1\",\n  \"value2\"\n]"
+                }
+              ><%= @value %></textarea>
+            </div>
+          <% _ -> %>
+            <.field
+              type="text"
+              field={@form[:value]}
+              label="Value"
+              placeholder="Enter value"
+              wrapper_class="mb-4"
+            />
+        <% end %>
+
+        <.field
+          type="text"
+          field={@form[:description]}
+          label="Description"
+          placeholder="Enter description"
+          wrapper_class="mb-4"
+        />
+
+        <div class="mb-4">
+          <.field
+            type="checkbox"
+            field={@form[:is_public]}
+            label="Public"
+            value="true"
+            checked={@setting.is_public}
+            wrapper_class="mb-0"
+          />
+        </div>
+      </div>
+    </.form>
+  </div>
+  
+<!-- Footer with action buttons -->
+  <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+    <button
+      type="button"
+      phx-click={JS.patch(~p"/admin/settings")}
+      class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      form="setting-form"
+      phx-disable-with="Saving..."
+      class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    >
+      <svg
+        class="w-5 h-5 mr-2"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+        </path>
+      </svg>
+      Save Setting
+    </button>
+  </div>
 </div>
