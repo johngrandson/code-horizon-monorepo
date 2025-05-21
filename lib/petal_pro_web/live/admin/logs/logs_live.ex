@@ -127,25 +127,6 @@ defmodule PetalProWeb.LogsLive do
     end
   end
 
-  defp highlight_metadata("billing.create_subscription", metadata),
-    do: "Subscription #{metadata["subscription_id"]} - Plan #{metadata["plan_id"]}"
-
-  defp highlight_metadata("billing.update_subscription", metadata),
-    do: "Subscription #{metadata["subscription_id"]} - Plan #{metadata["plan_id"]}"
-
-  defp highlight_metadata("billing.cancel_subscription", metadata),
-    do: "Subscription #{metadata["subscription_id"]} - Plan #{metadata["plan_id"]}"
-
-  defp highlight_metadata("billing.more_than_one_active_subscription_warning", metadata),
-    do: "Subscription #{metadata["subscription_id"]} - Plan #{metadata["plan_id"]}"
-
-  defp highlight_metadata("billing.after_click_subscribe_button", metadata), do: "Plan #{metadata["plan_id"]}"
-
-  defp highlight_metadata("billing.click_subscribe_button", %{"org_id" => org_id, "plan_id" => plan_id}),
-    do: "Org #{org_id} - Plan #{plan_id}"
-
-  defp highlight_metadata(_action, _metadata), do: ""
-
   defp maybe_add_emoji("register"), do: "🥳"
   defp maybe_add_emoji("sign_in"), do: "🙌"
   defp maybe_add_emoji("delete_user"), do: "💀"

@@ -65,7 +65,7 @@
           <.field
             type="text"
             field={@form[:category]}
-            placeholder="Category"
+            placeholder={gettext("Category")}
             class="pc-card__category pc-card__category--primary"
             phx-debounce={@autosave_delay}
           />
@@ -73,7 +73,7 @@
           <.field
             type="number"
             field={@form[:duration]}
-            label="Time to read (in minutes)"
+            label={gettext("Time to read (in minutes)")}
             class="text-xs uppercase"
             phx-debounce={@autosave_delay}
           />
@@ -86,7 +86,7 @@
         class="text-3xl font-bold"
         wrapper_class="mb-0"
         label_class="hidden"
-        placeholder="Title"
+        placeholder={gettext("Title")}
         rows="2"
         phx-debounce={@autosave_delay}
       />
@@ -105,7 +105,7 @@
           field={@form[:cover_caption]}
           wrapper_class="mb-0"
           label_class="hidden"
-          placeholder="Caption for Cover Image"
+          placeholder={gettext("Caption for Cover Image")}
           phx-debounce={@autosave_delay}
         />
         <.link
@@ -125,13 +125,13 @@
         class="font-semibold"
         wrapper_class="mb-0"
         label_class="hidden"
-        placeholder="Summary"
+        placeholder={gettext("Summary")}
         phx-debounce={@autosave_delay}
       />
 
       <.content_field
         field={@form[:content]}
-        placeholder="Start typing..."
+        placeholder={gettext("Start typing...")}
         wrapper_class={[
           "sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed",
           "dark:bg-gray-800 dark:text-gray-300 dark:disabled:bg-gray-700",
@@ -149,7 +149,7 @@
     class="fixed z-10 flex items-center gap-2 transition-opacity duration-300 opacity-0 top-20 right-8"
     phx-hook="AutosaveIndicator"
   >
-    <span class="text-sm text-gray-600">Autosaving</span>
+    <span class="text-sm text-gray-600">{gettext("Autosaving")}</span>
     <div class="w-3 h-3 bg-gray-500 rounded-full animate-pulse" />
   </div>
 
@@ -159,7 +159,7 @@
     class="fixed z-10 flex items-center gap-2 transition-opacity duration-300 top-20 right-8"
     phx-hook="AutosaveIndicator"
   >
-    <span class="text-sm text-green-600">Autosaved</span>
+    <span class="text-sm text-green-600">{gettext("Autosaved")}</span>
     <div class="w-3 h-3 bg-green-500 rounded-full" />
   </div>
 

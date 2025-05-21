@@ -4,13 +4,22 @@ defmodule PetalProWeb.AdminPostLive.Index do
 
   import PetalProWeb.AdminLayoutComponent
   import PetalProWeb.PageComponents
+  import Phoenix.LiveView
 
   alias PetalPro.Posts
   alias PetalPro.Posts.Post
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :posts, Posts.list_posts())}
+    posts = Posts.list_posts()
+
+    socket =
+      socket
+      |> stream(:posts, posts)
+      |> assign(:stream_items_count, Enum.count(posts))
+      |> assign(:stream_empty, Enum.empty?(posts))
+
+    {:ok, socket}
   end
 
   @impl true

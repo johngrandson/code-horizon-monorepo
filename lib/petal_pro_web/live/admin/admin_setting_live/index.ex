@@ -16,6 +16,14 @@ defmodule PetalProWeb.AdminSettingLive.Index do
 
   require Jason
 
+  @default_setting %Setting{
+    key: "",
+    value: nil,
+    type: "string",
+    description: "",
+    is_public: false
+  }
+
   @data_table_opts [
     default_limit: 20,
     default_order: %{
@@ -27,33 +35,17 @@ defmodule PetalProWeb.AdminSettingLive.Index do
   ]
 
   @impl true
-  def mount(params, _session, socket) do
-    index_params = Map.get(params, "index", %{})
-
-    socket =
-      assign(socket,
-        meta: nil,
-        settings: [],
-        index_params: index_params,
-        page_title: gettext("Global App Settings"),
-        setting: nil,
-        live_action: nil
-      )
-
-    {:ok, socket, temporary_assigns: [settings: []]}
+  def mount(_params, _session, socket) do
+    {:ok,
+     assign(socket,
+       index_params: nil,
+       page_title: gettext("Global App Settings")
+     )}
   end
 
-  defp apply_action(socket, :index, _params) do
-    index_params = socket.assigns.index_params
-    query = Settings.list_settings_query()
-
-    {settings, meta} = DataTable.search(query, index_params, @data_table_opts)
-
-    socket
-    |> assign(:settings, settings)
-    |> assign(:meta, meta)
-    |> assign(:page_title, gettext("Global App Settings"))
-    |> assign(:setting, nil)
+  @impl true
+  def handle_params(params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -63,91 +55,62 @@ defmodule PetalProWeb.AdminSettingLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    setting = %Setting{
-      key: "",
-      value: "",
-      type: "boolean",
-      description: "",
-      is_public: false
-    }
-
     socket
     |> assign(:page_title, gettext("New Setting"))
-    |> assign(:setting, setting)
-    |> assign(:action, :new)
+    |> assign(:setting, @default_setting)
+  end
+
+  defp apply_action(socket, :index, params) do
+    socket
+    |> assign(:page_title, gettext("Global App Settings"))
+    |> assign_settings(params)
+    |> assign(:index_params, params)
+  end
+
+  defp current_index_path(index_params) do
+    ~p"/admin/settings?#{index_params || %{}}"
   end
 
   @impl true
-  def handle_info({PetalProWeb.AdminSettingLive.FormComponent, {:saved, setting}}, socket) do
-    socket =
-      socket
-      |> put_flash(:info, gettext("Setting saved successfully"))
-      |> push_patch(to: ~p"/admin/settings")
-      |> assign(:setting, setting)
-
-    {settings, meta} =
-      DataTable.search(
-        Settings.list_settings_query(),
-        socket.assigns.index_params,
-        @data_table_opts
-      )
-
-    {:noreply, assign(socket, settings: settings, meta: meta)}
-  end
-
-  @impl true
-  def handle_params(params, _url, socket) do
-    live_action = socket.assigns.live_action || :index
-
-    socket =
-      case live_action do
-        :index -> apply_action(socket, :index, params)
-        :new -> apply_action(socket, :new, params)
-        :edit -> apply_action(socket, :edit, params)
-        _ -> socket
-      end
-
-    {:noreply, assign(socket, live_action: live_action)}
+  def handle_info({PetalProWeb.AdminSettingLive.FormComponent, {:saved, _setting}}, socket) do
+    {:noreply,
+     socket
+     |> put_flash(:info, gettext("Setting saved successfully"))
+     |> push_patch(to: current_index_path(socket.assigns.index_params))}
   end
 
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
     query_params = DataTable.build_filter_params(socket.assigns.meta, filter_params)
-    {:noreply, push_patch(socket, to: ~p"/admin/settings?#{query_params}")}
+    {:noreply, push_patch(socket, to: current_index_path(query_params))}
   end
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     setting = Settings.get_setting!(id)
+    {:ok, _} = Settings.delete_setting(setting)
 
-    case Settings.delete_setting(setting) do
-      {:ok, _setting} ->
-        {settings, meta} =
-          DataTable.search(
-            Settings.list_settings_query(),
-            socket.assigns.index_params,
-            @data_table_opts
-          )
+    socket =
+      socket
+      |> assign_settings(socket.assigns.index_params)
+      |> put_flash(:info, gettext("Setting deleted successfully"))
 
-        {:noreply,
-         socket
-         |> assign(settings: settings, meta: meta)
-         |> put_flash(:info, gettext("Setting deleted successfully"))}
-
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, gettext("Failed to delete setting"))}
-    end
-  rescue
-    Ecto.NoResultsError ->
-      {:noreply,
-       socket
-       |> put_flash(:error, gettext("Setting not found"))
-       |> push_patch(to: ~p"/admin/settings")}
+    {:noreply, socket}
   end
 
   @impl true
   def handle_event("close_modal", _, socket) do
-    {:noreply, push_patch(socket, to: ~p"/admin/settings")}
+    {:noreply, patch_back_to_index(socket)}
+  end
+
+  defp assign_settings(socket, params) do
+    starting_query = Setting
+    {settings, meta} = DataTable.search(starting_query, params, @data_table_opts)
+    assign(socket, settings: settings, meta: meta)
+  end
+
+  defp patch_back_to_index(socket) do
+    push_patch(socket, to: ~p"/admin/settings?#{socket.assigns[:index_params] || []}")
   end
 
   # Formats a setting value for display in the UI.

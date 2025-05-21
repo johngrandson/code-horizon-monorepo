@@ -21,17 +21,45 @@
   <div id="posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" phx-update="stream">
     <%= for {id, post} <- @streams.posts do %>
       <.link id={id} navigate={~p"/blog/#{post.published_slug}"} class="flex">
-        <.card class="hover:drop-shadow-lg w-full">
-          <.card_media src={post.published_cover} />
+        <.card class="p-4 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+          <.card_media src={post.published_cover} class="mb-5 rounded-lg" />
 
-          <.card_content category={post.published_category}>
-            <p class="pc-card__heading line-clamp-2">{post.published_title}</p>
-            <p class="line-clamp-3">{post.published_summary}</p>
+          <.card_content class="p-0">
+            <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-purple-200 dark:text-purple-900">
+              {post.published_category}
+            </span>
+            <h2 class="my-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {post.published_title}
+            </h2>
+            <p class="mb-4 font-light text-gray-500 dark:text-gray-400">
+              {post.published_summary}
+            </p>
           </.card_content>
 
-          <.card_footer class="flex justify-between text-xs uppercase">
-            <p>By {user_name(post.author)}</p>
-            <p :if={post.published_duration}>{post.published_duration} minute read</p>
+          <.card_footer class="flex items-center p-0">
+            <img
+              class="w-10 h-10 rounded-full mr-2"
+              src={post.author.avatar}
+              alt={"#{user_name(post.author)} avatar"}
+            />
+            <div class="font-medium dark:text-white">
+              <div>{user_name(post.author)}</div>
+              <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                <span class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-gray-400 border border-gray-400">
+                  <svg
+                    class="w-2.5 h-2.5 me-1.5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                  </svg>
+                  {Util.handle_relative_time(post.inserted_at)}
+                </span>
+                <span class="ml-2">{post.published_duration} minute read</span>
+              </div>
+            </div>
           </.card_footer>
         </.card>
       </.link>

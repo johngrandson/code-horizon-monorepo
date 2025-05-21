@@ -36,7 +36,7 @@ defmodule PetalProWeb.AdminPostLive.PublishComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Post is no longer publically available")
+         |> put_flash(:info, gettext("Post is no longer publically available"))
          |> push_patch(to: ~p"/admin/posts/#{post.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -51,7 +51,7 @@ defmodule PetalProWeb.AdminPostLive.PublishComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Post published successfully")
+         |> put_flash(:info, gettext("Post published successfully"))
          |> push_navigate(to: ~p"/admin/posts/#{post.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

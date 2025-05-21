@@ -1,5 +1,9 @@
 <.admin_layout current_page={:admin_dashboard} current_user={@current_user}>
-  <.h2>Dashboard</.h2>
+  <.page_header
+    title={gettext("Dashboard")}
+    description={gettext("Overview of your application")}
+  />
+
   <dl class="grid grid-cols-1 gap-5 mt-5 md:grid-cols-3">
     <.dashboard_stat
       label={"New Users in #{Timex.now() |> Timex.format!("{Mshort}")}"}

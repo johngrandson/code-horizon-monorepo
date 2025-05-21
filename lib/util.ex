@@ -195,6 +195,26 @@ defmodule Util do
   end
 
   @doc """
+  Formats a datetime into a relative time string.
+
+  ## Examples
+
+      iex> handle_relative_time("2022-01-01 00:00:00")
+      "1 year ago"
+  """
+  def handle_relative_time(datetime) do
+    formatted_time =
+      case datetime
+           |> Timex.shift(minutes: 0)
+           |> Timex.format("{relative}", :relative) do
+        {:ok, time_string} -> time_string
+        _ -> "unknown time"
+      end
+
+    formatted_time
+  end
+
+  @doc """
   Conditionally puts a key-value pair into a map, only if the value is not nil.
 
   ## Examples

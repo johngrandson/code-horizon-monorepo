@@ -35,7 +35,7 @@ defmodule PetalProWeb.AdminPostLive.NewComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Post created successfully")
+         |> put_flash(:info, gettext("Post created successfully"))
          |> push_navigate(to: ~p"/admin/posts/#{post}/show/edit")}
 
       {:error, :insert_post, %Ecto.Changeset{} = changeset, _changes_so_far} ->

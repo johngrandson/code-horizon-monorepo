@@ -212,9 +212,9 @@ defmodule PetalProWeb.Menus do
     if Helpers.admin?(current_user) do
       %{
         name: name,
-        label: "Admin dashboard",
+        label: gettext("Dashboard"),
         path: ~p"/admin/dashboard",
-        icon: "hero-lock-closed"
+        icon: "hero-home-modern"
       }
     end
   end

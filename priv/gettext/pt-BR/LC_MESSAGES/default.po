@@ -70,7 +70,7 @@ msgstr "Alterar email"
 #: lib/petal_pro_web/menus.ex:155
 #, elixir-autogen, elixir-format
 msgid "Dashboard"
-msgstr "Painel"
+msgstr "Painel de informações"
 
 #: lib/petal_pro_web/menus.ex:119
 #, elixir-autogen, elixir-format
@@ -2164,3 +2164,207 @@ msgstr "Editar configuração"
 
 msgid "Public"
 msgstr "Público"
+
+msgid "Yes"
+msgstr "Sim"
+
+msgid "No"
+msgstr "Não"
+
+msgid "JSON Object"
+msgstr "Objeto JSON"
+
+msgid "JSON Array"
+msgstr "Array JSON"
+
+msgid "Enter setting key"
+msgstr "Insira a chave da configuração"
+
+msgid "Enter setting value"
+msgstr "Insira o valor da configuração"
+
+msgid "Enter setting description"
+msgstr "Insira a descrição da configuração"
+
+msgid "Enter setting public"
+msgstr "Insira a visibilidade da configuração"
+
+msgid "Published document will be overwritten"
+msgstr "O documento publicado será sobrescrito"
+
+msgid "Manage all your existing posts or add a new one"
+msgstr "Gerencie todos os seus posts existentes ou adicione um novo"
+
+msgid "Manage all your existing settings"
+msgstr "Gerencie todas as suas configurações existentes"
+
+msgid "Manage all your existing logs"
+msgstr "Gerencie todos os seus logs existentes"
+
+msgid "New Log"
+msgstr "Novo Log"
+
+msgid "System Logs"
+msgstr "Logs do Sistema"
+
+msgid "Monitor and analyze system activity across users and organizations"
+msgstr "Monitor e analise a atividade do sistema entre usuários e organizações"
+
+msgid "Export"
+msgstr "Exportar"
+
+msgid "Export logs to CSV"
+msgstr "Exportar logs para CSV"
+
+msgid "Refresh"
+msgstr "Atualizar"
+
+msgid "Activity Type"
+msgstr "Tipo de Atividade"
+
+msgid "Enter User ID"
+msgstr "Insira o ID do Usuário"
+
+msgid "Configure Columns"
+msgstr "Configurar Colunas"
+
+msgid "Clear Filters"
+msgstr "Limpar Filtros"
+
+msgid "All activity types"
+msgstr "Todos os tipos de atividade"
+
+msgid "Time Period"
+msgstr "Período de Tempo"
+
+msgid "All time"
+msgstr "Todo o tempo"
+
+msgid "Last hour"
+msgstr "Última hora"
+
+msgid "Last 24 hours"
+msgstr "Últimas 24 horas"
+
+msgid "Last 7 days"
+msgstr "Últimos 7 dias"
+
+msgid "Last 30 days"
+msgstr "Últimos 30 dias"
+
+msgid "Timestamp"
+msgstr "Data e Hora"
+
+msgid "Content Management"
+msgstr "Gerenciamento de Conteúdo"
+
+msgid "Manage your blog posts, articles, and other published content"
+msgstr "Gerencie seus posts, artigos e outros conteúdos publicados"
+
+msgid "Delete Selected"
+msgstr "Deletar Selecionados"
+
+msgid "All categories"
+msgstr "Todas as categorias"
+
+msgid "Search posts..."
+msgstr "Procurar posts..."
+
+msgid "All statuses"
+msgstr "Todos os status"
+
+msgid "Published"
+msgstr "Publicado"
+
+msgid "Draft"
+msgstr "Rascunho"
+
+msgid "Scheduled"
+msgstr "Agendado"
+
+msgid "All authors"
+msgstr "Todos os autores"
+
+msgid "Search authors..."
+msgstr "Procurar autores..."
+
+msgid "All tags"
+msgstr "Todos os tags"
+
+msgid "Search tags..."
+msgstr "Procurar tags..."
+
+msgid "Search categories..."
+msgstr "Procurar categorias..."
+
+msgid "Live"
+msgstr "Publicado"
+
+msgid "Unpublished"
+msgstr "Não publicado"
+
+msgid "No category"
+msgstr "Nenhuma categoria"
+
+msgid "Content"
+msgstr "Conteúdo"
+
+msgid "No organization"
+msgstr "Nenhuma organização"
+
+msgid "Category"
+msgstr "Categoria"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "View Blog"
+msgstr "Ver Blog"
+
+msgid "Post created successfully"
+msgstr "Post criado com sucesso"
+
+msgid "Post updated successfully"
+msgstr "Post atualizado com sucesso"
+
+msgid "Post deleted successfully"
+msgstr "Post deletado com sucesso"
+
+msgid "Post published successfully"
+msgstr "Post publicado com sucesso"
+
+msgid "Autosaving"
+msgstr "Salvando automaticamente"
+
+msgid "Autosaved"
+msgstr "Salvo automaticamente"
+
+msgid "Time to read (in minutes)"
+msgstr "Tempo de leitura (em minutos)"
+
+msgid "Caption for Cover Image"
+msgstr "Legenda para Imagem de Capa"
+
+msgid "Start typing..."
+msgstr "Comece a digitar..."
+
+msgid "Reading Time"
+msgstr "Tempo de leitura"
+
+msgid "Manage your organizations"
+msgstr "Gerencie suas organizações"
+
+msgid "Member"
+msgstr "Membro"
+
+msgid "Manage your users and their accounts"
+msgstr "Gerencie seus usuários e suas contas"
+
+msgid "Overview of your application"
+msgstr "Visão geral de sua aplicação"
+
+msgid "Manage all the subscriptions"
+msgstr "Gerencie todas as assinaturas"
+
+msgid "Users Records"
+msgstr "Registros de usuários"

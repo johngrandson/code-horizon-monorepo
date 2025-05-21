@@ -65,7 +65,7 @@
                 <span :if={not_live_yet(@post)}>
                   Live {@post.go_live |> Timex.from_now()}
                 </span>
-                <span :if={!@post.go_live}>Unpublished</span>
+                <span :if={!@post.go_live}>{gettext("Unpublished")}</span>
               </.dropdown_menu_item>
 
               <.dropdown_menu_item
@@ -98,15 +98,15 @@
             <div>Live {@post.go_live |> Timex.from_now()}</div>
           </div>
           <.p :if={!@post.go_live} class="flex items-center gap-2 text-sm">
-            <.icon name="hero-eye-slash" class="w-4 h-4" /> Unpublished
+            <.icon name="hero-eye-slash" class="w-4 h-4" /> {gettext("Unpublished")}
           </.p>
           <div :if={@post.last_published} class="flex items-center">
-            Published {@post.last_published |> Timex.from_now()}
+            {gettext("Published")} {@post.last_published |> Timex.from_now()}
           </div>
         </div>
 
         <.p :if={@post.duration} class="-mb-8 text-xs uppercase">
-          Reading Time - {formatted_duration(@post)}
+          {gettext("Reading Time")} - {formatted_duration(@post)}
         </.p>
 
         <.page_header title={@post.title} class="!mb-0" />

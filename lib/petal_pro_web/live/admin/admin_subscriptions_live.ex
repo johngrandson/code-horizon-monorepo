@@ -44,7 +44,10 @@ defmodule PetalProWeb.AdminSubscriptionsLive do
   def render(assigns) do
     ~H"""
     <.admin_layout current_page={:admin_subscriptions} current_user={@current_user}>
-      <.page_header title={@page_title} />
+      <.page_header
+        title={gettext("Subscriptions")}
+        description={gettext("Manage all the subscriptions")}
+      />
 
       <.data_table meta={@meta} items={@subscriptions}>
         <:col field={:id} sortable />

@@ -1,10 +1,8 @@
 <.admin_layout current_page={:admin_orgs} current_user={@current_user}>
-  <.page_header title={gettext("Organizations")}>
-    <.button size="sm" link_type="live_patch" to={~p"/admin/orgs/new"}>
-      <.icon name="hero-plus" class="h-4 w-4 mr-2" />
-      {gettext("New %{model}", model: gettext("Org"))}
-    </.button>
-  </.page_header>
+  <.page_header
+    title={gettext("Organizations")}
+    description={gettext("Manage your organizations")}
+  />
 
   <.data_table
     :if={@index_params}

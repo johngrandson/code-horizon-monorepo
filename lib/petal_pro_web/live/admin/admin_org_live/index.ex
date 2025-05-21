@@ -61,7 +61,7 @@ defmodule PetalProWeb.AdminOrgLive.Index do
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
     query_params = DataTable.build_filter_params(socket.assigns.meta, filter_params)
-    {:noreply, push_patch(socket, to: ~p"/admin/orgs?#{query_params}")}
+    {:noreply, push_patch(socket, to: current_index_path(query_params))}
   end
 
   @impl true

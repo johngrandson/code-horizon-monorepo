@@ -45,7 +45,7 @@ defmodule PetalProWeb.AdminPostLive.FormComponent do
 
         {:noreply,
          socket
-         |> put_flash(:info, "Post updated successfully")
+         |> put_flash(:info, gettext("Post updated successfully"))
          |> push_navigate(to: ~p"/admin/posts/#{post.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

@@ -62,6 +62,9 @@ config :petal_pro, PetalProWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :petal_pro, PetalPro.Mailer, adapter: Swoosh.Adapters.Local
 
+# Timex
+config :timex, :translator, PetalProWeb.Gettext
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

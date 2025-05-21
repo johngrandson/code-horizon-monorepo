@@ -7,26 +7,74 @@ defmodule PetalProWeb.PageComponents do
   Allows you to have a heading on the left side, and some action buttons on the right (default slot)
   """
 
-  attr :icon, :string, default: nil
-  attr :class, :string, default: ""
-  attr :title, :string, required: true
-  slot(:inner_block)
+  # attr :icon, :string, default: nil
+  # attr :class, :string, default: ""
+  # attr :title, :string, required: true
+  # slot(:inner_block)
+
+  # def page_header(assigns) do
+  #   assigns = assign_new(assigns, :inner_block, fn -> nil end)
+
+  #   ~H"""
+  #   <div class={["mb-8 sm:flex sm:justify-between sm:items-center", @class]}>
+  #     <div class="mb-4 sm:mb-0 flex gap-2 items-center">
+  #       <.icon :if={@icon} name={@icon} class="w-10 h-10" />
+  #       <.h2 class="!mb-0">
+  #         {@title}
+  #       </.h2>
+  #     </div>
+
+  #     <div class="flex gap-2 items-center">
+  #       <%= if @inner_block do %>
+  #         {render_slot(@inner_block)}
+  #       <% end %>
+  #     </div>
+  #   </div>
+  #   """
+  # end
+
+  attr :title, :string, required: true, doc: "Header title"
+  attr :description, :string, default: nil, doc: "Optional description text"
+  attr :class, :string, default: "mb-4", doc: "Additional CSS classes"
+
+  slot :action, doc: "Slot for action buttons" do
+    attr :label, :string
+    attr :to, :string
+    attr :color, :string
+    attr :link_type, :string
+    attr :icon, :string
+  end
+
+  slot :right_elements, doc: "Slot for custom elements on the right side"
 
   def page_header(assigns) do
-    assigns = assign_new(assigns, :inner_block, fn -> nil end)
-
     ~H"""
-    <div class={["mb-8 sm:flex sm:justify-between sm:items-center", @class]}>
-      <div class="mb-4 sm:mb-0 flex gap-2 items-center">
-        <.icon :if={@icon} name={@icon} class="w-10 h-10" />
-        <.h2 class="!mb-0">
-          {@title}
-        </.h2>
-      </div>
-
-      <div class="flex gap-2 items-center">
-        <%= if @inner_block do %>
-          {render_slot(@inner_block)}
+    <div class={@class}>
+      <div class="flex-row items-center justify-between p-1 space-y-3 sm:flex sm:space-y-0 sm:space-x-4">
+        <div>
+          <h1 class="text-3xl font-extrabold dark:text-white">{@title}</h1>
+          <%= if @description do %>
+            <p class="text-gray-500 dark:text-gray-400">
+              {@description}
+            </p>
+          <% end %>
+        </div>
+        <%= if Enum.any?(@action) do %>
+          <div class="flex gap-2">
+            <%= for action <- @action do %>
+              <.button
+                size="sm"
+                color={Map.get(action, :color, "primary")}
+                link_type={Map.get(action, :link_type, "live_patch")}
+                to={action.to}
+              >
+                <%= if Map.has_key?(action, :icon) do %>
+                  <.icon name={action.icon} class="w-4 h-4 mr-2" />
+                <% end %>
+                {action.label}
+              </.button>
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>

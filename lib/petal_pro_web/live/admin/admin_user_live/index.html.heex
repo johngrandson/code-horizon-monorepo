@@ -1,10 +1,8 @@
 <.admin_layout current_page={:admin_users} current_user={@current_user}>
-  <.page_header title={gettext("Users")}>
-    <.button size="sm" link_type="live_patch" to={~p"/admin/users/new"}>
-      <.icon name="hero-plus" class="w-4 h-4 mr-2" />
-      {gettext("New %{model}", model: gettext("User"))}
-    </.button>
-  </.page_header>
+  <.page_header
+    title={gettext("Users Records")}
+    description={gettext("Manage your users and their accounts")}
+  />
 
   <.form for={@base_filters_form} phx-change="toggle_base_filters" class="flex gap-5 mb-3">
     <.field type="checkbox" field={@base_filters_form[:show_is_suspended]} />

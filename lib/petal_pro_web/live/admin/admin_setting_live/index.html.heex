@@ -1,9 +1,15 @@
 <.admin_layout current_page={:admin_settings} current_user={@current_user}>
-  <.page_header icon="hero-cog" title={gettext("Global App Settings")}>
-    <.button size="sm" link_type="live_patch" to={~p"/admin/settings/new"} data-phx-link="patch">
-      <.icon name="hero-plus" class="w-4 h-4 mr-2" />
-      {gettext("New Setting")}
-    </.button>
+  <.page_header
+    title={gettext("Global App Settings")}
+    description={gettext("Manage all your existing settings")}
+  >
+    <:action
+      label={gettext("New Setting")}
+      to={~p"/admin/settings/new"}
+      color="white"
+      link_type="live_redirect"
+      icon="hero-plus"
+    />
   </.page_header>
 
   <.data_table
@@ -28,6 +34,30 @@
         {setting.description}
       </div>
     </:col>
+    <:col :let={setting} field={:is_public} label={gettext("Public")} sortable>
+      <div class="text-gray-600 dark:text-gray-300">
+        <%= if setting.is_public do %>
+          <span class="inline-flex items-center justify-center w-6 h-6 ml-4 text-sm font-semibold text-green-800 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-300">
+            <svg
+              class="w-2.5 h-2.5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 16 12"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5.917 5.724 10.5 15 1.5"
+              />
+            </svg>
+            <span class="sr-only">Icon description</span>
+          </span>
+        <% end %>
+      </div>
+    </:col>
     <:col :let={setting} field={:inserted_at} label={gettext("Created")} sortable>
       <div class="text-gray-600 dark:text-gray-300">
         <%= if setting.inserted_at do %>
@@ -38,48 +68,30 @@
       </div>
     </:col>
     <:col :let={setting} label={gettext("Actions")} align_right>
-      <div class="flex items-center justify-end space-x-2">
-        <.button
-          color="primary"
-          variant="outline"
-          size="xs"
-          link_type="live_redirect"
-          to={~p"/admin/settings/#{setting}"}
-          aria-label={gettext("View")}
+      <div class="flex items-center" id={"setting_actions_container_#{setting.id}"}>
+        <.dropdown
+          class="dark:shadow-lg"
+          options_container_id={"setting_options_#{setting.id}"}
+          menu_items_wrapper_class="dark:border dark:border-gray-600"
         >
-          <.icon name="hero-eye" class="w-4 h-4" />
-        </.button>
-        <.button
-          color="white"
-          variant="outline"
-          size="xs"
-          link_type="live_patch"
-          to={~p"/admin/settings/#{setting}/edit"}
-          aria-label={gettext("Edit")}
-        >
-          <.icon name="hero-pencil" class="w-4 h-4" />
-        </.button>
-        <.button
-          color="danger"
-          variant="outline"
-          size="xs"
-          phx-click={JS.push("delete", value: %{id: setting.id})}
-          phx-hook="LogClick"
-          data-confirm={gettext("Are you sure?")}
-          aria-label={gettext("Delete")}
-        >
-          <.icon name="hero-trash" class="w-4 h-4" />
-        </.button>
-        <script>
-          window.logClick = {
-            mounted() {
-              this.el.addEventListener("click", (e) => {
-                console.log("Delete button clicked", e);
-                console.log("Setting ID:", this.el.getAttribute("phx-value-id") || "No ID found");
-              });
-            }
-          }
-        </script>
+          <.dropdown_menu_item link_type="live_redirect" to={~p"/admin/settings/#{setting}"}>
+            <.icon name="hero-information-circle" class="w-5 h-5" /> {gettext("View")}
+          </.dropdown_menu_item>
+
+          <.dropdown_menu_item link_type="live_patch" to={~p"/admin/settings/#{setting}/edit"}>
+            <.icon name="hero-pencil" class="w-5 h-5" /> {gettext("Edit")}
+          </.dropdown_menu_item>
+
+          <.dropdown_menu_item
+            link_type="a"
+            to="#"
+            phx-click="delete"
+            phx-value-id={setting.id}
+            data-confirm={gettext("Are you sure?")}
+          >
+            <.icon name="hero-trash" class="w-5 h-5" /> {gettext("Delete")}
+          </.dropdown_menu_item>
+        </.dropdown>
       </div>
     </:col>
   </.data_table>

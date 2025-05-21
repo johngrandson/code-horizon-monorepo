@@ -100,7 +100,6 @@ defmodule PetalProWeb do
       # Core UI components and translation
       use PetalComponents
       use PetalProComponents
-      use PrelineComponents
       use Gettext, backend: PetalProWeb.Gettext
 
       import PetalProWeb.CoreComponents

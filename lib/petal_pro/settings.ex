@@ -209,9 +209,9 @@ defmodule PetalPro.Settings do
   @doc """
   Returns the list of settings.
   """
-  @spec list_settings_query() :: Ecto.Query.t()
-  def list_settings_query do
-    from(s in Setting, order_by: [asc: s.key])
+  @spec list_settings_query(Ecto.Queryable.t()) :: Ecto.Query.t()
+  def list_settings_query(queryable \\ Setting) do
+    from(s in queryable, order_by: [asc: s.key])
   end
 
   @spec list_settings() :: [Setting.t()]
@@ -223,7 +223,11 @@ defmodule PetalPro.Settings do
   Gets a single setting by ID.
   """
   @spec get_setting!(integer()) :: Setting.t()
-  def get_setting!(id), do: Repo.get!(Setting, id)
+  def get_setting!(id) do
+    Setting
+    |> Repo.get!(id)
+    |> normalize_value()
+  end
 
   @doc """
   Creates a setting.
@@ -267,12 +271,9 @@ defmodule PetalPro.Settings do
     Setting.changeset(setting, attrs)
   end
 
-  # Normalize value from various formats to a direct value
-  defp normalize_value(attrs) do
-    case attrs do
-      %{"value" => %{"value" => value}} -> Map.put(attrs, "value", value)
-      %{"value" => _value} -> attrs
-      _ -> attrs
-    end
+  defp normalize_value(%{value: %{"value" => value}} = setting) do
+    %{setting | value: value}
   end
+
+  defp normalize_value(setting), do: setting
 end

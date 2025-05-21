@@ -38,7 +38,7 @@
       </div>
 
       <.p :if={@post.published_duration} class="text-xs uppercase -mb-8">
-        Reading Time - {formatted_duration(@post)}
+        {gettext("Reading Time")} - {formatted_duration(@post)}
       </.p>
 
       <.page_header title={@post.published_title} class="!mb-0" />
