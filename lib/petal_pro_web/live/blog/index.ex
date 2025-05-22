@@ -10,7 +10,21 @@ defmodule PetalProWeb.BlogLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :posts, Posts.list_live_posts())}
+    posts = Posts.list_live_posts()
+
+    socket =
+      socket
+      |> stream(:posts, posts)
+      |> assign(
+        stream_items_count: Enum.count(posts),
+        stream_empty: Enum.empty?(posts),
+        active_category: "all",
+        search_term: "",
+        page: 1,
+        has_more: true
+      )
+
+    {:ok, socket}
   end
 
   @impl true
@@ -56,6 +70,118 @@ defmodule PetalProWeb.BlogLive.Index do
   @impl true
   def handle_event("close_modal", _, socket) do
     {:noreply, push_patch(socket, to: ~p"/blog")}
+  end
+
+  def handle_event("filter_category", %{"category" => category}, socket) do
+    # Reset page
+    socket = assign(socket, page: 1, active_category: category)
+
+    # Apply filters
+    filtered_posts =
+      Posts.list_live_posts(
+        category: if(category == "all", do: nil, else: category),
+        search: socket.assigns.search_term,
+        limit: 9
+      )
+
+    socket =
+      socket
+      |> stream(:posts, filtered_posts, reset: true)
+      |> assign(
+        stream_items_count: Enum.count(filtered_posts),
+        stream_empty: Enum.empty?(filtered_posts),
+        has_more: Enum.count(filtered_posts) >= 9
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("search", %{"search" => search_term}, socket) do
+    # Reset page
+    socket = assign(socket, page: 1, search_term: search_term)
+
+    # Apply filters
+    filtered_posts =
+      Posts.list_live_posts(
+        category: if(socket.assigns.active_category == "all", do: nil, else: socket.assigns.active_category),
+        search: search_term,
+        limit: 9
+      )
+
+    socket =
+      socket
+      |> stream(:posts, filtered_posts, reset: true)
+      |> assign(
+        stream_items_count: Enum.count(filtered_posts),
+        stream_empty: Enum.empty?(filtered_posts),
+        has_more: Enum.count(filtered_posts) >= 9
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("clear_search", _, socket) do
+    # Reset page and search
+    socket = assign(socket, page: 1, search_term: "")
+
+    # Apply filters
+    filtered_posts =
+      Posts.list_live_posts(
+        category: if(socket.assigns.active_category == "all", do: nil, else: socket.assigns.active_category),
+        limit: 9
+      )
+
+    socket =
+      socket
+      |> stream(:posts, filtered_posts, reset: true)
+      |> assign(
+        stream_items_count: Enum.count(filtered_posts),
+        stream_empty: Enum.empty?(filtered_posts),
+        has_more: Enum.count(filtered_posts) >= 9
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("reset_filters", _, socket) do
+    # Reset all filters
+    socket = assign(socket, page: 1, search_term: "", active_category: "all")
+
+    # Load unfiltered posts
+    posts = Posts.list_live_posts(limit: 9)
+
+    socket =
+      socket
+      |> stream(:posts, posts, reset: true)
+      |> assign(
+        stream_items_count: Enum.count(posts),
+        stream_empty: Enum.empty?(posts),
+        has_more: Enum.count(posts) >= 9
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("load_more", _, socket) do
+    # Increment page
+    page = socket.assigns.page + 1
+    socket = assign(socket, page: page)
+
+    # Load more posts with current filters
+    more_posts =
+      Posts.list_live_posts(
+        category: if(socket.assigns.active_category == "all", do: nil, else: socket.assigns.active_category),
+        search: socket.assigns.search_term,
+        page: page,
+        limit: 9
+      )
+
+    socket =
+      socket
+      |> stream(:posts, more_posts)
+      |> assign(has_more: Enum.count(more_posts) >= 9)
+
+    {:noreply, socket}
   end
 
   attr :class, :any

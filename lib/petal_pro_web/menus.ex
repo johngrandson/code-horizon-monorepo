@@ -296,8 +296,8 @@ defmodule PetalProWeb.Menus do
     end
   end
 
-  def get_link(:dev = name, _current_user) do
-    if PetalPro.config(:env) == :dev do
+  def get_link(:dev = name, current_user) do
+    if Helpers.admin?(current_user) do
       %{
         name: name,
         label: gettext("Dev"),

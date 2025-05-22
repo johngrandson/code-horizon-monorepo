@@ -18,9 +18,13 @@ defmodule PetalPro.Orgs.Org do
     field :name, :string
     field :slug, :string
     field :schema_prefix, :string
+    field :avatar_url, :string, default: nil
 
     # Primary domain for this tenant (cached for performance)
     field :primary_domain, :string
+
+    # Whether this org is an enterprise org
+    field :is_enterprise, :boolean, default: false
 
     # Plan and billing information
     field :plan, Ecto.Enum, values: [:free, :starter, :professional, :enterprise], default: :free

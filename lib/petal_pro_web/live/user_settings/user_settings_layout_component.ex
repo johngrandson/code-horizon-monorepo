@@ -13,7 +13,10 @@ defmodule PetalProWeb.UserSettingsLayoutComponent do
     ~H"""
     <.layout current_page={@current_page} current_user={@current_user} type="sidebar">
       <.container max_width="xl" class="py-10">
-        <.page_header title={gettext("Settings")} />
+        <.page_header
+          title={gettext("Settings")}
+          description={gettext("Manage your account settings")}
+        />
 
         <.sidebar_tabs_container current_page={@current_page} menu_items={menu_items(@current_user)}>
           {render_slot(@inner_block)}

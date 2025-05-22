@@ -578,7 +578,7 @@ msgstr "Você nao pertence a nenhuma organização no momento"
 #: lib/petal_pro_web/live/user_settings/user_org_invitations_live.ex:40
 #, elixir-autogen, elixir-format
 msgid "You have been invited to join %{org_name}"
-msgstr "Você foi convidado a participar de %{org_name}"
+msgstr "Você foi convidado a participar da organização %{org_name}"
 
 #: lib/petal_pro_web/live/orgs/org/org_team_live.ex:58
 #, elixir-autogen, elixir-format
@@ -2368,3 +2368,50 @@ msgstr "Gerencie todas as assinaturas"
 
 msgid "Users Records"
 msgstr "Registros de usuários"
+
+msgid "Company Blog"
+msgstr "Blog da empresa"
+
+msgid "Stay updated with the latest news, insights, and announcements"
+msgstr "Fique atualizado com as últimas notícias, insights e anúncios"
+
+msgid "Articles, Tips and Tutorials"
+msgstr "Artigos, Dicas e Tutoriais"
+
+msgid "Articles, tips and tutorials about Software Development and more"
+msgstr "Artigos, dicas e tutoriais sobre Desenvolvimento de Software e mais"
+
+msgid "You've been invited to join this organization. Accept to get access or reject to decline"
+msgstr "Você foi convidado a participar da organização. Aceite para obter acesso ou rejeite a solicitação"
+
+msgid "%{count} pending invitation"
+msgid_plural "%{count} pending invitations"
+msgstr[0] "%{count} convite pendente"
+msgstr[1] "%{count} convites pendentes"
+
+msgid "Organization Invitations"
+msgstr "Convites de Organização"
+
+msgid "No Pending Invitations"
+msgstr "Nenhum convite pendente"
+
+msgid "You don't have any pending organization invitations at the moment. When you're invited to join an organization, invitations will appear here"
+msgstr "Você não tem nenhum convite de organização pendente no momento. Quando você é convidado para se juntar a uma organização, os convites aparecerão aqui"
+
+msgid "You've been invited to join the following organizations. Accept invitations to collaborate with team members or reject those you don't want to join"
+msgstr "Você foi convidado para se juntar às seguintes organizações. Aceite os convites para colaborar com membros da equipe ou rejeite os que não deseja juntar-se"
+
+msgid "Load More Articles"
+msgstr "Carregar mais artigos"
+
+msgid "Search blog posts..."
+msgstr "Procurar posts..."
+
+msgid "Read article"
+msgstr "Leia o artigo"
+
+msgid "Load More Logs"
+msgstr "Carregar mais logs"
+
+msgid "Manage your account settings"
+msgstr "Gerencie suas configurações de conta"

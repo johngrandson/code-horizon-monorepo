@@ -45,8 +45,6 @@ defmodule PetalProWeb.PageComponents do
     attr :icon, :string
   end
 
-  slot :right_elements, doc: "Slot for custom elements on the right side"
-
   def page_header(assigns) do
     ~H"""
     <div class={@class}>

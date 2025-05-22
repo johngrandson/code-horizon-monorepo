@@ -56,6 +56,27 @@ defmodule PetalPro.Posts do
   end
 
   @doc """
+  Returns the list of posts that have been published.
+
+  ## Examples
+
+      iex> list_live_posts(category: "all", search: "", limit: 9)
+      [%Post{}, ...]
+
+  """
+  def list_live_posts(category: category, search: search, limit: limit) do
+    query =
+      from p in live_posts(),
+        where: p.published_category == ^category and ilike(p.published_title, ^"%#{search}%"),
+        order_by: [desc: p.go_live],
+        limit: ^limit
+
+    query
+    |> Repo.all()
+    |> Repo.preload(:author)
+  end
+
+  @doc """
   Gets a single post.
 
   Raises `Ecto.NoResultsError` if the Post does not exist.

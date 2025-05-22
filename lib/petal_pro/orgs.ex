@@ -225,7 +225,9 @@ defmodule PetalPro.Orgs do
     |> Repo.transaction()
     |> case do
       {:ok, %{invitation: invitation} = txn_result} ->
-        invitation.user_id && Notifications.broadcast_user_notification(txn_result.user_notification)
+        if invitation.user_id do
+          Notifications.broadcast_user_notification(txn_result.user_notification)
+        end
 
         to = if(invitation.user_id, do: url(~p"/app/users/org-invitations"), else: url(~p"/auth/register"))
         UserMailer.deliver_org_invitation(org, invitation, to)
@@ -251,7 +253,11 @@ defmodule PetalPro.Orgs do
     |> case do
       {:ok, %{invitation: invitation} = txn_result} ->
         {deleted_count, _} = Map.get(txn_result, :delete_sent_notifications, {0, nil})
-        deleted_count > 0 && Notifications.broadcast_user_notification(invitation.user_id)
+
+        if deleted_count > 0 do
+          Notifications.broadcast_user_notification(invitation.user_id)
+        end
+
         {:ok, txn_result}
 
       {:error, error} ->

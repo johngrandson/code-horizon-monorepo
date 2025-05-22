@@ -146,6 +146,7 @@ config :petal_pro, :content_security_policy, %{
     "'self'",
     "data:",
     "blob:",
+    "https://*",
     "https://cdnjs.cloudflare.com",
     "https://cdn.skypack.dev",
     "https://cdn.jsdelivr.net",

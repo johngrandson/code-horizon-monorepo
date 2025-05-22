@@ -23,7 +23,7 @@ defmodule PetalProWeb.EditProfileLive do
     socket =
       socket
       |> assign(%{
-        page_title: "Settings",
+        page_title: gettext("Settings"),
         uploaded_files: []
       })
       |> assign_form(socket.assigns.current_user)

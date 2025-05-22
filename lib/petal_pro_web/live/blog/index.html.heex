@@ -1,74 +1,157 @@
 <.container class="py-16">
-  <.page_header icon="hero-signal" title="Blog">
-    <.button
-      :if={@current_user && @current_user.role == :admin}
-      link_type="live_patch"
-      color="white"
-      to={~p"/admin/posts"}
-      class="flex gap-2 items-center"
-    >
-      <.icon name="hero-signal" class="w-5 h-5" />
-      {gettext("Posts")}
-    </.button>
-    <.button
-      :if={@current_user && @current_user.role == :admin}
-      link_type="live_patch"
-      label="New Post"
-      to={~p"/admin/posts/new"}
+  <div class="flex items-center justify-between">
+    <.page_header
+      title={gettext("Articles, Tips and Tutorials")}
+      description={gettext("Articles, tips and tutorials about Software Development and more")}
     />
-  </.page_header>
 
-  <div id="posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" phx-update="stream">
+    <div class="mt-4 lg:mt-0 relative">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <.icon name="hero-magnifying-glass" class="w-4 h-4 text-gray-500" />
+      </div>
+      <form phx-change="search" phx-submit="search">
+        <input
+          type="text"
+          name="search"
+          value={@search_term}
+          class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400"
+          placeholder={gettext("Search blog posts...")}
+          phx-debounce="300"
+        />
+      </form>
+    </div>
+  </div>
+
+  <div class="mb-6">
+    <%= if @search_term != "" do %>
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-gray-600 dark:text-gray-400">
+          {gettext("Showing results for")} <span class="font-medium">"{@search_term}"</span>
+          ({@stream_items_count} {gettext("posts found")})
+        </p>
+        <.button
+          phx-click="clear_search"
+          size="sm"
+          color="white"
+          variant="outline"
+          class="flex items-center gap-1"
+        >
+          <.icon name="hero-x-mark" class="w-3 h-3" />
+          {gettext("Clear")}
+        </.button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" phx-update="stream">
     <%= for {id, post} <- @streams.posts do %>
-      <.link id={id} navigate={~p"/blog/#{post.published_slug}"} class="flex">
-        <.card class="p-4 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-          <.card_media src={post.published_cover} class="mb-5 rounded-lg" />
+      <.link
+        id={id}
+        navigate={~p"/blog/#{post.published_slug}"}
+        class="flex group overflow-hidden"
+      >
+        <.card class="flex flex-col bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 h-full dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
+          <div class="relative overflow-hidden">
+            <.card_media
+              src={post.published_cover}
+              alt={post.published_title}
+              class="h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div class="absolute top-4 left-4">
+              <span class="bg-primary-100 text-primary-800 text-xs font-semibold px-2.5 py-1.5 rounded-md shadow-sm dark:bg-primary-900 dark:text-primary-300">
+                {post.published_category}
+              </span>
+            </div>
+          </div>
 
-          <.card_content class="p-0">
-            <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-purple-200 dark:text-purple-900">
-              {post.published_category}
-            </span>
-            <h2 class="my-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <.card_content class="p-5 flex-grow min-h-[210px] max-h-[210px] mb-4">
+            <div class="flex items-center gap-2 mb-3">
+              <img
+                class="w-8 h-8 rounded-full"
+                src={post.author.avatar}
+                alt={"#{user_name(post.author)} avatar"}
+              />
+              <div class="text-sm">
+                <div class="font-medium dark:text-white">{user_name(post.author)}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                  {Util.handle_relative_time(post.inserted_at)}
+                </div>
+              </div>
+            </div>
+
+            <.h2 class="mb-3 text-xl font-bold tracking-tight text-gray-900 dark:text-white line-clamp-2">
               {post.published_title}
-            </h2>
-            <p class="mb-4 font-light text-gray-500 dark:text-gray-400">
+            </.h2>
+            <p class="mb-3 font-normal text-gray-600 dark:text-gray-400 line-clamp-3">
               {post.published_summary}
             </p>
           </.card_content>
 
-          <.card_footer class="flex items-center p-0">
-            <img
-              class="w-10 h-10 rounded-full mr-2"
-              src={post.author.avatar}
-              alt={"#{user_name(post.author)} avatar"}
-            />
-            <div class="font-medium dark:text-white">
-              <div>{user_name(post.author)}</div>
-              <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
-                <span class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-gray-400 border border-gray-400">
-                  <svg
-                    class="w-2.5 h-2.5 me-1.5"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-                  </svg>
-                  {Util.handle_relative_time(post.inserted_at)}
-                </span>
-                <span class="ml-2">{post.published_duration} minute read</span>
-              </div>
+          <.card_footer class="flex items-center justify-between p-5 mt-auto border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <.icon name="hero-clock" class="w-4 h-4 mr-1" />
+              <span>{post.published_duration} min read</span>
             </div>
+            <span class="inline-flex items-center text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium transition-colors">
+              {gettext("Read article")}
+              <.icon
+                name="hero-arrow-right"
+                class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"
+              />
+            </span>
           </.card_footer>
         </.card>
       </.link>
     <% end %>
   </div>
 
-  <%= if Enum.count(@streams.posts) == 0 do %>
-    <div class="grid gap-3 justify-center items-center text-center">
-      <.waiting_for_you class="fill-primary-500 w-96 h-80 sm:-translate-x-10" /> No blog posts!
+  <%= if @stream_empty do %>
+    <div class="py-20 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-center px-6">
+      <.icon name="hero-newspaper" class="w-16 h-16 mb-4 text-gray-400" />
+
+      <%= if @search_term != "" || @active_category != "all" do %>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {gettext("No posts found")}
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
+          {gettext(
+            "We couldn't find any posts matching your current filters. Try adjusting your search or categories."
+          )}
+        </p>
+        <.button phx-click="reset_filters" color="primary">
+          {gettext("Reset Filters")}
+        </.button>
+      <% else %>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          {gettext("No blog posts yet")}
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
+          {gettext(
+            "We're working on creating great content. Check back soon for our latest posts and updates."
+          )}
+        </p>
+
+        <%= if @current_user && @current_user.role == :admin do %>
+          <.button link_type="live_patch" to={~p"/admin/posts/new"}>
+            <.icon name="hero-plus" class="w-4 h-4 mr-2" />
+            {gettext("Write First Post")}
+          </.button>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= if @has_more do %>
+    <div class="mt-12 flex justify-center">
+      <.button phx-click="load_more" color="white" variant="outline" class="px-6">
+        <span class="phx-click-loading:hidden">
+          {gettext("Load More Articles")}
+        </span>
+        <span class="hidden phx-click-loading:block flex items-center">
+          <.spinner class="mr-2" />
+          {gettext("Loading...")}
+        </span>
+      </.button>
     </div>
   <% end %>
 </.container>
