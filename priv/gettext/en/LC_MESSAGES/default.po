@@ -1515,7 +1515,7 @@ msgstr ""
 
 #: lib/petal_pro_web/live/notifications/notifications_components.ex:30
 #, elixir-autogen, elixir-format
-msgid "%{name} invited you to join the %{org_name} organisation."
+msgid "%{name} invited you to join the %{org_name} organization."
 msgstr ""
 
 #: lib/petal_pro_web/live/notifications/notifications_components.ex:81
@@ -1843,7 +1843,7 @@ msgstr ""
 
 #: lib/petal_pro/notifications/user_notification_attrs.ex:20
 #, elixir-autogen, elixir-format, fuzzy
-msgid "You have been invited to join the %{org_name} organisation!"
+msgid "You have been invited to join the %{org_name} organization!"
 msgstr ""
 
 #: lib/petal_pro_web/live/notifications/notification_bell_component.ex:157

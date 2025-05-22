@@ -7,6 +7,7 @@ defmodule PetalProWeb.OrgOnMountHooks do
 
   import Phoenix.Component
   import Phoenix.LiveView
+  import Phoenix.PubSub
 
   alias PetalPro.Orgs
 
@@ -16,6 +17,7 @@ defmodule PetalProWeb.OrgOnMountHooks do
       |> assign_orgs()
       |> assign_current_membership(params)
       |> assign_current_org()
+      |> register_multi_org_handlers()
 
     {:cont, socket}
   end
@@ -59,5 +61,19 @@ defmodule PetalProWeb.OrgOnMountHooks do
       membership = socket.assigns.current_membership
       membership && membership.org
     end)
+  end
+
+  defp register_multi_org_handlers(socket) do
+    if connected?(socket) do
+      user_id = socket.assigns.current_user.id
+
+      # Subscribe to all user's organizations
+      for org <- socket.assigns.orgs do
+        topic = "user:#{user_id}:org:#{org.id}"
+        subscribe(PetalPro.PubSub, topic)
+      end
+    end
+
+    socket
   end
 end

@@ -2,18 +2,11 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
   @moduledoc false
   use PetalProWeb, :live_view
 
+  import PetalPro.Events.Modules.Orgs.Subscriber
   import PetalProWeb.UserSettingsLayoutComponent
 
   alias PetalPro.Accounts
   alias PetalPro.Orgs
-
-  @impl true
-  def mount(_params, _session, socket) do
-    socket =
-      assign_invitations(socket)
-
-    {:ok, socket}
-  end
 
   @impl true
   def render(assigns) do
@@ -216,6 +209,32 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
   end
 
   @impl true
+  def mount(_params, _session, socket) do
+    socket =
+      socket
+      |> assign_invitations()
+      |> register_subscriber()
+
+    {:ok, socket}
+  end
+
+  @impl true
+  def handle_info({:invitation_deleted, payload}, socket) do
+    {:noreply, assign_invitations(socket)}
+  end
+
+  @impl true
+  def handle_info({:invitation_sent, _payload}, socket) do
+    {:noreply, assign_invitations(socket)}
+  end
+
+  # Catch-all
+  @impl true
+  def handle_info(message, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("reject_invitation", %{"id" => id}, socket) do
     invitation = Orgs.reject_invitation!(socket.assigns.current_user, id)
 
@@ -230,8 +249,11 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
 
     {:noreply,
      socket
-     |> put_flash(:info, gettext("Invitation was rejected"))
-     |> assign(:invitations, updated_invitations)}
+     |> assign(:invitations, updated_invitations)
+     |> put_flash(:info, gettext("Invitation rejected successfully"))}
+  rescue
+    Ecto.InvalidChangesetError ->
+      {:noreply, put_flash(socket, :error, gettext("Failed to reject invitation"))}
   end
 
   @impl true

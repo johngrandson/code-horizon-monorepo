@@ -1515,7 +1515,7 @@ msgstr "%{model} atualizado com sucesso"
 
 #: lib/petal_pro_web/live/notifications/notifications_components.ex:30
 #, elixir-autogen, elixir-format, fuzzy
-msgid "%{name} invited you to join the %{org_name} organisation."
+msgid "%{name} invited you to join the %{org_name} organization."
 msgstr "%{name} convidou você para participar da organização %{org_name}."
 
 #: lib/petal_pro_web/live/notifications/notifications_components.ex:81
@@ -1843,7 +1843,7 @@ msgstr "Ver logs"
 
 #: lib/petal_pro/notifications/user_notification_attrs.ex:20
 #, elixir-autogen, elixir-format, fuzzy
-msgid "You have been invited to join the %{org_name} organisation!"
+msgid "You have been invited to join the %{org_name} organization!"
 msgstr "Você foi convidado a ingressar na organização %{org_name}!"
 
 #: lib/petal_pro_web/live/notifications/notification_bell_component.ex:157
@@ -2415,3 +2415,6 @@ msgstr "Carregar mais logs"
 
 msgid "Manage your account settings"
 msgstr "Gerencie suas configurações de conta"
+
+msgid "You don't have any pending organization invitations at the moment. When you invite someone to join an organization, invitations will appear here"
+msgstr "Você não tem nenhum convite de organização pendente no momento. Quando você convidar alguém para se juntar a uma organização, os convites aparecerão aqui"

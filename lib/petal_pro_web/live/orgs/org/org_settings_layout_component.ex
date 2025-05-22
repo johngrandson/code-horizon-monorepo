@@ -25,7 +25,7 @@ defmodule PetalProWeb.OrgSettingsLayoutComponent do
       current_membership={@current_membership}
       socket={@socket}
     >
-      <.container max_width="xl" class="py-10">
+      <.container max_width="xl" class="py-5">
         <.page_header title={gettext("%{org_name} settings", org_name: @current_org.name)} />
 
         <.sidebar_tabs_container current_page={@current_page} menu_items={menu_items(@current_org)}>

@@ -2,6 +2,7 @@ defmodule PetalProWeb.OrgTeamLive do
   @moduledoc false
   use PetalProWeb, :live_view
 
+  import PetalPro.Events.Modules.Orgs.Subscriber
   import PetalProWeb.OrgSettingsLayoutComponent
 
   alias PetalPro.Orgs
@@ -15,6 +16,7 @@ defmodule PetalProWeb.OrgTeamLive do
       socket
       |> assign_memberships()
       |> assign_invitations()
+      |> register_subscriber()
 
     {:ok, socket}
   end
@@ -22,6 +24,39 @@ defmodule PetalProWeb.OrgTeamLive do
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  @impl true
+  def handle_info({:invitation_sent, %{invitation_id: _invitation_id, org_id: _org_id}}, socket) do
+    socket = assign_invitations(socket)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:invitation_accepted, %{invitation_id: _invitation_id, org_id: _org_id}}, socket) do
+    socket =
+      socket
+      |> assign_memberships()
+      |> assign_invitations()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:invitation_rejected, %{org_id: org_id}}, socket) do
+    socket =
+      if socket.assigns.current_org.id == org_id do
+        assign_invitations(socket)
+      else
+        socket
+      end
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(_message, socket) do
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :index, _params) do

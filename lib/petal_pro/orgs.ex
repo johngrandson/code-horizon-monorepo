@@ -4,6 +4,7 @@ defmodule PetalPro.Orgs do
 
   import Ecto.Query, only: [from: 2]
 
+  alias PetalPro.Events.Modules.Orgs.Broadcaster
   alias PetalPro.Notifications
   alias PetalPro.Notifications.UserMailer
   alias PetalPro.Notifications.UserNotification
@@ -45,6 +46,16 @@ defmodule PetalPro.Orgs do
 
   def preload_org_memberships(org) do
     Repo.preload(org, memberships: :user)
+  end
+
+  def list_org_admin_users(%Org{} = org) do
+    Repo.all(
+      from(m in Membership,
+        join: u in assoc(m, :user),
+        where: m.org_id == ^org.id and m.role == :admin,
+        select: %{user_id: u.id, user: u}
+      )
+    )
   end
 
   def create_org(attrs) do
@@ -227,6 +238,10 @@ defmodule PetalPro.Orgs do
       {:ok, %{invitation: invitation} = txn_result} ->
         if invitation.user_id do
           Notifications.broadcast_user_notification(txn_result.user_notification)
+
+          Broadcaster.broadcast_invitation_sent(invitation, org)
+
+          Broadcaster.broadcast_to_org_admins(org, :invitation_sent, %{invitation_id: invitation.id})
         end
 
         to = if(invitation.user_id, do: url(~p"/app/users/org-invitations"), else: url(~p"/auth/register"))
@@ -243,7 +258,7 @@ defmodule PetalPro.Orgs do
   end
 
   @doc """
-  Rescind an invite to an organisation. Deletes the invitation and any associated user notification.
+  Rescind an invite to an organization. Deletes the invitation and any associated user notification.
   """
   def rescind_and_delete_org_invitation(invitation) do
     Ecto.Multi.new()
@@ -256,6 +271,8 @@ defmodule PetalPro.Orgs do
 
         if deleted_count > 0 do
           Notifications.broadcast_user_notification(invitation.user_id)
+
+          Broadcaster.broadcast_invitation_deleted(invitation)
         end
 
         {:ok, txn_result}
@@ -278,23 +295,52 @@ defmodule PetalPro.Orgs do
     invitation = get_invitation_by_user!(user, id)
     org = Repo.one!(Ecto.assoc(invitation, :org))
 
-    {:ok, %{membership: membership}} =
-      Ecto.Multi.new()
-      |> Ecto.Multi.insert(:membership, Membership.insert_changeset(org, user))
-      |> Ecto.Multi.delete(:invitation, invitation)
-      |> Repo.transaction()
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:membership, Membership.insert_changeset(org, user))
+    |> Ecto.Multi.delete(:invitation, invitation)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{membership: membership}} ->
+        Broadcaster.broadcast_invitation_accepted(invitation, org)
+        %{membership | org: org}
 
-    %{membership | org: org}
+      {:error, error} ->
+        {:error, error}
+    end
+  end
+
+  def reject_invitation(user, id) do
+    invitation =
+      user
+      |> get_invitation_by_user!(id)
+      |> Repo.preload(:org)
+
+    case Repo.delete(invitation) do
+      {:ok, _} ->
+        Notifications.broadcast_user_notification(invitation.user_id)
+
+        Broadcaster.broadcast_invitation_rejected(invitation, invitation.org)
+        {:ok, invitation}
+
+      error ->
+        error
+    end
   end
 
   def reject_invitation!(user, id) do
-    invitation = get_invitation_by_user!(user, id)
-    Repo.delete!(invitation)
+    case reject_invitation(user, id) do
+      {:ok, invitation} ->
+        invitation
+
+      {:error, changeset} ->
+        raise Ecto.InvalidChangesetError, action: :delete, changeset: changeset
+    end
   end
 
   defp get_invitation_by_user!(user, id) do
     user
     |> Invitation.by_user()
     |> Repo.get!(id)
+    |> Repo.preload(:org)
   end
 end

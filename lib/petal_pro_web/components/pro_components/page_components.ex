@@ -122,7 +122,7 @@ defmodule PetalProWeb.PageComponents do
   def sidebar_tabs_container(assigns) do
     ~H"""
     <.box class="flex flex-col border border-gray-200 divide-y divide-gray-200 dark:border-none dark:divide-gray-700 md:divide-y-0 md:divide-x md:flex-row">
-      <div class="shrink-0 w-full py-6 md:w-72">
+      <div class="shrink-0 w-full py-6 md:w-50">
         <%= for menu_item <- @menu_items do %>
           <.sidebar_menu_item current={@current_page} {menu_item} />
         <% end %>

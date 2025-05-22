@@ -17,7 +17,7 @@ defmodule PetalPro.Notifications.UserNotificationAttrs do
       recipient_id: recipient_id,
       sender_id: sender_id,
       org_id: org.id,
-      message: gettext("You have been invited to join the %{org_name} organisation!", org_name: org.name)
+      message: gettext("You have been invited to join the %{org_name} organization!", org_name: org.name)
     }
   end
 end

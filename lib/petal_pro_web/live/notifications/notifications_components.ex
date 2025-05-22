@@ -27,7 +27,7 @@ defmodule PetalProWeb.Notifications.Components do
       />
       <div class="flex flex-col my-auto ml-4 space-y-1 text-sm text-gray-700 dark:text-gray-100">
         <p>
-          {gettext("%{name} invited you to join the %{org_name} organisation.",
+          {gettext("%{name} invited you to join the %{org_name} organization.",
             name: "<span class='font-medium'>#{get_sender_name(@notification.sender)}</span>",
             org_name: "<span class='font-medium'>#{@notification.org.name}</span>"
           )

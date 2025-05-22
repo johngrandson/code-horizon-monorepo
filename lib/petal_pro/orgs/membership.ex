@@ -7,6 +7,7 @@ defmodule PetalPro.Orgs.Membership do
 
   alias PetalPro.Accounts.User
   alias PetalPro.Orgs.Org
+  alias PetalPro.Repo
 
   @role_options ~w(admin member)a
   @default_role :member
@@ -26,6 +27,20 @@ defmodule PetalPro.Orgs.Membership do
       join: org in assoc(ms, :org),
       on: [slug: ^org_slug],
       where: ms.user_id == ^user.id
+    )
+  end
+
+  def list_orgs_by_user(%User{} = user) do
+    user
+    |> list_orgs_by_user_query()
+    |> Repo.all()
+  end
+
+  def list_orgs_by_user_query(%User{} = user) do
+    from(ms in __MODULE__,
+      join: org in assoc(ms, :org),
+      where: ms.user_id == ^user.id,
+      select: org
     )
   end
 

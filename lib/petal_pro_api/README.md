@@ -86,7 +86,7 @@ defmodule PetalProApi.MembershipControllerTest do
   end
 
   describe "list" do
-    test "list organisations", %{conn: conn, user: user} do
+    test "list organizations", %{conn: conn, user: user} do
       conn = get(conn, ~p"/api/user/#{user.id}/orgs")
 
       assert orgs = json_response(conn, 200)
@@ -127,7 +127,7 @@ Excluding tags: [:petal_framework]
 
 
 
-  1) test list list organisations (PetalProApi.MembershipControllerTest)
+  1) test list list organizations (PetalProApi.MembershipControllerTest)
      test/petal_pro_api/membership_controller_test.exs:17
      ** (RuntimeError) expected response with status 200, got: 401, with body:
      "{\"errors\":{\"details\":\"unauthenticated\"}}"
@@ -156,10 +156,10 @@ end
 
 ### Adjusting for Authentication
 
-Adding `put_bearer_token` to the "list organisations" test in `membership_controllers_test.exs` will address the issue:
+Adding `put_bearer_token` to the "list organizations" test in `membership_controllers_test.exs` will address the issue:
 
 ```elixir
-test "list organisations", %{conn: conn, user: user} do
+test "list organizations", %{conn: conn, user: user} do
   conn =
     conn
     |> put_bearer_token(user)
@@ -254,7 +254,7 @@ defmodule PetalProApi.MembershipControllerTest do
     ...
 
     # Two new tests...
-    test "can't list organisations for other user", %{
+    test "can't list organizations for other user", %{
       conn: conn,
       user: user,
       other_user: other_user
@@ -267,7 +267,7 @@ defmodule PetalProApi.MembershipControllerTest do
       assert json_response(conn, 403)
     end
 
-    test "admin can list organisations for other user", %{
+    test "admin can list organizations for other user", %{
       conn: conn,
       admin_user: admin_user,
       other_user: other_user
@@ -334,8 +334,8 @@ Next, you need to define an Open API Operation for the `:list` function call in 
 
 ```elixir
 operation :list,
-  summary: "List organisations",
-  description: "List organisations for user",
+  summary: "List organizations",
+  description: "List organizations for user",
   parameters: [
     id: [in: :path, name: "id", type: :integer]
   ],
@@ -369,7 +369,7 @@ To round out the Open API definition, we need to add the following Schema to `/l
 defmodule OrganisationNames do
   OpenApiSpex.schema(%{
     title: "OrganisationNames",
-    description: "List of organisation names for a user",
+    description: "List of organization names for a user",
     type: :array,
     items: %Schema{description: "name", type: :string},
     example: ["Mayfield Columbus", "Tracking Bronze"]
