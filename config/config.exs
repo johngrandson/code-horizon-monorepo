@@ -115,7 +115,7 @@ config :petal_pro, PetalProWeb.Gettext, allowed_locales: ~w(en pt-BR)
 
 config :petal_pro, :language_options, [
   %{locale: "pt-BR", flag: "🇧🇷", label: "Português"},
-  %{locale: "en", flag: "🇬🇧", label: "English"}
+  %{locale: "en", flag: "🇺🇸", label: "English"}
 ]
 
 # Social login providers

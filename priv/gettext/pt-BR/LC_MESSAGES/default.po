@@ -919,7 +919,7 @@ msgstr "preferências de notificação"
 
 #: lib/petal_pro_web/live/orgs/org/org_dashboard_live.ex:34
 #, elixir-autogen, elixir-format, fuzzy
-msgid "Organisation dashboard"
+msgid "Organization dashboard"
 msgstr "Painel da organização"
 
 #: lib/petal_pro_web/live/user_settings/edit_password_live.ex:48
@@ -997,7 +997,7 @@ msgstr "Ação"
 #: lib/petal_pro_web/menus.ex:206
 #, elixir-autogen, elixir-format
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administrador"
 
 #: lib/petal_pro_web/live/billing/billing_live.ex:159
 #, elixir-autogen, elixir-format
@@ -2418,3 +2418,50 @@ msgstr "Gerencie suas configurações de conta"
 
 msgid "You don't have any pending organization invitations at the moment. When you invite someone to join an organization, invitations will appear here"
 msgstr "Você não tem nenhum convite de organização pendente no momento. Quando você convidar alguém para se juntar a uma organização, os convites aparecerão aqui"
+
+msgid "View organization"
+msgstr "Ver organização"
+
+msgid "Create organization"
+msgstr "Criar organização"
+
+msgid "organization"
+msgid_plural "organizations"
+msgstr[0] "organização"
+msgstr[1] "organizações"
+
+msgid "Profile setup"
+msgstr "Configuração de perfil"
+
+msgid "View all"
+msgstr "Ver todas"
+
+msgid "Your Organizations"
+msgstr "Suas Organizações"
+
+msgid "No organizations yet"
+msgstr "Nenhuma organização ainda"
+
+msgid "Create your first organization to collaborate with your team and manage resources together."
+msgstr "Crie sua primeira organização para colaborar com sua equipe e gerenciar recursos juntos."
+
+msgid "Join an organization to collaborate with your team and manage resources together."
+msgstr "Participe de uma organização para colaborar com sua equipe e gerenciar recursos juntos."
+
+msgid "Create your first organization"
+msgstr "Crie sua primeira organização"
+
+msgid "Total members"
+msgstr "Total de membros"
+
+msgid "View members"
+msgstr "Ver membros"
+
+msgid "Active Modules"
+msgstr "Módulos Ativos"
+
+msgid "View modules"
+msgstr "Ver módulos"
+
+msgid "View status"
+msgstr "Ver status"

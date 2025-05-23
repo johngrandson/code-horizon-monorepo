@@ -7,6 +7,7 @@ defmodule PetalProWeb.CoreComponents do
 
   import PetalProWeb.ColorSchemeSwitch
   import PetalProWeb.Helpers
+  import PetalProWeb.LanguageSelect
   import PetalProWeb.SidebarLayout
   import PetalProWeb.SocialButton
   import PetalProWeb.StackedLayout
@@ -229,6 +230,10 @@ defmodule PetalProWeb.CoreComponents do
               id={PetalProWeb.NotificationBellComponent.lc_id()}
               current_user={@current_user}
             />
+            <.language_select
+              current_locale={Gettext.get_locale(PetalProWeb.Gettext)}
+              language_options={PetalPro.config(:language_options)}
+            />
           </:top_right>
           {render_slot(@inner_block)}
         </.sidebar_layout>
@@ -252,6 +257,10 @@ defmodule PetalProWeb.CoreComponents do
               id={PetalProWeb.NotificationBellComponent.lc_id()}
               current_user={@current_user}
             />
+            <.language_select
+              current_locale={Gettext.get_locale(PetalProWeb.Gettext)}
+              language_options={PetalPro.config(:language_options)}
+            />
           </:top_right>
           <:top_right_mobile>
             <.color_scheme_switch />
@@ -262,6 +271,10 @@ defmodule PetalProWeb.CoreComponents do
               dropdown_id={PetalProWeb.NotificationBellComponent.dropdown_id("mobile")}
               icon_button_id={PetalProWeb.NotificationBellComponent.icon_button_id("mobile")}
               current_user={@current_user}
+            />
+            <.language_select
+              current_locale={Gettext.get_locale(PetalProWeb.Gettext)}
+              language_options={PetalPro.config(:language_options)}
             />
           </:top_right_mobile>
           {render_slot(@inner_block)}
@@ -588,7 +601,7 @@ defmodule PetalProWeb.CoreComponents do
   def pro_badge(assigns) do
     ~H"""
     <div class={[@class, "absolute -bottom-3 -inset-x-0 text-center"]}>
-      <span class="inline-flex items-center justify-center shadow-lg w-6 h-6 text-sm font-semibold text-green-600 bg-green-50 rounded-full dark:bg-gray-800 dark:text-green-400">
+      <span class="inline-flex items-center justify-center shadow-lg w-6 h-6 text-sm font-semibold text-green-600 bg-green-50 rounded-full dark:bg-gray-900 dark:text-green-400">
         <svg
           class="w-4 h-4"
           aria-hidden="true"

@@ -96,22 +96,27 @@ defmodule PetalProWeb.OrgsLive do
           <div class="flex items-center justify-end m-2">
             <div class="text-sm text-gray-500 dark:text-gray-400">
               <%= if @orgs != [] do %>
-                <span class="font-medium">{length(@orgs)}</span> {gettext("organizations")}
+                <span class="font-medium">
+                  {gettext("%{count} %{plural}",
+                    count: length(@orgs),
+                    plural: ngettext("organization", "organizations", length(@orgs))
+                  )}
+                </span>
               <% end %>
             </div>
           </div>
 
           <%= if Enum.all?([@orgs, @invitations], &Enum.empty?/1) do %>
-            <div class="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700 p-8 mb-8">
+            <div class="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-200 dark:bg-neutral-900 dark:border-neutral-700 p-8 mb-8">
               <div class="text-center">
                 <.icon
                   name="hero-building-office-2"
                   class="w-16 h-16 mx-auto text-gray-400 dark:text-neutral-500"
                 />
 
-                <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+                <.h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
                   {gettext("No organizations yet")}
-                </h3>
+                </.h3>
 
                 <p class="mt-2 text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
                   <%= if @is_org_admin do %>
@@ -144,7 +149,7 @@ defmodule PetalProWeb.OrgsLive do
                 <%= for org <- @orgs do %>
                   <.link
                     navigate={~p"/app/org/#{org.slug}"}
-                    class="block p-4 mb-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all dark:bg-neutral-800 dark:border-neutral-700 dark:hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="block p-4 mb-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all dark:bg-neutral-900 dark:border-neutral-700 dark:hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <div class="relative sm:flex sm:justify-between sm:gap-x-4">
                       <div>
@@ -199,13 +204,6 @@ defmodule PetalProWeb.OrgsLive do
 
                       <div class="mt-2 sm:mt-0">
                         <div class="flex justify-end items-center gap-x-4">
-                          <div class="whitespace-nowrap">
-                            <p class="text-xs sm:text-sm text-gray-500 dark:text-neutral-500">
-                              <.icon name="hero-users" class="w-3.5 h-3.5 inline mr-1" />
-                              {org.max_users} {gettext("users")}
-                            </p>
-                          </div>
-
                           <div class="py-2 px-3 flex items-center justify-center sm:justify-start text-primary-600 dark:text-primary-400">
                             <span class="text-xs font-medium">{gettext("View organization")}</span>
                             <.icon

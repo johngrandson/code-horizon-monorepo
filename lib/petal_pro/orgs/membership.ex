@@ -48,6 +48,35 @@ defmodule PetalPro.Orgs.Membership do
     Repo.exists?(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.role == @admin_role))
   end
 
+  def current_user_role_in_org(%User{} = user, %Org{} = org) do
+    Repo.one(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.org_id == ^org.id, select: ms.role))
+  end
+
+  def list_orgs_with_user_roles(%User{} = user) do
+    from(o in Org,
+      join: m in __MODULE__,
+      on: m.org_id == o.id,
+      where: m.user_id == ^user.id,
+      select: %{
+        id: o.id,
+        name: o.name,
+        slug: o.slug,
+        avatar_url: o.avatar_url,
+        is_enterprise: o.is_enterprise,
+        role: m.role
+      }
+    )
+    |> Repo.all()
+    |> Enum.map(&format_org_role/1)
+  end
+
+  defp format_org_role(org_data) do
+    %{org_data | role: format_role(org_data.role)}
+  end
+
+  defp format_role(:admin), do: gettext("Admin")
+  defp format_role(:member), do: gettext("Member")
+
   def all_by_org(%Org{} = org) do
     from(m in __MODULE__,
       join: u in assoc(m, :user),
@@ -55,6 +84,10 @@ defmodule PetalPro.Orgs.Membership do
       on: o.id == ^org.id,
       preload: [:user]
     )
+  end
+
+  def org_members_count(%Org{} = org) do
+    Repo.count(from(m in __MODULE__, where: m.org_id == ^org.id))
   end
 
   def insert_changeset(org, user, role \\ @default_role) do

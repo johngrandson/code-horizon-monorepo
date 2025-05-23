@@ -15,6 +15,7 @@ import FocusBySelectorHook from "./focus-by-selector-hook";
 import MicrophoneHook from "./microphone-hook";
 import EditorJsHook from "./editorjs-hook";
 import AuroraHook from "./aurora-hook";
+import OrgDashboardChartHook from "./org-dashboard-chart-hook";
 
 // Either add hooks here or create a new file for each like ExampleHook
 
@@ -36,4 +37,5 @@ export default {
   FocusBySelectorHook,
   MicrophoneHook,
   EditorJsHook,
+  OrgDashboardChartHook,
 };

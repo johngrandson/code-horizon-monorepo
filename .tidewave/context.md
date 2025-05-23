@@ -1,8 +1,8 @@
-# Documentação de Contexto: Petal Pro Multi-Tenant Platform
+# Documentação de Contexto: Petal Pro Platform
 
 ## 1. Visão Geral & Arquitetura
 
-O projeto consiste em uma plataforma multi-tenant white-label construída sobre o framework Petal Pro, que utiliza a stack PETAL (Phoenix, Elixir, TailwindCSS, Alpine.js, LiveView). A arquitetura segue os princípios de design da Clean Architecture e Domain-Driven Design, organizando o código em contextos bem definidos com interfaces claras.
+O projeto é uma plataforma white-label construída sobre o framework Petal Pro, que utiliza a stack PETAL (Phoenix, Elixir, TailwindCSS, Alpine.js, LiveView). A arquitetura segue os princípios de design da Clean Architecture e Domain-Driven Design, organizando o código em contextos bem definidos com interfaces claras, com foco em organizações como unidade central de isolamento de dados.
 
 ```
 lib/
@@ -10,13 +10,7 @@ lib/
 │   ├── accounts/             # User authentication and management
 │   ├── orgs/                 # Organization context with memberships
 │   ├── billing/              # Subscription management with Stripe
-│   │
-│   ├── multi_tenant/         # Multi-tenant implementation
-│   │   ├── tenants.ex        # Tenant management API
-│   │   ├── tenant.ex         # Tenant schema
-│   │   └── schema_manager.ex # Schema isolation logic
-│   │
-│   ├── modules/              # Module system
+│   │   ├── modules/          # Module system
 │   │   ├── registry.ex       # Module registration
 │   │   ├── behaviours/       # Module interfaces
 │   │   └── authorizer.ex     # Access control
@@ -41,10 +35,10 @@ O Petal Pro fornece um robusto sistema de generators que **devem ser utilizados 
 
 ```bash
 # Criar um novo contexto e schema
-mix petal.gen.context Tenants Tenant tenants name:string slug:string:unique status:enum:active:inactive:suspended org_id:references:orgs
+mix petal.gen.context Orgs Org orgs name:string slug:string:unique status:enum:active:inactive:suspended
 
 # Criar um novo LiveView
-mix petal.gen.live Tenants Tenant tenants name:string slug:string status:enum org_id:references:orgs
+mix petal.gen.live Orgs Org orgs name:string slug:string status:enum
 ```
 
 Os generators do Petal Pro criam automaticamente:
@@ -63,67 +57,61 @@ Todo desenvolvimento deve seguir estritamente os padrões e convenções do Peta
 defmodule PetalPro.MultiTenant.Tenant do
   use PetalPro.Schema  # Includes QueryBuilder, typed_schema, etc.
 
-  typed_schema "tenants" do
+  typed_schema "orgs" do
     field :name, :string
     field :slug, :string, unique: true
     field :status, Ecto.Enum, values: [:active, :inactive, :suspended]
+    field :settings, :map, default: %{}
     
-    belongs_to :org, PetalPro.Orgs.Org
+    has_many :members, PetalPro.Orgs.Member
+    has_many :users, through: [:members, :user]
     
     timestamps()
   end
   
-  # Always use changeset functions for validations
-  def changeset(tenant, attrs) do
-    tenant
-    |> cast(attrs, [:name, :slug, :status, :org_id])
+  def changeset(org, attrs) do
+    org
+    |> cast(attrs, [:name, :slug, :status, :settings])
     |> validate_required([:name, :slug, :status])
     |> unique_constraint(:slug)
   end
 end
 
 # Context pattern with standardized API
-defmodule PetalPro.MultiTenant.Tenants do
+defmodule PetalPro.Orgs do
   import Ecto.Query
   alias PetalPro.Repo
-  alias PetalPro.MultiTenant.Tenant
+  alias PetalPro.Orgs.Org
   
   # Standard CRUD functions
-  def list_tenants(filters \\ []), do: Tenant |> apply_filters(filters) |> Repo.all()
-  def get_tenant!(id), do: Repo.get!(Tenant, id)
-  def create_tenant(attrs), do: %Tenant{} |> Tenant.changeset(attrs) |> Repo.insert()
-  def update_tenant(%Tenant{} = tenant, attrs), do: tenant |> Tenant.changeset(attrs) |> Repo.update()
-  def delete_tenant(%Tenant{} = tenant), do: Repo.delete(tenant)
-  def change_tenant(%Tenant{} = tenant, attrs \\ %{}), do: Tenant.changeset(tenant, attrs)
+  def list_orgs(filters \\ []), do: Org |> apply_filters(filters) |> Repo.all()
+  def get_org!(id), do: Repo.get!(Org, id)
+  def create_org(attrs), do: %Org{} |> Org.changeset(attrs) |> Repo.insert()
+  def update_org(%Org{} = org, attrs), do: org |> Org.changeset(attrs) |> Repo.update()
+  def delete_org(%Org{} = org), do: Repo.delete(org)
+  def change_org(%Org{} = org, attrs \\ %{}), do: Org.changeset(org, attrs)
 end
 ```
 
-## 3. Arquitetura Multi-Tenant
+## 3. Gerenciamento de Organizações
 
-A implementação multi-tenant do projeto usa o padrão de isolamento por schema PostgreSQL via Triplex:
+O projeto utiliza organizações (orgs) para gerenciar o escopo dos dados e permissões:
 
-### 3.1 Isolamento de Dados
+### 3.1 Estrutura de Organizações
 
-Três níveis de isolamento são suportados:
-1. **Shared**: Múltiplos tenants compartilham tabelas (filtrados por tenant_id)
-2. **Isolated**: Cada tenant possui seu próprio schema PostgreSQL
-3. **Enterprise**: Configuração avançada para clientes que exigem banco dedicado
+Cada organização possui seus próprios dados e configurações:
 
 ```elixir
 # Schema definition
-typed_schema "tenants" do
+typed_schema "orgs" do
   field :name, :string
   field :slug, :string, unique: true
-  field :isolation_type, Ecto.Enum, values: [:shared, :isolated, :enterprise]
-  field :schema_prefix, :string  # For isolated tenants
-  field :db_config, :map         # For enterprise tenants
+  field :status, Ecto.Enum, values: [:active, :inactive, :suspended]
+  field :settings, :map, default: %{}
   
   # Relationships
-  belongs_to :org, PetalPro.Orgs.Org
-  belongs_to :parent_tenant, PetalPro.MultiTenant.Tenant
-  
-  has_many :domains, PetalPro.MultiTenant.Domain
-  has_many :child_tenants, PetalPro.MultiTenant.Tenant, foreign_key: :parent_tenant_id
+  has_many :members, PetalPro.Orgs.Member
+  has_many :users, through: [:members, :user]
   has_one :theme, PetalPro.WhiteLabel.Theme
   has_many :module_subscriptions, PetalPro.Modules.ModuleSubscription
   
@@ -131,37 +119,40 @@ typed_schema "tenants" do
 end
 ```
 
-### 3.2 Detecção de Tenant
+### 3.2 Autenticação e Autorização
 
-A detecção de tenant é baseada no domínio da requisição:
+O acesso aos dados é controlado através da organização atual do usuário:
 
 ```elixir
-defmodule PetalProWeb.Plugs.TenantDetector do
+defmodule PetalProWeb.Plugs.RequireOrgAccess do
   import Plug.Conn
+  import Phoenix.Controller, only: [put_flash: 3, redirect: 2]
+  
+  def init(opts), do: opts
   
   def call(conn, _opts) do
-    host = conn.host
-    tenant = PetalPro.MultiTenant.Tenants.get_tenant_by_domain(host)
+    current_user = conn.assigns.current_user
+    org_id = get_org_id_from_conn(conn)
     
-    conn
-    |> assign(:current_tenant, tenant || get_default_tenant())
-    |> put_tenant_in_process(tenant)
+    if has_access?(current_user, org_id) do
+      assign(conn, :current_org_id, org_id)
+    else
+      conn
+      |> put_flash(:error, "You don't have access to this organization")
+      |> redirect(to: "/orgs")
+      |> halt()
+    end
   end
   
-  defp put_tenant_in_process(conn, tenant) do
-    if tenant do
-      Process.put(:current_tenant, tenant)
-      Process.put(:current_tenant_id, tenant.id)
-    end
-    
-    conn
+  defp has_access?(user, org_id) do
+    PetalPro.Orgs.user_in_org?(user, org_id)
   end
 end
 ```
 
 ## 4. Sistema de Módulos
 
-A arquitetura modular permite que funcionalidades sejam ativadas por tenant, implementando o padrão de comportamento (behaviour):
+A arquitetura modular permite que funcionalidades sejam ativadas por organização, implementando o padrão de comportamento (behaviour):
 
 ```elixir
 defmodule PetalPro.Modules.Behaviours.Module do
@@ -171,8 +162,8 @@ defmodule PetalPro.Modules.Behaviours.Module do
   @callback version() :: String.t()
   @callback dependencies() :: [String.t()]
   
-  @callback setup_tenant(tenant_id :: integer, opts :: keyword) :: :ok | {:error, term()}
-  @callback cleanup_tenant(tenant_id :: integer) :: :ok | {:error, term()}
+  @callback setup_org(org_id :: integer, opts :: keyword) :: :ok | {:error, term()}
+  @callback cleanup_org(org_id :: integer) :: :ok | {:error, term()}
   
   @callback routes() :: map()
   
@@ -191,7 +182,7 @@ end
 
 ### 4.1 Implementação de Módulo
 
-Cada módulo funcional deve seguir a implementação do comportamento:
+Cada módulo funcional deve seguir a implementação do comportamento, garantindo que os dados sejam sempre escopados à organização atual:
 
 ```elixir
 # Example module implementation
@@ -217,14 +208,14 @@ defmodule PetalPro.AppModules.CRM do
   def dependencies, do: []
   
   @impl true
-  def setup_tenant(tenant_id, _opts \\ []) do
-    # Initialize tenant-specific data
+  def setup_org(org_id, _opts \\ []) do
+    # Initialize organization-specific data
     :ok
   end
   
   @impl true
-  def cleanup_tenant(tenant_id) do
-    # Clean up tenant data
+  def cleanup_org(org_id) do
+    # Clean up organization data
     :ok
   end
   
@@ -250,7 +241,7 @@ end
 
 ## 5. Sistema White-Label
 
-O sistema de white-label permite personalização completa por tenant:
+O sistema de white-label permite personalização completa por organização:
 
 ```elixir
 typed_schema "themes" do
@@ -258,23 +249,18 @@ typed_schema "themes" do
   field :secondary_color, :string, default: "#10b981"
   field :accent_color, :string, default: "#f43f5e"
   field :background_color, :string, default: "#ffffff"
-  field :text_color, :string, default: "#111827"
-  
-  field :font_family, :string, default: "system-ui"
-  field :heading_font, :string
-  
+  field :text_color, :string, default: "#1f2937"
+  field :font_family, :string, default: "sans-serif"
   field :logo_url, :string
   field :favicon_url, :string
   field :login_background_url, :string
-  
   field :custom_css, :string
   field :custom_js, :string
-  
   field :company_name, :string
   field :support_email, :string
   field :copyright_text, :string
   
-  belongs_to :tenant, PetalPro.MultiTenant.Tenant
+  belongs_to :org, PetalPro.Orgs.Org
   
   timestamps()
 end
@@ -317,14 +303,14 @@ mix petal.gen.context AppModules.CRM.Contacts Contact contacts \
   name:string \
   email:string:unique \
   phone:string \
-  tenant_id:references:tenants
+  org_id:references:orgs
 
 # Criando a interface LiveView
 mix petal.gen.live AppModules.CRM.Contacts Contact contacts \
   name:string \
   email:string \
   phone:string \
-  tenant_id:references:tenants
+  org_id:references:orgs
 ```
 
 ### 6.2 Padrão de Diretórios e Arquivos
@@ -355,14 +341,14 @@ defmodule PetalPro.AppModules.CRM.Workers.ContactSyncWorker do
   use Oban.Worker, queue: :default, unique: [period: 5]
   
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"tenant_id" => tenant_id}}) do
+  def perform(%Oban.Job{args: %{"org_id" => org_id}}) do
     # Synchronization logic
     :ok
   end
 end
 
 # Usage
-%{tenant_id: tenant.id}
+%{org_id: org.id}
 |> PetalPro.AppModules.CRM.Workers.ContactSyncWorker.new()
 |> Oban.insert()
 ```
@@ -420,91 +406,135 @@ O Petal Pro inclui vários recursos prontos que devem ser aproveitados:
 
 ## 9. Deployment e Configuração
 
-Seguir as diretrizes de deployment do Petal Pro:
-
-```elixir
-# config/runtime.exs
-config :petal_pro, :multi_tenant,
-  enabled: System.get_env("MULTI_TENANT_ENABLED", "true") == "true",
-  schema_prefix: System.get_env("TENANT_SCHEMA_PREFIX", "tenant_"),
-  create_tenant_schemas: System.get_env("CREATE_TENANT_SCHEMAS", "true") == "true"
-
-config :triplex,
-  repo: PetalPro.Repo,
-  reserved_tenants: ["public", "www", "admin", "master"],
-  tenant_prefix: System.get_env("TENANT_SCHEMA_PREFIX", "tenant_")
-```
-
 ## 10. Conclusão
 
-Este projeto estende a base do Petal Pro com funcionalidades multi-tenant avançadas. É **crucial** seguir os padrões, convenções e utilizar os generators do framework para manter a consistência e qualidade do código. A arquitetura modular permite a adição de novos módulos de forma isolada, garantindo flexibilidade e escalabilidade.
+Este projeto utiliza organizações para gerenciar o escopo dos dados e permissões. É **crucial** seguir os padrões, convenções e utilizar os generators do framework para manter a consistência e qualidade do código. A arquitetura modular permite a adição de novos módulos de forma isolada, garantindo flexibilidade e escalabilidade.
 
 Todo desenvolvimento deve seguir os princípios de Clean Architecture e as convenções do Petal Pro para garantir um sistema coeso, manutenível e escalável.
 
-## 11. Estratégia de Migração de Dados Multi-Tenant
+## 11. Sistema de Eventos
 
-A migração de dados em um ambiente multi-tenant com esquemas PostgreSQL isolados requer uma abordagem específica. O Petal Pro Multi-Tenant estende o sistema de migrações do Ecto utilizando o Triplex:
+O sistema de eventos do Petal Pro é responsável por gerenciar notificações em tempo real e comunicação entre diferentes partes da aplicação. A arquitetura é baseada no padrão Pub/Sub (Publicador/Assinante) do Phoenix.PubSub.
+
+### 11.1 Estrutura do Módulo de Eventos
+
+```
+lib/petal_pro/events/
+├── modules/
+│   ├── notifications/      # Eventos de notificações do usuário
+│   │   └── broadcaster.ex  # Lógica de broadcast de notificações
+│   └── orgs/               # Eventos relacionados a organizações
+│       ├── broadcaster.ex  # Lógica de broadcast de eventos de org
+│       └── subscriber.ex   # Lógica de inscrição em eventos de org
+```
+
+### 11.2 Módulo de Notificações
+
+O módulo `Notifications.Broadcaster` é responsável por gerenciar notificações em tempo real para os usuários:
 
 ```elixir
-defmodule PetalPro.MultiTenant.Migrations do
-  @moduledoc """
-  Handles tenant-specific migrations across isolated PostgreSQL schemas.
-  """
-  
-  alias PetalPro.MultiTenant.Tenants
-  alias Triplex.Migrations, as: TrplxMigrations
-  
-  @doc """
-  Runs module-specific migrations for a single tenant.
-  """
-  def run_tenant_migrations(tenant, module_code) do
-    # Get migration paths from module registry
-    migration_paths = get_module_migration_paths(module_code)
-    
-    # Run migrations on tenant schema
-    Triplex.migrate(tenant.schema_prefix, migration_paths)
-  end
-  
-  @doc """
-  Runs migrations across all tenants.
-  """
-  def run_all_tenant_migrations do
-    Tenants.list_tenants(isolation_type: :isolated)
-    |> Enum.each(fn tenant ->
-      tenant.module_subscriptions
-      |> Enum.each(fn subscription ->
-        run_tenant_migrations(tenant, subscription.module_code)
-      end)
-    end)
-  end
+# Tópico de notificações para um usuário específico
+PetalPro.Events.Modules.Notifications.Broadcaster.user_notifications_topic(user_id)
+
+# Broadcast de atualização de notificações
+PetalPro.Events.Modules.Notifications.Broadcaster.broadcast_user_notification(notification)
+```
+
+### 11.3 Eventos de Organização
+
+O módulo `Orgs.Broadcaster` lida com eventos relacionados a organizações, como convites e alterações de membros:
+
+#### Tipos de Eventos
+
+1. **Convites**
+   - `:invitation_sent` - Novo convite enviado
+   - `:invitation_accepted` - Convite aceito
+   - `:invitation_rejected` - Convite rejeitado
+   - `:invitation_deleted` - Convite removido
+
+2. **Membros**
+   - `:invited_to_org` - Usuário convidado para uma organização
+   - `:left_org` - Usuário saiu da organização
+
+#### Exemplo de Uso
+
+```elixir
+# Enviar notificação de convite
+PetalPro.Events.Modules.Orgs.Broadcaster.broadcast_invitation_sent(invitation, org)
+
+# Notificar todos os membros de uma organização
+PetalPro.Events.Modules.Orgs.Broadcaster.broadcast_to_org_members(org, :member_updated, %{user_id: user_id})
+```
+
+### 11.4 Sistema de Inscrição
+
+O módulo `Orgs.Subscriber` gerencia as inscrições em eventos baseados no usuário e nas organizações às quais ele pertence:
+
+```elixir
+# Em um LiveView, registrar o assinante
+@impl true
+def mount(_params, _session, socket) do
+  socket = PetalPro.Events.Modules.Orgs.Subscriber.register_subscriber(socket)
+  {:ok, socket}
+end
+
+# Manipular eventos recebidos
+@impl true
+def handle_info({:invitation_sent, payload}, socket) do
+  # Lógica para lidar com o evento
+  {:noreply, socket}
 end
 ```
 
-### Mix Tasks para Migrações
+### 11.5 Tópicos de Eventos
 
-Utilize as mix tasks customizadas para gerenciar migrações em ambiente multi-tenant:
+- `user:{user_id}:invitations` - Eventos de convite para um usuário específico
+- `org:{org_id}:admin_notifications` - Notificações para administradores de uma organização
+- `user:{user_id}:org:{org_id}` - Eventos específicos de organização para um usuário
 
-```bash
-# Gerar migração para um módulo específico
-mix tenant.gen.migration create_contacts_table --module=crm
+## 12. Gerenciamento de Dados por Organização
 
-# Executar migrações para todos os tenants
-mix tenant.migrate
-
-# Executar migrações para um tenant específico
-mix tenant.migrate --tenant=tenant-slug
-```
-
-## 12. Estratégia de Estado e Comunicação em Tempo Real
-
-### 12.1 PubSub para Comunicação Cross-Tenant
-
-A arquitetura utiliza Phoenix PubSub para comunicação entre módulos e tenants:
+O gerenciamento de dados é feito através de escopos de organização, onde cada organização possui seus próprios dados isolados. A migração de dados segue o padrão do Ecto, com as migrações sendo aplicadas ao banco de dados principal.
 
 ```elixir
-defmodule PetalPro.Modules.PubSub do
+defmodule PetalPro.ReleaseTasks.Migrate do
   @moduledoc """
-  Centralized PubSub interface for cross-module and cross-tenant communication.
+  Task para executar migrações do banco de dados.
+  Uso: `mix petal_pro.migrate`
+  """
+  use Task
+  
+  @migration_paths ["priv/repo/migrations"]
+  
+  def run(_args) do
+    # Carrega a aplicação e suas dependências
+    Application.ensure_all_started(:petal_pro)
+    
+    # Executa as migrações
+    Ecto.Migrator.run(PetalPro.Repo, @migration_paths, :up, all: true)
+  end
+end
+
+### Mix Tasks para Migrações
+
+Utilize as mix tasks do Ecto para gerenciar migrações:
+
+```bash
+# Criar uma nova migração
+mix ecto.gen.migration nome_da_migracao
+
+# Executar migrações
+mix ecto.migrate
+
+# Reverter a última migração
+mix ecto.rollback
+
+A arquitetura utiliza Phoenix PubSub para comunicação em tempo real entre módulos e organizações:
+
+```elixir
+defmodule PetalPro.Events.PubSub do
+  @moduledoc """
+  Interface centralizada para comunicação entre módulos e organizações.
   """
   
   alias Phoenix.PubSub
@@ -512,9 +542,9 @@ defmodule PetalPro.Modules.PubSub do
   @pubsub PetalPro.PubSub
   
   @doc """
-  Broadcasts a tenant-specific event.
+  Transmite um evento específico para uma organização.
   """
-  def broadcast_tenant_event(tenant_id, module_code, event_name, payload) do
+  def broadcast_org_event(org_id, module_code, event_name, payload) do
     topic = tenant_topic(tenant_id, module_code)
     PubSub.broadcast(@pubsub, topic, {event_name, payload})
   end
@@ -571,24 +601,24 @@ defmodule PetalPro.Authorization do
   Multi-layered authorization system with tenant, module, and resource policies.
   """
   
-  alias PetalPro.MultiTenant.Tenants
+  alias PetalPro.Orgs.Org
   alias PetalPro.Modules
   
   @doc """
   Authorization flow:
-  1. Tenant access check
+  1. Organization access check
   2. Module subscription check
   3. Module-specific permission check
   4. Resource-level permission check
   """
   def authorize(user, action, resource, opts \\ []) do
-    tenant_id = opts[:tenant_id] || infer_tenant_id(resource)
+    org_id = opts[:org_id] || infer_org_id(resource)
     module_code = opts[:module_code] || infer_module_code(resource)
     
-    with :ok <- check_tenant_access(user, tenant_id),
-         :ok <- check_module_access(tenant_id, module_code),
-         :ok <- check_module_permission(user, tenant_id, module_code, action),
-         :ok <- check_resource_permission(user, action, resource, tenant_id) do
+    with :ok <- check_org_access(user, org_id),
+         :ok <- check_module_access(org_id, module_code),
+         :ok <- check_module_permission(user, org_id, module_code, action),
+         :ok <- check_resource_permission(user, action, resource, org_id) do
       :ok
     else
       {:error, reason} -> {:error, reason}
@@ -596,25 +626,25 @@ defmodule PetalPro.Authorization do
   end
   
   # Individual check implementations
-  defp check_tenant_access(user, tenant_id) do
-    # Check if user has access to tenant
+  defp check_org_access(user, org_id) do
+    # Check if user has access to organization
   end
   
-  defp check_module_access(tenant_id, module_code) do
-    # Check if tenant has access to module
+  defp check_module_access(org_id, module_code) do
+    # Check if organization has access to module
   end
   
-  defp check_module_permission(user, tenant_id, module_code, action) do
+  defp check_module_permission(user, org_id, module_code, action) do
     # Check user's module-specific permissions
   end
   
-  defp check_resource_permission(user, action, resource, tenant_id) do
+  defp check_resource_permission(user, action, resource, org_id) do
     # Check resource-level permissions
   end
   
-  # Helper functions to infer tenant_id and module_code from resource
-  defp infer_tenant_id(resource) do
-    # Logic to determine tenant_id from resource
+  # Helper functions to infer org_id and module_code from resource
+  defp infer_org_id(resource) do
+    # Logic to determine org_id from resource
   end
   
   defp infer_module_code(resource) do

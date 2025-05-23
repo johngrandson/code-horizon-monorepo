@@ -919,7 +919,7 @@ msgstr ""
 
 #: lib/petal_pro_web/live/orgs/org/org_dashboard_live.ex:34
 #, elixir-autogen, elixir-format
-msgid "Organisation dashboard"
+msgid "Organization dashboard"
 msgstr ""
 
 #: lib/petal_pro_web/live/user_settings/edit_password_live.ex:48
