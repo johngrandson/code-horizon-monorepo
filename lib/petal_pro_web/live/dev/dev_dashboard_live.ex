@@ -13,7 +13,7 @@ defmodule PetalProWeb.DevDashboardLive do
   def render(assigns) do
     ~H"""
     <DevLayoutComponent.dev_layout current_page={:dev} current_user={@current_user}>
-      <.container class="py-16">
+      <.container class="py-4">
         <div class="ml-[60px]">
           <.h2>{PetalPro.config(:app_name)}</.h2>
           <.p>A list of your apps routes. Click one to copy its helper.</.p>

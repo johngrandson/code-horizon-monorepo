@@ -1,11 +1,12 @@
-defmodule PetalPro.NotificationsTest do
+defmodule PetalPro.Events.Modules.NotificationsTest do
   use PetalPro.DataCase
 
   import PetalPro.AccountsFixtures
-  import PetalPro.NotificationsFixtures
+  import PetalPro.Events.Modules.NotificationsFixtures
 
+  alias PetalPro.Events.Modules.Notifications.Broadcaster
+  alias PetalPro.Events.Modules.Notifications.UserNotification
   alias PetalPro.Notifications
-  alias PetalPro.Notifications.UserNotification
   alias PetalPro.PubSub
 
   defp user_and_other_user(ctx) do
@@ -17,7 +18,7 @@ defmodule PetalPro.NotificationsTest do
   describe "read_unread_user_notifications_for_path/2" do
     setup do
       user = user_fixture(%{confirmed_at: DateTime.utc_now()})
-      notifications_topic = Notifications.user_notifications_topic(user.id)
+      notifications_topic = Broadcaster.user_notifications_topic(user.id)
       Phoenix.PubSub.subscribe(PubSub, notifications_topic)
 
       %{user: user, notifications_topic: notifications_topic}

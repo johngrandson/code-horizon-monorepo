@@ -6,19 +6,20 @@ defmodule PetalProWeb.UserOnMountHooks do
   use PetalProWeb, :verified_routes
   use Gettext, backend: PetalProWeb.Gettext
 
+  import PetalPro.Events.Modules.Notifications.Broadcaster
+  import PetalPro.Notifications
   import Phoenix.Component
   import Phoenix.LiveView
 
   alias PetalPro.Accounts
   alias PetalPro.Accounts.Permissions
   alias PetalPro.Accounts.User
-  alias PetalPro.Notifications
 
   # If the page we're loading is the destination for any unread
   # notifications, this hooks into handle_params/3 to mark them as read.
   defp read_relevant_user_notifications(_params, url, %{assigns: %{current_user: %User{} = current_user}} = socket) do
     req_path = url |> URI.parse() |> Map.get(:path)
-    Notifications.read_unread_user_notifications_for_path(current_user, req_path)
+    read_unread_user_notifications_for_path(current_user, req_path)
 
     # here you could put the :req_path in assigns, if you like
     {:cont, socket}
@@ -101,7 +102,7 @@ defmodule PetalProWeb.UserOnMountHooks do
   end
 
   defp maybe_subscribe_to_user_topics(%{assigns: %{current_user: %User{} = user}} = socket) do
-    PetalProWeb.Endpoint.subscribe(Notifications.user_notifications_topic(user.id))
+    PetalProWeb.Endpoint.subscribe(user_notifications_topic(user.id))
     socket
   end
 

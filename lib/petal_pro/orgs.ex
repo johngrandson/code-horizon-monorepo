@@ -3,12 +3,13 @@ defmodule PetalPro.Orgs do
   use PetalProWeb, :verified_routes
 
   import Ecto.Query, only: [from: 2]
+  import PetalPro.Events.Modules.Notifications.Broadcaster
+  import PetalPro.Events.Modules.Orgs.Broadcaster
 
-  alias PetalPro.Events.Modules.Orgs.Broadcaster
+  alias PetalPro.Events.Modules.Notifications.UserMailer
+  alias PetalPro.Events.Modules.Notifications.UserNotification
+  alias PetalPro.Events.Modules.Notifications.UserNotificationAttrs
   alias PetalPro.Notifications
-  alias PetalPro.Notifications.UserMailer
-  alias PetalPro.Notifications.UserNotification
-  alias PetalPro.Notifications.UserNotificationAttrs
   alias PetalPro.Orgs.Invitation
   alias PetalPro.Orgs.Membership
   alias PetalPro.Orgs.Org
@@ -237,11 +238,14 @@ defmodule PetalPro.Orgs do
     |> case do
       {:ok, %{invitation: invitation} = txn_result} ->
         if invitation.user_id do
-          Notifications.broadcast_user_notification(txn_result.user_notification)
+          # broadcast notification to recipient
+          broadcast_user_notification(txn_result.user_notification)
 
-          Broadcaster.broadcast_invitation_sent(invitation, org)
+          # broadcast invitation sent to recipient
+          broadcast_invitation_sent(invitation, org)
 
-          Broadcaster.broadcast_to_org_admins(org, :invitation_sent, %{invitation_id: invitation.id})
+          # broadcast invitation sent to org admins
+          broadcast_to_org_admins(org, :invitation_sent, %{invitation_id: invitation.id})
         end
 
         to = if(invitation.user_id, do: url(~p"/app/users/org-invitations"), else: url(~p"/auth/register"))
@@ -270,9 +274,11 @@ defmodule PetalPro.Orgs do
         {deleted_count, _} = Map.get(txn_result, :delete_sent_notifications, {0, nil})
 
         if deleted_count > 0 do
-          Notifications.broadcast_user_notification(invitation.user_id)
+          # broadcast notification to recipient
+          broadcast_user_notification(invitation.user_id)
 
-          Broadcaster.broadcast_invitation_deleted(invitation)
+          # broadcast invitation deleted to org admins
+          broadcast_invitation_deleted(invitation)
         end
 
         {:ok, txn_result}
@@ -301,7 +307,7 @@ defmodule PetalPro.Orgs do
     |> Repo.transaction()
     |> case do
       {:ok, %{membership: membership}} ->
-        Broadcaster.broadcast_invitation_accepted(invitation, org)
+        broadcast_invitation_accepted(invitation, org)
         %{membership | org: org}
 
       {:error, error} ->
@@ -317,9 +323,11 @@ defmodule PetalPro.Orgs do
 
     case Repo.delete(invitation) do
       {:ok, _} ->
-        Notifications.broadcast_user_notification(invitation.user_id)
+        # broadcast invitation rejected to user
+        broadcast_user_notification(invitation.user_id)
 
-        Broadcaster.broadcast_invitation_rejected(invitation, invitation.org)
+        # broadcast invitation rejected to org admins
+        broadcast_invitation_rejected(invitation, invitation.org)
         {:ok, invitation}
 
       error ->

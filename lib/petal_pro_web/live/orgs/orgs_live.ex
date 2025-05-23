@@ -5,6 +5,7 @@ defmodule PetalProWeb.OrgsLive do
   use PetalProWeb, :live_view
 
   alias PetalPro.Orgs
+  alias PetalPro.Orgs.Membership
   alias PetalPro.Orgs.Org
 
   require Logger
@@ -15,6 +16,7 @@ defmodule PetalProWeb.OrgsLive do
       socket
       |> assign(:invitations, Orgs.list_invitations_by_user(socket.assigns.current_user))
       |> assign(:orgs, Orgs.list_orgs(socket.assigns.current_user))
+      |> assign(:is_org_admin, Membership.is_admin_from_current_org(socket.assigns.current_user))
 
     {:ok, socket}
   end
@@ -45,7 +47,7 @@ defmodule PetalProWeb.OrgsLive do
   def render(assigns) do
     ~H"""
     <.layout current_page={:orgs} current_user={@current_user} type="sidebar">
-      <.container class="py-16">
+      <.container class="py-4">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <.page_header
             title={gettext("Organizations")}
@@ -53,6 +55,7 @@ defmodule PetalProWeb.OrgsLive do
           />
           <%= if @current_user.confirmed_at do %>
             <.button
+              :if={@is_org_admin}
               link_type="live_redirect"
               color="primary"
               to={~p"/app/orgs/new"}
@@ -111,12 +114,19 @@ defmodule PetalProWeb.OrgsLive do
                 </h3>
 
                 <p class="mt-2 text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-                  {gettext(
-                    "Create your first organization to collaborate with your team and manage resources together."
-                  )}
+                  <%= if @is_org_admin do %>
+                    {gettext(
+                      "Create your first organization to collaborate with your team and manage resources together."
+                    )}
+                  <% else %>
+                    {gettext(
+                      "Join an organization to collaborate with your team and manage resources together."
+                    )}
+                  <% end %>
                 </p>
 
                 <.button
+                  :if={@is_org_admin}
                   link_type="live_redirect"
                   color="primary"
                   size="lg"

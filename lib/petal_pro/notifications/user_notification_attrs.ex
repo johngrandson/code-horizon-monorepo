@@ -1,4 +1,4 @@
-defmodule PetalPro.Notifications.UserNotificationAttrs do
+defmodule PetalPro.Events.Modules.Notifications.UserNotificationAttrs do
   @moduledoc """
   A module to house user notification attribute definitions for use in the Notifications context.
   """

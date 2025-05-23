@@ -8,8 +8,8 @@ defmodule PetalPro.Accounts do
   alias PetalPro.Accounts.User
   alias PetalPro.Accounts.UserToken
   alias PetalPro.Accounts.UserTOTP
+  alias PetalPro.Events.Modules.Notifications.UserMailer
   alias PetalPro.Logs
-  alias PetalPro.Notifications.UserMailer
   alias PetalPro.Orgs.Org
   alias PetalPro.Repo
 

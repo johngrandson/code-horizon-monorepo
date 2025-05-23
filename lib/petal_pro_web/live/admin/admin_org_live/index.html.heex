@@ -2,7 +2,15 @@
   <.page_header
     title={gettext("Organizations")}
     description={gettext("Manage your organizations")}
-  />
+  >
+    <:action
+      label={gettext("New Organization")}
+      to={~p"/admin/orgs/new"}
+      color="white"
+      link_type="live_redirect"
+      icon="hero-plus"
+    />
+  </.page_header>
 
   <.data_table
     :if={@index_params}

@@ -7,11 +7,11 @@ alias PetalPro.Billing.Customers.Customer
 alias PetalPro.Billing.Plans
 alias PetalPro.Billing.Subscriptions
 alias PetalPro.Billing.Subscriptions.Subscription
+alias PetalPro.Events.Modules.Notifications.UserMailer
+alias PetalPro.Events.Modules.Notifications.UserNotifier
 alias PetalPro.Logs
 alias PetalPro.Logs.Log
 alias PetalPro.MailBluster
-alias PetalPro.Notifications.UserMailer
-alias PetalPro.Notifications.UserNotifier
 alias PetalPro.Orgs
 alias PetalPro.Orgs.Invitation
 alias PetalPro.Orgs.Membership

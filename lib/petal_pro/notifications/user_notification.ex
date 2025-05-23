@@ -1,4 +1,4 @@
-defmodule PetalPro.Notifications.UserNotification do
+defmodule PetalPro.Events.Modules.Notifications.UserNotification do
   @moduledoc """
   The UserNotification schema represents a notification sent to a user.
 

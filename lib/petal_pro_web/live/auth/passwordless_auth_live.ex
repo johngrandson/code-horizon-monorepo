@@ -17,7 +17,7 @@ defmodule PetalProWeb.PasswordlessAuthLive do
   alias PetalPro.Accounts
   alias PetalPro.Accounts.User
   alias PetalPro.Accounts.UserPin
-  alias PetalPro.Notifications.UserMailer
+  alias PetalPro.Events.Modules.Notifications.UserMailer
 
   require Logger
 

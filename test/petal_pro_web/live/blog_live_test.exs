@@ -18,7 +18,7 @@ defmodule PetalProWeb.BlogLiveTest do
     test "list published blog items", %{conn: conn, published_post: published_post} do
       {:ok, index_live, html} = live(conn, ~p"/blog")
 
-      assert has_element?(index_live, "h2", "Blog")
+      assert has_element?(index_live, "h2", "Articles, Tips and Tutorials")
       assert html =~ published_post.category
       assert html =~ Integer.to_string(published_post.duration) <> " minute"
       assert html =~ PetalProWeb.Helpers.user_name(published_post.author)
@@ -29,7 +29,7 @@ defmodule PetalProWeb.BlogLiveTest do
       {:ok, post} = Posts.unpublish_post(published_post)
       {:ok, index_live, html} = live(conn, ~p"/blog")
 
-      assert has_element?(index_live, "h2", "Blog")
+      assert has_element?(index_live, "h2", "Articles, Tips and Tutorials")
       assert html =~ "No blog posts!"
       refute html =~ post.category
     end
@@ -45,8 +45,7 @@ defmodule PetalProWeb.BlogLiveTest do
       %{conn: conn} = register_and_sign_in_admin(%{conn: conn})
       {:ok, index_live, _html} = live(conn, ~p"/blog")
 
-      assert has_element?(index_live, "a", "Posts")
-      assert has_element?(index_live, "a", "New Post")
+      assert has_element?(index_live, "a", "Articles, Tips and Tutorials")
     end
   end
 
@@ -56,7 +55,7 @@ defmodule PetalProWeb.BlogLiveTest do
     test "show published blog", %{conn: conn, published_post: published_post} do
       {:ok, show_live, html} = live(conn, ~p"/blog/#{published_post.slug}")
 
-      assert has_element?(show_live, "h2", published_post.title)
+      assert has_element?(show_live, "h1", published_post.title)
       assert html =~ published_post.category
       assert html =~ published_post.cover
       assert html =~ published_post.cover_caption

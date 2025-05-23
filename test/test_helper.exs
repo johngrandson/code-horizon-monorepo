@@ -1,4 +1,4 @@
-Mimic.copy(PetalPro.Notifications.UserMailer)
+Mimic.copy(PetalPro.Events.Modules.Notifications.UserMailer)
 Mimic.copy(PetalPro.Billing.Providers.Stripe.Provider)
 Mimic.copy(PetalPro.Billing.Providers.Stripe.Services.SyncSubscription)
 

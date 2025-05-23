@@ -19,7 +19,7 @@ defmodule PetalProWeb.AdminLayoutComponent do
       sidebar_title="Admin"
       main_menu_items={menu_items(@current_user)}
     >
-      <.container max_width="xl" class="my-10">
+      <.container max_width="xl" class="my-4">
         <AlpineComponents.js_setup />
 
         {render_slot(@inner_block)}

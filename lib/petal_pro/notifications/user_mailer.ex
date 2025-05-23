@@ -1,4 +1,4 @@
-defmodule PetalPro.Notifications.UserMailer do
+defmodule PetalPro.Events.Modules.Notifications.UserMailer do
   @moduledoc """
   When sending an email we use the functions in PetalPro.Email to generate the Email struct ready for Swoosh to send off.
   Here we generate an Email struct based on a user and then deliver it.

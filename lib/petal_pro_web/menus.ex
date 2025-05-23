@@ -21,7 +21,8 @@ defmodule PetalProWeb.Menus do
   def main_menu_items(nil), do: []
 
   # Signed in main menu
-  def main_menu_items(current_user), do: build_menu([:dashboard, :orgs, :subscribe, :user_ai_chat], current_user)
+  def main_menu_items(current_user),
+    do: build_menu([:dashboard, :orgs, :subscribe, :user_ai_chat, :settings], current_user)
 
   # Signed out user menu
   def user_menu_items(nil), do: build_menu([:sign_in, :register], nil)

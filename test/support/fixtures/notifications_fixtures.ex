@@ -1,11 +1,11 @@
-defmodule PetalPro.NotificationsFixtures do
+defmodule PetalPro.Events.Modules.NotificationsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `PetalPro.Notifications` context.
+  entities via the `PetalPro.Events.Modules.Notifications` context.
   """
   alias PetalPro.Accounts
+  alias PetalPro.Events.Modules.Notifications.UserNotification
   alias PetalPro.Notifications
-  alias PetalPro.Notifications.UserNotification
 
   @valid_read_path "/some/path"
   @valid_notification_message "some notification message"

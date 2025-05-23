@@ -26,7 +26,7 @@ defmodule PetalProWeb.OrgDashboardLive do
       current_membership={@current_membership}
       socket={@socket}
     >
-      <.container max_width="xl" class="my-10">
+      <.container max_width="xl" class="my-4">
         <.h2>{@current_org.name}</.h2>
 
         <div class="px-4 py-8 sm:px-0">

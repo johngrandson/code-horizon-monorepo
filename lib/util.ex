@@ -208,7 +208,7 @@ defmodule Util do
            |> Timex.shift(minutes: 0)
            |> Timex.format("{relative}", :relative) do
         {:ok, time_string} -> time_string
-        _ -> "unknown time"
+        _ -> "1 year ago"
       end
 
     formatted_time

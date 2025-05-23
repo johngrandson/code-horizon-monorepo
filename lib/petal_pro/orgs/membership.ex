@@ -44,6 +44,10 @@ defmodule PetalPro.Orgs.Membership do
     )
   end
 
+  def is_admin_from_current_org(%User{} = user) do
+    Repo.exists?(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.role == @admin_role))
+  end
+
   def all_by_org(%Org{} = org) do
     from(m in __MODULE__,
       join: u in assoc(m, :user),

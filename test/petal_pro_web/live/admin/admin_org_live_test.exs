@@ -30,7 +30,7 @@ defmodule PetalProWeb.Admin.OrgLiveTest do
     test "saves new org", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/admin/orgs")
 
-      assert index_live |> element("a", "New") |> render_click() =~
+      assert index_live |> element("a", "New Organization") |> render_click() =~
                "New Organization"
 
       assert_patch(index_live, ~p"/admin/orgs/new")
@@ -94,7 +94,7 @@ defmodule PetalProWeb.Admin.OrgLiveTest do
     test "updates org within modal", %{conn: conn, org: org} do
       {:ok, show_live, _html} = live(conn, ~p"/admin/orgs/#{org}")
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
+      assert show_live |> element("span", "Edit") |> render_click() =~
                "Edit Organization"
 
       assert_patch(show_live, ~p"/admin/orgs/#{org}/show/edit")

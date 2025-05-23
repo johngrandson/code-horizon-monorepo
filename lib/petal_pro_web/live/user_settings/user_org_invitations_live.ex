@@ -219,7 +219,7 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
   end
 
   @impl true
-  def handle_info({:invitation_deleted, payload}, socket) do
+  def handle_info({:invitation_deleted, _payload}, socket) do
     {:noreply, assign_invitations(socket)}
   end
 
@@ -230,30 +230,8 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
 
   # Catch-all
   @impl true
-  def handle_info(message, socket) do
+  def handle_info(_message, socket) do
     {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("reject_invitation", %{"id" => id}, socket) do
-    invitation = Orgs.reject_invitation!(socket.assigns.current_user, id)
-
-    PetalPro.Logs.log("orgs.reject_invitation", %{
-      user: socket.assigns.current_user,
-      org_id: invitation.org_id
-    })
-
-    # Remove from current list instead of requerying database
-    updated_invitations =
-      Enum.reject(socket.assigns.invitations, &(&1.id == String.to_integer(id)))
-
-    {:noreply,
-     socket
-     |> assign(:invitations, updated_invitations)
-     |> put_flash(:info, gettext("Invitation rejected successfully"))}
-  rescue
-    Ecto.InvalidChangesetError ->
-      {:noreply, put_flash(socket, :error, gettext("Failed to reject invitation"))}
   end
 
   @impl true
@@ -277,6 +255,28 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
      |> put_flash(:info, gettext("You've successfully joined %{org_name}", org_name: membership.org.name))
      |> assign(:invitations, updated_invitations)
      |> redirect(to: ~p"/app/org/#{membership.org.slug}")}
+  end
+
+  @impl true
+  def handle_event("reject_invitation", %{"id" => id}, socket) do
+    invitation = Orgs.reject_invitation!(socket.assigns.current_user, id)
+
+    PetalPro.Logs.log("orgs.reject_invitation", %{
+      user: socket.assigns.current_user,
+      org_id: invitation.org_id
+    })
+
+    # Remove from current list instead of requerying database
+    updated_invitations =
+      Enum.reject(socket.assigns.invitations, &(&1.id == String.to_integer(id)))
+
+    {:noreply,
+     socket
+     |> assign(:invitations, updated_invitations)
+     |> put_flash(:info, gettext("Invitation was rejected"))}
+  rescue
+    Ecto.InvalidChangesetError ->
+      {:noreply, put_flash(socket, :error, gettext("Failed to reject invitation"))}
   end
 
   @impl true

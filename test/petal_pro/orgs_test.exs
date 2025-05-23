@@ -2,11 +2,12 @@ defmodule PetalPro.OrgsTest do
   use PetalPro.DataCase
 
   import PetalPro.AccountsFixtures
-  import PetalPro.NotificationsFixtures
+  import PetalPro.Events.Modules.NotificationsFixtures
   import PetalPro.OrgsFixtures
 
+  alias PetalPro.Events.Modules.Notifications.Broadcaster
+  alias PetalPro.Events.Modules.Notifications.UserNotification
   alias PetalPro.Notifications
-  alias PetalPro.Notifications.UserNotification
   alias PetalPro.Orgs
   alias PetalPro.Orgs.Invitation
   alias PetalPro.PubSub
@@ -17,7 +18,7 @@ defmodule PetalPro.OrgsTest do
 
     new_user_email = unique_invitation_email()
     existing_user = user_fixture(%{confirmed_at: DateTime.utc_now()})
-    notifications_topic = Notifications.user_notifications_topic(existing_user.id)
+    notifications_topic = Broadcaster.user_notifications_topic(existing_user.id)
     Phoenix.PubSub.subscribe(PubSub, notifications_topic)
 
     Map.merge(ctx, %{
@@ -39,7 +40,7 @@ defmodule PetalPro.OrgsTest do
       notifications_topic: notifications_topic
     } do
       # email should be delivered
-      Mimic.expect(PetalPro.Notifications.UserMailer, :deliver_org_invitation, fn _, _, _ ->
+      Mimic.expect(PetalPro.Events.Modules.Notifications.UserMailer, :deliver_org_invitation, fn _, _, _ ->
         {:ok, Swoosh.Email.new()}
       end)
 
@@ -63,7 +64,7 @@ defmodule PetalPro.OrgsTest do
       notifications_topic: notifications_topic
     } do
       # email should be delivered
-      Mimic.expect(PetalPro.Notifications.UserMailer, :deliver_org_invitation, fn _, _, _ ->
+      Mimic.expect(PetalPro.Events.Modules.Notifications.UserMailer, :deliver_org_invitation, fn _, _, _ ->
         {:ok, Swoosh.Email.new()}
       end)
 

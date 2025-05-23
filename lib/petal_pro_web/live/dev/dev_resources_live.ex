@@ -13,7 +13,7 @@ defmodule PetalProWeb.DevResourcesLive do
   def render(assigns) do
     ~H"""
     <DevLayoutComponent.dev_layout current_page={:dev_resources} current_user={@current_user}>
-      <.container class="py-16">
+      <.container class="py-4">
         <.h2>Resources 🧰</.h2>
         <.h5 class="mt-5">
           Thanks for joining the Petal community! Here are a few handy resources to help you get off the ground as quickly as possible 🚀

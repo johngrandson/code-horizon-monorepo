@@ -76,13 +76,15 @@ defmodule PetalProWeb.UserAiChatLive.LangChain do
     )
   end
 
-  @spec add_message(LLMChain.t(), String.t()) :: LLMChain.t()
+  @spec add_message(LLMChain.t(), String.t()) ::
+          {:ok, LLMChain.t(), message: String.t()}
+          | {:error, any()}
   def add_message(llm_chain, message) do
-    with {:ok, llm_chain} <-
-           llm_chain
-           |> LLMChain.add_message(Message.new_user!(message))
-           |> LLMChain.run(mode: :while_needs_response) do
-      %{assistant: llm_chain, message: llm_chain.last_message.content}
+    case llm_chain
+         |> LLMChain.add_message(Message.new_user!(message))
+         |> LLMChain.run(mode: :while_needs_response) do
+      {:ok, llm_chain} -> {:ok, llm_chain, message: llm_chain.last_message.content}
+      error -> {:error, error}
     end
   end
 

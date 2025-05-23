@@ -107,7 +107,12 @@ defmodule PetalProWeb.Admin.PostLiveTest do
     test "deletes post in listing", %{conn: conn, post: post} do
       {:ok, index_live, _html} = live(conn, ~p"/admin/posts")
 
-      assert index_live |> element("button[data-confirm*='Are you sure']") |> render_click()
+      assert index_live
+             |> element(
+               "button[data-confirm*='Are you sure you want to delete the selected posts? This action cannot be undone.']"
+             )
+             |> render_click()
+
       refute has_element?(index_live, "#posts-#{post.id}")
     end
   end

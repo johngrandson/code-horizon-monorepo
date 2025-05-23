@@ -8,7 +8,7 @@ defmodule PetalProWeb.Notifications.Components do
   import PetalProWeb.Helpers
 
   alias PetalPro.Accounts.User
-  alias PetalPro.Notifications.UserNotification
+  alias PetalPro.Events.Modules.Notifications.UserNotification
 
   attr :idx, :integer, required: true, doc: "The index of the notification in the list."
   attr :notification, :map, required: true, doc: "The notification to render."
