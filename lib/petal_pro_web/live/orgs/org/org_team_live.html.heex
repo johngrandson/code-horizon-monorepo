@@ -113,7 +113,7 @@
     </div>
   <% end %>
 
-  <%= if @live_action == :invite do %>
+  <%= if @live_action == :invite and @is_org_admin do %>
     <.live_component
       module={PetalProWeb.OrgTeamLive.OrgTeamInviteFormComponent}
       id={:new_membership}
@@ -124,7 +124,7 @@
     />
   <% end %>
 
-  <%= if @live_action == :edit_membership do %>
+  <%= if @live_action == :edit_membership and @is_org_admin do %>
     <.modal max_width="sm" title={@page_title}>
       <.live_component
         module={PetalProWeb.OrgTeamLive.OrgMembershipFormComponent}

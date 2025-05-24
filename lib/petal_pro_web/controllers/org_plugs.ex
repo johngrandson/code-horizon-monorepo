@@ -44,7 +44,7 @@ defmodule PetalProWeb.OrgPlugs do
   def require_org_admin(conn, _opts) do
     membership = conn.assigns.current_membership
 
-    if membership.role == :admin do
+    if membership && membership.role == :admin do
       conn
     else
       conn

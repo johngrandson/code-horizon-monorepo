@@ -99,6 +99,7 @@ config :petal_pro, Oban,
     {Oban.Plugins.Pruner, max_age: 3600 * 24},
     {Oban.Plugins.Cron,
      crontab: [
+       {"0 0 * * SUN", PetalPro.Workers.MetricSyncWorker}
        # {"@daily", PetalPro.Workers.ExampleWorker}
        # {"* * * * *", EveryMinuteWorker},
        # {"0 * * * *", EveryHourWorker},

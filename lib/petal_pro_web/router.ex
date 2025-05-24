@@ -99,7 +99,6 @@ defmodule PetalProWeb.Router do
       live "/ai-chat", UserAiChatLive
 
       live "/orgs", OrgsLive, :index
-      live "/orgs/new", OrgsLive, :new
 
       scope "/org/:org_slug" do
         live "/", OrgDashboardLive
@@ -108,6 +107,14 @@ defmodule PetalProWeb.Router do
         live "/team/invite", OrgTeamLive, :invite
         live "/team/memberships/:id/edit", OrgTeamLive, :edit_membership
       end
+    end
+
+    # Admin-only routes
+    live_session :admin_required,
+      on_mount: [
+        {PetalProWeb.UserOnMountHooks, :require_admin_user}
+      ] do
+      live "/orgs/new", OrgsLive, :new
     end
   end
 

@@ -6,17 +6,21 @@ defmodule PetalProWeb.OrgTeamLive do
   import PetalProWeb.OrgSettingsLayoutComponent
 
   alias PetalPro.Orgs
+  alias PetalPro.Orgs.Membership
   alias PetalPro.Repo
 
   on_mount {PetalProWeb.OrgOnMountHooks, :require_org_admin}
 
   @impl true
   def mount(_params, _session, socket) do
+    is_org_admin = Membership.is_org_admin?(socket.assigns.current_user)
+
     socket =
       socket
+      |> register_subscriber()
+      |> assign(:is_org_admin, is_org_admin)
       |> assign_memberships()
       |> assign_invitations()
-      |> register_subscriber()
 
     {:ok, socket}
   end

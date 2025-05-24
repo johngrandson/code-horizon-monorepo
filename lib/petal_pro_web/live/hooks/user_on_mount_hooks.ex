@@ -79,7 +79,14 @@ defmodule PetalProWeb.UserOnMountHooks do
       PetalProWeb.Presence.track(self(), "users", socket.assigns.current_user.id, %{})
       {:cont, socket}
     else
-      {:halt, redirect(socket, to: "/")}
+      safe_redirect = determine_safe_redirect(socket)
+
+      socket =
+        socket
+        |> put_flash(:error, gettext("You do not have permission to access this page."))
+        |> redirect(to: safe_redirect)
+
+      {:halt, socket}
     end
   end
 
@@ -139,4 +146,20 @@ defmodule PetalProWeb.UserOnMountHooks do
 
   defp get_user(nil), do: nil
   defp get_user(token), do: Accounts.get_user_by_session_token(token)
+
+  defp determine_safe_redirect(socket) do
+    cond do
+      socket.assigns[:current_org] && socket.assigns.current_org.slug ->
+        "/app/org/#{socket.assigns.current_org.slug}"
+
+      socket.assigns[:current_user] ->
+        "/app/orgs"
+
+      !socket.assigns.current_user ->
+        "/auth/sign-in"
+
+      true ->
+        "/app"
+    end
+  end
 end

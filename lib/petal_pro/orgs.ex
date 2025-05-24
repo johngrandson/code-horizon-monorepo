@@ -45,6 +45,10 @@ defmodule PetalPro.Orgs do
     Repo.get!(Org, id)
   end
 
+  def org_exists?(id) do
+    Repo.exists?(from o in Org, where: o.id == ^id)
+  end
+
   def preload_org_memberships(org) do
     Repo.preload(org, memberships: :user)
   end

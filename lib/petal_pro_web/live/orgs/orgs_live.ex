@@ -4,6 +4,8 @@ defmodule PetalProWeb.OrgsLive do
   """
   use PetalProWeb, :live_view
 
+  import PetalPro.Events.Modules.Orgs.Subscriber
+
   alias PetalPro.Orgs
   alias PetalPro.Orgs.Membership
   alias PetalPro.Orgs.Org
@@ -12,11 +14,14 @@ defmodule PetalProWeb.OrgsLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    is_org_admin = Membership.is_org_admin?(socket.assigns.current_user)
+
     socket =
       socket
-      |> assign(:invitations, Orgs.list_invitations_by_user(socket.assigns.current_user))
-      |> assign(:orgs, Orgs.list_orgs(socket.assigns.current_user))
-      |> assign(:is_org_admin, Membership.is_admin_from_current_org(socket.assigns.current_user))
+      |> assign_invitations()
+      |> assign_orgs()
+      |> assign(:is_org_admin, is_org_admin)
+      |> register_subscriber()
 
     {:ok, socket}
   end
@@ -24,6 +29,26 @@ defmodule PetalProWeb.OrgsLive do
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  @impl true
+  def handle_info({:invitation_sent, %{invitation_id: _invitation_id, org_id: _org_id}}, socket) do
+    socket =
+      socket
+      |> assign_invitations()
+      |> assign_orgs()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:invitation_deleted, %{invitation_id: _invitation_id, org_id: _org_id}}, socket) do
+    socket =
+      socket
+      |> assign_invitations()
+      |> assign_orgs()
+
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :new, _params) do
@@ -43,12 +68,20 @@ defmodule PetalProWeb.OrgsLive do
     {:noreply, push_patch(socket, to: ~p"/app/orgs")}
   end
 
+  defp assign_invitations(socket) do
+    assign(socket, :invitations, Orgs.list_invitations_by_user(socket.assigns.current_user))
+  end
+
+  defp assign_orgs(socket) do
+    assign(socket, :orgs, Orgs.list_orgs(socket.assigns.current_user))
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
     <.layout current_page={:orgs} current_user={@current_user} type="sidebar">
       <.container class="py-4">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
           <.page_header
             title={gettext("Organizations")}
             description={gettext("Manage your organizations")}
@@ -69,44 +102,43 @@ defmodule PetalProWeb.OrgsLive do
 
         <%= if @current_user.confirmed_at do %>
           <%= if @invitations != [] do %>
-            <.alert
-              with_icon
-              class="max-w-md mb-8 shadow-sm border-l-4 border-amber-500"
-              color="warning"
-              heading={gettext("New invitations")}
+            <div
+              id="hs-pro-shchal"
+              class="mb-5 p-4 sm:ps-16 relative overflow-hidden rounded-lg bg-blue-50 dark:bg-blue-900"
+              role="alert"
+              tabindex="-1"
+              aria-labelledby="hs-pro-shchal-label"
             >
-              <div class="mb-2">
-                {gettext("You have %{count} pending invitation(s) waiting for your response.",
-                  count: length(@invitations)
-                )}
-              </div>
+              <div class="flex items-center gap-x-3">
+                <div class="hidden sm:block absolute -bottom-4 -start-6">
+                  <span class="text-7xl">📩</span>
+                </div>
+                <div class="grow ml-2">
+                  <h4 id="hs-pro-shchal-label" class="font-medium text-blue-700 dark:text-white">
+                    {gettext("You have %{count} %{plural}",
+                      count: length(@invitations),
+                      plural: ngettext("invitation", "invitations", length(@invitations))
+                    )}
+                  </h4>
+                  <p class="mt-1 text-xs text-gray-800 dark:text-neutral-200">
+                    {gettext("You have pending invitations to join other organizations.")}
+                  </p>
+                </div>
 
-              <.button
-                link_type="live_redirect"
-                color="success"
-                to={~p"/app/users/org-invitations"}
-                class="transition-all hover:translate-x-1"
-              >
-                {gettext("View invitations")}
-                <.icon name="hero-arrow-right" class="w-4 h-4 ml-2" />
-              </.button>
-            </.alert>
+                <.button
+                  color="primary"
+                  link_type="live_redirect"
+                  to={~p"/app/users/org-invitations"}
+                  class="transition-all hover:translate-x-1"
+                >
+                  {gettext("View invitations")}
+                  <.icon name="hero-arrow-right" class="w-4 h-4 ml-2" />
+                </.button>
+              </div>
+            </div>
           <% end %>
 
-          <div class="flex items-center justify-end m-2">
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-              <%= if @orgs != [] do %>
-                <span class="font-medium">
-                  {gettext("%{count} %{plural}",
-                    count: length(@orgs),
-                    plural: ngettext("organization", "organizations", length(@orgs))
-                  )}
-                </span>
-              <% end %>
-            </div>
-          </div>
-
-          <%= if Enum.all?([@orgs, @invitations], &Enum.empty?/1) do %>
+          <%= if Enum.all?([@orgs], &Enum.empty?/1) do %>
             <div class="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-200 dark:bg-neutral-900 dark:border-neutral-700 p-8 mb-8">
               <div class="text-center">
                 <.icon

@@ -2465,3 +2465,11 @@ msgstr "Ver módulos"
 
 msgid "View status"
 msgstr "Ver status"
+
+msgid "You have pending invitations to join other organizations."
+msgstr "Você tem convites pendentes para se juntar a outras organizações."
+
+msgid "invitation"
+msgid_plural "invitations"
+msgstr[0] "convite"
+msgstr[1] "convites"

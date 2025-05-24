@@ -11,6 +11,7 @@ defmodule PetalProWeb.UserAuth do
 
   alias PetalPro.Accounts
   alias PetalPro.Accounts.Permissions
+  alias PetalPro.Orgs.Membership
   alias PetalPro.Repo
 
   require Logger
@@ -274,6 +275,17 @@ defmodule PetalProWeb.UserAuth do
       conn
       |> put_flash(:error, gettext("You do not have access to this page."))
       |> redirect(to: "/")
+      |> halt()
+    end
+  end
+
+  def require_is_org_admin(conn, _opts) do
+    if Membership.is_org_admin?(conn.assigns[:current_user]) do
+      conn
+    else
+      conn
+      |> put_flash(:error, gettext("You do not have access to this page."))
+      |> redirect(to: ~p"/app/orgs")
       |> halt()
     end
   end

@@ -37,10 +37,16 @@ defmodule PetalProWeb.OrgOnMountHooks do
     if socket.assigns[:current_membership] && socket.assigns.current_membership.role == :admin do
       {:cont, socket}
     else
-      socket =
-        put_flash(socket, :error, gettext("You do not have permission to access this page."))
+      previous_url =
+        get_connect_info(socket, :peer_data)[:referer] ||
+          PetalProWeb.Helpers.home_path(socket.assigns.current_user)
 
-      {:halt, redirect(socket, to: PetalProWeb.Helpers.home_path(socket.assigns.current_user))}
+      socket =
+        socket
+        |> put_flash(:error, gettext("You do not have permission to access this page."))
+        |> redirect(to: previous_url)
+
+      {:halt, socket}
     end
   end
 
@@ -67,7 +73,6 @@ defmodule PetalProWeb.OrgOnMountHooks do
     if connected?(socket) do
       user_id = socket.assigns.current_user.id
 
-      # Subscribe to all user's organizations
       for org <- socket.assigns.orgs do
         topic = "user:#{user_id}:org:#{org.id}"
         subscribe(PetalPro.PubSub, topic)

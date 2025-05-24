@@ -13,9 +13,12 @@ defmodule PetalPro.Events.Modules.Orgs.Subscriber do
 
       # Always subscribe to general invitations
       invitation_topic = "user:#{user_id}:invitations"
+
       Phoenix.PubSub.subscribe(PetalPro.PubSub, invitation_topic)
 
-      Logger.info("[SUBSCRIPTION] - User #{user_id} is subscribed to invitation topic: #{invitation_topic}")
+      Logger.info(
+        "[SUBSCRIPTION] - User #{user_id} | #{socket.assigns.current_user.email} is subscribed to invitation topic: #{invitation_topic}"
+      )
 
       if socket.assigns[:current_membership] && socket.assigns.current_membership.role == :admin do
         org_id = socket.assigns.current_org.id
@@ -27,7 +30,9 @@ defmodule PetalPro.Events.Modules.Orgs.Subscriber do
       # If user has orgs, subscribe to org-specific events
       case Membership.list_orgs_by_user(socket.assigns.current_user) do
         [] ->
-          Logger.info("[SUBSCRIPTION] - User #{user_id} has no orgs, subscribed only to invitations")
+          Logger.info(
+            "[SUBSCRIPTION] - User #{user_id} | #{socket.assigns.current_user.email} has no orgs, subscribed only to invitations"
+          )
 
         orgs when is_list(orgs) ->
           for org <- orgs do
@@ -35,7 +40,9 @@ defmodule PetalPro.Events.Modules.Orgs.Subscriber do
             Phoenix.PubSub.subscribe(PetalPro.PubSub, org_topic)
           end
 
-          Logger.info("[SUBSCRIPTION] - User #{user_id} is subscribed to #{length(orgs)} org topics")
+          Logger.info(
+            "[SUBSCRIPTION] - User #{user_id} | #{socket.assigns.current_user.email} is subscribed to #{length(orgs)} org topics"
+          )
       end
     end
 

@@ -16,6 +16,7 @@ import MicrophoneHook from "./microphone-hook";
 import EditorJsHook from "./editorjs-hook";
 import AuroraHook from "./aurora-hook";
 import OrgDashboardChartHook from "./org-dashboard-chart-hook";
+import RevenueChartHook from "./revenue-chart-hook";
 
 // Either add hooks here or create a new file for each like ExampleHook
 
@@ -38,4 +39,5 @@ export default {
   MicrophoneHook,
   EditorJsHook,
   OrgDashboardChartHook,
+  RevenueChartHook,
 };

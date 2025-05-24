@@ -44,7 +44,7 @@ defmodule PetalPro.Orgs.Membership do
     )
   end
 
-  def is_admin_from_current_org(%User{} = user) do
+  def is_org_admin?(%User{} = user) do
     Repo.exists?(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.role == @admin_role))
   end
 

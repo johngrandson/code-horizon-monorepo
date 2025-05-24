@@ -252,8 +252,8 @@ defmodule PetalProWeb.UserOrgInvitationsLive do
 
     {:noreply,
      socket
-     |> put_flash(:info, gettext("You've successfully joined %{org_name}", org_name: membership.org.name))
      |> assign(:invitations, updated_invitations)
+     |> put_flash(:info, gettext("You've successfully joined %{org_name}", org_name: membership.org.name))
      |> redirect(to: ~p"/app/org/#{membership.org.slug}")}
   end
 

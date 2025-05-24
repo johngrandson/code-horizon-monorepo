@@ -7,10 +7,10 @@ defmodule PetalProWeb.EditOrgLiveTest do
   alias PetalPro.Orgs.Org
   alias PetalPro.Repo
 
-  setup :register_and_sign_in_user
+  describe "when an admin using valid params" do
+    setup :register_and_sign_in_admin
 
-  describe "valid params" do
-    test "can edit an org", %{conn: conn, org: org, user: _user} do
+    test "can edit and update an org", %{conn: conn, org: org, user: _user} do
       edit_org_path = ~p"/app/org/#{org.slug}/edit"
       current_slug = org.slug
       {:ok, view, _html} = live(conn, edit_org_path)
@@ -32,8 +32,10 @@ defmodule PetalProWeb.EditOrgLiveTest do
     end
   end
 
-  describe "invalid params" do
-    test "shows errors", %{conn: conn, org: org, user: _user} do
+  describe "when an admin using invalid params tries to edit an org" do
+    setup :register_and_sign_in_admin
+
+    test "it shows errors", %{conn: conn, org: org, user: _user} do
       {:ok, view, _html} = live(conn, ~p"/app/org/#{org.slug}/edit")
 
       html_response =
@@ -45,7 +47,9 @@ defmodule PetalProWeb.EditOrgLiveTest do
     end
   end
 
-  describe "not admin" do
+  describe "when a member tries to edit an org" do
+    setup :register_and_sign_in_user
+
     test "it redirects", %{conn: conn, org: _org, user: user} do
       new_org = org_fixture()
       membership_fixture(new_org, user, :member)

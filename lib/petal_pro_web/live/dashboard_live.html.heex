@@ -35,7 +35,7 @@
       </div>
       <!-- End Overlay User Profile -->
 
-    <!-- Content -->
+      <!-- Content -->
       <div class="max-w-5xl mx-auto px-2 sm:px-5 xl:px-0 pb-10">
         <!-- Card Grid Group -->
         <div class="grid md:grid-cols-8 gap-y-5 md:gap-y-0 md:gap-x-4">
@@ -65,8 +65,7 @@
                 </span>
                 to be publicly visible.
               </p>
-              
-<!-- List -->
+
               <div class="mt-3 md:mt-5">
                 <!-- List -->
                 <div class="space-y-1.5">
@@ -297,7 +296,43 @@
           </div>
           <!-- End Filter Group -->
 
-        <!-- Grid -->
+          <%= if @invitations != [] do %>
+            <div
+              id="hs-pro-shchal"
+              class="mb-5 p-4 sm:ps-16 relative overflow-hidden rounded-lg bg-blue-50 dark:bg-blue-900"
+              role="alert"
+              tabindex="-1"
+              aria-labelledby="hs-pro-shchal-label"
+            >
+              <div class="flex items-center gap-x-3">
+                <div class="hidden sm:block absolute -bottom-4 -start-6">
+                  <span class="text-7xl">📩</span>
+                </div>
+                <div class="grow ml-2">
+                  <h4 id="hs-pro-shchal-label" class="font-medium text-blue-700 dark:text-white">
+                    {gettext("You have %{count} %{plural}",
+                      count: length(@invitations),
+                      plural: ngettext("invitation", "invitations", length(@invitations))
+                    )}
+                  </h4>
+                  <p class="mt-1 text-xs text-gray-800 dark:text-neutral-200">
+                    {gettext("You have pending invitations to join other organizations.")}
+                  </p>
+                </div>
+
+                <.button
+                  color="primary"
+                  link_type="live_redirect"
+                  to={~p"/app/users/org-invitations"}
+                  class="transition-all hover:translate-x-1"
+                >
+                  {gettext("View invitations")}
+                  <.icon name="hero-arrow-right" class="w-4 h-4 ml-2" />
+                </.button>
+              </div>
+            </div>
+          <% end %>
+
           <%= if Enum.empty?(@orgs) do %>
             <div class="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-200 dark:bg-neutral-900 dark:border-neutral-700 p-8 mb-8">
               <div class="text-center">
@@ -362,9 +397,12 @@
                               <h3 class="font-medium text-gray-800 dark:text-neutral-200">
                                 {org.name}
                               </h3>
-                              <span class="inline-flex items-center gap-x-1.5 py-1 px-2.5 text-xs font-medium bg-primary-100 text-primary-800 rounded-full dark:bg-primary-900 dark:text-primary-300">
-                                {org.role}
-                              </span>
+                              <div class="flex items-center gap-x-1.5 py-0.5 px-2 border border-gray-200 dark:border-neutral-700 rounded-md">
+                                <span class="w-1 h-3 rounded-full bg-teal-600 dark:bg-teal-400" />
+                                <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
+                                  {org.role}
+                                </span>
+                              </div>
                             </div>
 
                             <div class="inline-flex items-center gap-x-2">
