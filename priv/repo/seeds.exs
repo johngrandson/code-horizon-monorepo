@@ -16,6 +16,7 @@ alias PetalPro.Accounts.UserTOTP
 alias PetalPro.Files.File
 alias PetalPro.Files.FileSeeder
 alias PetalPro.Logs.Log
+alias PetalPro.Modules.ModuleSeeder
 alias PetalPro.Orgs.Invitation
 alias PetalPro.Orgs.Membership
 alias PetalPro.Orgs.Org
@@ -53,4 +54,5 @@ if Mix.env() == :dev do
 
   FileSeeder.create_files(admin)
   PostSeeder.create_posts(admin)
+  ModuleSeeder.seed_modules()
 end
