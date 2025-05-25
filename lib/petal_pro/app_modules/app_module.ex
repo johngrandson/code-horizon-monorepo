@@ -1,9 +1,8 @@
-# lib/petal_pro/modules/module.ex
-defmodule PetalPro.Modules.Module do
+defmodule PetalPro.AppModules.AppModule do
   @moduledoc false
   use PetalPro.Schema
 
-  typed_schema "modules" do
+  typed_schema "app_modules" do
     field :code, :string
     field :name, :string
     field :description, :string
@@ -24,6 +23,7 @@ defmodule PetalPro.Modules.Module do
   Returns a changeset for the Module model.
   """
   def changeset(module, attrs) do
+    # Primeiro, use `cast` para lidar com a maioria dos campos e os defaults.
     changeset =
       module
       |> cast(attrs, [

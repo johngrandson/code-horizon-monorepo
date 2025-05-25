@@ -1,9 +1,9 @@
 # priv/repo/seeds/modules_seeder.ex
-defmodule PetalPro.Modules.ModuleSeeder do
+defmodule PetalPro.AppModules.AppModuleSeeder do
   @moduledoc """
   Seeds initial module data into the database.
   """
-  alias PetalPro.Modules
+  alias PetalPro.AppModules
 
   @doc """
   Seeds the predefined modules.
@@ -11,7 +11,7 @@ defmodule PetalPro.Modules.ModuleSeeder do
   def seed_modules do
     IO.puts("Seeding modules...")
 
-    seed_module(%{
+    seed_app_module(%{
       code: "cms",
       name: "Content Management System",
       description: "Gerencie facilmente o conteúdo do seu site com este sistema completo de gerenciamento de conteúdo.",
@@ -33,7 +33,7 @@ defmodule PetalPro.Modules.ModuleSeeder do
       }
     })
 
-    seed_module(%{
+    seed_app_module(%{
       code: "lms",
       name: "Learning Management System",
       description: "Ofereça cursos online e gerencie o aprendizado de seus usuários com um LMS robusto.",
@@ -57,8 +57,8 @@ defmodule PetalPro.Modules.ModuleSeeder do
     IO.puts("Modules seeding complete.")
   end
 
-  defp seed_module(attrs) do
-    case Modules.create_module(attrs) do
+  defp seed_app_module(attrs) do
+    case AppModules.create_app_module(attrs) do
       {:ok, module} ->
         IO.puts("Module created: #{module.name}")
 

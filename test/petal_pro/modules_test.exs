@@ -1,29 +1,55 @@
 defmodule PetalPro.ModulesTest do
   use PetalPro.DataCase
 
-  alias PetalPro.Modules
+  alias PetalPro.AppModules
 
-  describe "modules" do
-    alias PetalPro.Modules.Module
+  describe "app_modules" do
+    import PetalPro.AppModulesFixtures
 
-    import PetalPro.ModulesFixtures
+    alias PetalPro.AppModules.AppModule
 
-    @invalid_attrs %{code: nil, name: nil, status: nil, version: nil, description: nil, dependencies: nil, price_id: nil, is_white_label_ready: nil, is_publicly_visible: nil, setup_function: nil, cleanup_function: nil, routes_definition: nil}
+    @invalid_attrs %{
+      code: nil,
+      name: nil,
+      status: nil,
+      version: nil,
+      description: nil,
+      dependencies: nil,
+      price_id: nil,
+      is_white_label_ready: nil,
+      is_publicly_visible: nil,
+      setup_function: nil,
+      cleanup_function: nil,
+      routes_definition: nil
+    }
 
-    test "list_modules/0 returns all modules" do
+    test "list_app_modules/0 returns all app_modules" do
       module = module_fixture()
-      assert Modules.list_modules() == [module]
+      assert AppModules.list_app_modules() == [module]
     end
 
-    test "get_module!/1 returns the module with given id" do
+    test "get_app_module!/1 returns the app_module with given id" do
       module = module_fixture()
-      assert Modules.get_module!(module.id) == module
+      assert AppModules.get_app_module!(module.id) == module
     end
 
-    test "create_module/1 with valid data creates a module" do
-      valid_attrs = %{code: "some code", name: "some name", status: "some status", version: "some version", description: "some description", dependencies: "some dependencies", price_id: "some price_id", is_white_label_ready: true, is_publicly_visible: true, setup_function: "some setup_function", cleanup_function: "some cleanup_function", routes_definition: "some routes_definition"}
+    test "create_app_module/1 with valid data creates a app_module" do
+      valid_attrs = %{
+        code: "some code",
+        name: "some name",
+        status: "some status",
+        version: "some version",
+        description: "some description",
+        dependencies: "some dependencies",
+        price_id: "some price_id",
+        is_white_label_ready: true,
+        is_publicly_visible: true,
+        setup_function: "some setup_function",
+        cleanup_function: "some cleanup_function",
+        routes_definition: "some routes_definition"
+      }
 
-      assert {:ok, %Module{} = module} = Modules.create_module(valid_attrs)
+      assert {:ok, %AppModule{} = module} = AppModules.create_app_module(valid_attrs)
       assert module.code == "some code"
       assert module.name == "some name"
       assert module.status == "some status"
@@ -38,15 +64,29 @@ defmodule PetalPro.ModulesTest do
       assert module.routes_definition == "some routes_definition"
     end
 
-    test "create_module/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Modules.create_module(@invalid_attrs)
+    test "create_app_module/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = AppModules.create_app_module(@invalid_attrs)
     end
 
-    test "update_module/2 with valid data updates the module" do
+    test "update_app_module/2 with valid data updates the app_module" do
       module = module_fixture()
-      update_attrs = %{code: "some updated code", name: "some updated name", status: "some updated status", version: "some updated version", description: "some updated description", dependencies: "some updated dependencies", price_id: "some updated price_id", is_white_label_ready: false, is_publicly_visible: false, setup_function: "some updated setup_function", cleanup_function: "some updated cleanup_function", routes_definition: "some updated routes_definition"}
 
-      assert {:ok, %Module{} = module} = Modules.update_module(module, update_attrs)
+      update_attrs = %{
+        code: "some updated code",
+        name: "some updated name",
+        status: "some updated status",
+        version: "some updated version",
+        description: "some updated description",
+        dependencies: "some updated dependencies",
+        price_id: "some updated price_id",
+        is_white_label_ready: false,
+        is_publicly_visible: false,
+        setup_function: "some updated setup_function",
+        cleanup_function: "some updated cleanup_function",
+        routes_definition: "some updated routes_definition"
+      }
+
+      assert {:ok, %AppModule{} = module} = AppModules.update_app_module(module, update_attrs)
       assert module.code == "some updated code"
       assert module.name == "some updated name"
       assert module.status == "some updated status"
@@ -61,21 +101,21 @@ defmodule PetalPro.ModulesTest do
       assert module.routes_definition == "some updated routes_definition"
     end
 
-    test "update_module/2 with invalid data returns error changeset" do
+    test "update_app_module/2 with invalid data returns error changeset" do
       module = module_fixture()
-      assert {:error, %Ecto.Changeset{}} = Modules.update_module(module, @invalid_attrs)
-      assert module == Modules.get_module!(module.id)
+      assert {:error, %Ecto.Changeset{}} = AppModules.update_app_module(module, @invalid_attrs)
+      assert module == AppModules.get_app_module!(module.id)
     end
 
-    test "delete_module/1 deletes the module" do
+    test "delete_app_module/1 deletes the app_module" do
       module = module_fixture()
-      assert {:ok, %Module{}} = Modules.delete_module(module)
-      assert_raise Ecto.NoResultsError, fn -> Modules.get_module!(module.id) end
+      assert {:ok, %AppModule{}} = AppModules.delete_app_module(module)
+      assert_raise Ecto.NoResultsError, fn -> AppModules.get_app_module!(module.id) end
     end
 
-    test "change_module/1 returns a module changeset" do
+    test "change_app_module/1 returns a app_module changeset" do
       module = module_fixture()
-      assert %Ecto.Changeset{} = Modules.change_module(module)
+      assert %Ecto.Changeset{} = AppModules.change_app_module(module)
     end
   end
 end

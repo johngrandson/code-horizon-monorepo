@@ -52,30 +52,16 @@ defmodule PetalPro.Orgs.Membership do
     Repo.one(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.org_id == ^org.id, select: ms.role))
   end
 
-  def list_orgs_with_user_roles(%User{} = user) do
-    from(o in Org,
-      join: m in __MODULE__,
-      on: m.org_id == o.id,
-      where: m.user_id == ^user.id,
-      select: %{
-        id: o.id,
-        name: o.name,
-        slug: o.slug,
-        avatar_url: o.avatar_url,
-        is_enterprise: o.is_enterprise,
-        role: m.role
-      }
+  def list_orgs(%User{} = user) do
+    Repo.all(
+      from(o in Org,
+        join: m in __MODULE__,
+        on: m.org_id == o.id,
+        where: m.user_id == ^user.id,
+        select: o
+      )
     )
-    |> Repo.all()
-    |> Enum.map(&format_org_role/1)
   end
-
-  defp format_org_role(org_data) do
-    %{org_data | role: format_role(org_data.role)}
-  end
-
-  defp format_role(:admin), do: gettext("Admin")
-  defp format_role(:member), do: gettext("Member")
 
   def all_by_org(%Org{} = org) do
     from(m in __MODULE__,

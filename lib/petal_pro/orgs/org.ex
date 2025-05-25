@@ -3,10 +3,10 @@ defmodule PetalPro.Orgs.Org do
   use PetalPro.Schema
 
   alias PetalPro.Accounts.User
+  alias PetalPro.AppModules.Subscription
   alias PetalPro.Billing.Customers.Customer
   alias PetalPro.Extensions.Ecto.ChangesetExt
   alias PetalPro.Licenses.License
-  alias PetalPro.Modules.Subscription
   alias PetalPro.Orgs.Domain
   alias PetalPro.Orgs.Invitation
   alias PetalPro.Orgs.Membership

@@ -1,4 +1,4 @@
-defmodule PetalPro.Modules.Behaviours.Module do
+defmodule PetalPro.AppModules.Behaviours.AppModule do
   @moduledoc """
   Behavior that all application modules must implement.
   This defines the contract for module registration and functionality.

@@ -1,4 +1,4 @@
-defmodule PetalPro.Modules.Subscription do
+defmodule PetalPro.AppModules.Subscription do
   @moduledoc """
   Schema representing a tenant's subscription to a module.
   """
@@ -6,7 +6,7 @@ defmodule PetalPro.Modules.Subscription do
 
   alias PetalPro.Orgs.Org
 
-  typed_schema "module_subscriptions" do
+  typed_schema "app_module_subscriptions" do
     field :module_code, :string
     field :active, :boolean, default: false
     field :expires_at, :utc_datetime

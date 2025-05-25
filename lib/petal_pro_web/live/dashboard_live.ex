@@ -9,14 +9,14 @@ defmodule PetalProWeb.DashboardLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    orgs_with_roles = Membership.list_orgs_with_user_roles(socket.assigns.current_user)
+    orgs = Membership.list_orgs(socket.assigns.current_user)
     is_org_admin = Membership.is_org_admin?(socket.assigns.current_user)
 
     socket =
       socket
       |> assign(page_title: gettext("Dashboard"))
       |> assign(is_org_admin: is_org_admin)
-      |> assign(orgs: orgs_with_roles)
+      |> assign(orgs: orgs)
       |> assign_invitations()
       |> register_subscriber()
 

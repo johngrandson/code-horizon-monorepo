@@ -113,7 +113,7 @@ typed_schema "orgs" do
   has_many :members, PetalPro.Orgs.Member
   has_many :users, through: [:members, :user]
   has_one :theme, PetalPro.WhiteLabel.Theme
-  has_many :module_subscriptions, PetalPro.Modules.ModuleSubscription
+  has_many :app_module_subscriptions, PetalPro.AppModules.Subscription
   
   timestamps()
 end
@@ -155,7 +155,7 @@ end
 A arquitetura modular permite que funcionalidades sejam ativadas por organização, implementando o padrão de comportamento (behaviour):
 
 ```elixir
-defmodule PetalPro.Modules.Behaviours.Module do
+defmodule PetalPro.AppModules.Behaviours.AppModule do
   @callback code() :: String.t()
   @callback name() :: String.t() 
   @callback description() :: String.t()
@@ -187,7 +187,7 @@ Cada módulo funcional deve seguir a implementação do comportamento, garantind
 ```elixir
 # Example module implementation
 defmodule PetalPro.AppModules.CRM do
-  @behaviour PetalPro.Modules.Behaviours.Module
+  @behaviour PetalPro.AppModules.Behaviours.AppModule
   
   # Public API functions that delegate to internal contexts
   alias PetalPro.AppModules.CRM.{Contacts, Deals, Activities}
@@ -389,7 +389,7 @@ end
 
 1. **Planejamento**: Definir estrutura de dados e casos de uso do módulo
 2. **Generators**: Utilizar os generators para criar contextos e schemas base
-3. **Behaviour**: Implementar o comportamento `PetalPro.Modules.Behaviours.Module`
+3. **Behaviour**: Implementar o comportamento `PetalPro.AppModules.Behaviours.AppModule`
 4. **Interfaces**: Criar as interfaces LiveView usando generators
 5. **Registro**: Registrar o módulo no sistema de módulos
 6. **Testes**: Implementar testes automatizados para o módulo
@@ -602,7 +602,7 @@ defmodule PetalPro.Authorization do
   """
   
   alias PetalPro.Orgs.Org
-  alias PetalPro.Modules
+  alias PetalPro.AppModules
   
   @doc """
   Authorization flow:
@@ -660,7 +660,7 @@ end
 Uma arquitetura de hooks permite estender o comportamento sem modificar o código base:
 
 ```elixir
-defmodule PetalPro.Modules.HookSystem do
+defmodule PetalPro.AppModules.HookSystem do
   @moduledoc """
   Hook system allowing modules to extend core functionality.
   """
@@ -700,7 +700,7 @@ end
 ```elixir
 # Example of hook registration in a module
 defmodule PetalPro.AppModules.CRM do
-  alias PetalPro.Modules.HookSystem
+  alias PetalPro.AppModules.HookSystem
   
   def register_hooks do
     HookSystem.register_hook("crm", :tenant_created, &handle_tenant_created/1)
@@ -756,7 +756,7 @@ defmodule PetalPro.AppModules.Helpdesk do
   @moduledoc """
   Helpdesk module for customer support ticket management.
   """
-  @behaviour PetalPro.Modules.Behaviours.Module
+  @behaviour PetalPro.AppModules.Behaviours.AppModule
   
   # Public API - delegate to internal contexts
   alias PetalPro.AppModules.Helpdesk.{Tickets, Agents, Teams}

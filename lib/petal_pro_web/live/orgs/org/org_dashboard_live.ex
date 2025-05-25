@@ -64,7 +64,7 @@ defmodule PetalProWeb.OrgDashboardLive do
             <%= if @org.avatar_url do %>
               <img class="w-full h-full object-cover" src={@org.avatar_url} alt={@org.name} />
             <% else %>
-              <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
+              <.avatar class="w-full h-full" />
             <% end %>
           </div>
           <%= if @org.is_enterprise do %>

@@ -15,7 +15,7 @@
                       alt={@current_user.name}
                     />
                   <% else %>
-                    <div class="rounded-full bg-gray-700"></div>
+                    <.avatar class="w-full h-full" />
                   <% end %>
                 </div>
               </div>
@@ -382,11 +382,15 @@
                       <div>
                         <div class="flex items-center gap-x-4">
                           <div class="relative shrink-0">
-                            <img
-                              class="shrink-0 size-9.5 sm:w-11.5 sm:h-11.5 rounded-full object-cover"
-                              src={org.avatar_url}
-                              alt={org.name}
-                            />
+                            <%= if org.avatar_url do %>
+                              <img
+                                class="shrink-0 size-9.5 sm:w-11.5 sm:h-11.5 rounded-full object-cover"
+                                src={org.avatar_url}
+                                alt={org.name}
+                              />
+                            <% else %>
+                              <.avatar />
+                            <% end %>
                             <%= if org.is_enterprise do %>
                               <.pro_badge />
                             <% end %>
@@ -400,7 +404,11 @@
                               <div class="flex items-center gap-x-1.5 py-0.5 px-2 border border-gray-200 dark:border-neutral-700 rounded-md">
                                 <span class="w-1 h-3 rounded-full bg-teal-600 dark:bg-teal-400" />
                                 <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
-                                  {org.role}
+                                  <%= if @is_org_admin do %>
+                                    {gettext("Admin")}
+                                  <% else %>
+                                    {gettext("Member")}
+                                  <% end %>
                                 </span>
                               </div>
                             </div>

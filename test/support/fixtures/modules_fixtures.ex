@@ -1,7 +1,7 @@
-defmodule PetalPro.ModulesFixtures do
+defmodule PetalPro.AppModulesFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `PetalPro.Modules` context.
+  entities via the `PetalPro.AppModules` context.
   """
 
   @doc """
@@ -29,7 +29,7 @@ defmodule PetalPro.ModulesFixtures do
         status: "some status",
         version: "some version"
       })
-      |> PetalPro.Modules.create_module()
+      |> PetalPro.AppModules.create_app_module()
 
     module
   end
