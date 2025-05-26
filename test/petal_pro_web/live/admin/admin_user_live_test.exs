@@ -1,4 +1,4 @@
-defmodule PetalProWeb.Admin.UserLiveTest do
+defmodule PetalProWeb.AdminUserLiveTest do
   use PetalProWeb.ConnCase
 
   import PetalPro.AccountsFixtures

@@ -7,9 +7,10 @@ defmodule PetalProWeb.DataTable.Header do
   import PetalComponents.Field
   import PetalComponents.Form
   import PetalComponents.Icon
-  import PetalComponents.Link
   import PetalComponents.Table
   import Phoenix.HTML.Form
+
+  alias Phoenix.LiveView.JS
 
   def render(assigns) do
     index = order_index(assigns.meta.flop, assigns.column[:field])
@@ -19,112 +20,257 @@ defmodule PetalProWeb.DataTable.Header do
       assigns
       |> assign(:currently_ordered, index == 0)
       |> assign(:order_direction, direction)
+      |> assign(:dropdown_id, "dt-#{String.replace(to_string(assigns.column[:field]), "_", "-")}")
 
     ~H"""
     <.th class={"align-top #{@column[:class] || ""}"}>
-      <%= if @column[:sortable] && !@no_results? do %>
-        <.a
-          class={
-              "flex items-center gap-3 #{if @currently_ordered, do: "text-gray-900 dark:text-white font-semibold", else: "text-gray-500 dark:text-gray-400"} #{if @column[:align_right], do: "justify-end", else: ""}"
+      <div class="relative">
+        <%= if @column[:sortable] && !@no_results? do %>
+          <div
+            id={"#{@dropdown_id}-backdrop"}
+            class="hidden fixed inset-0 z-40"
+            phx-click={
+              JS.hide(
+                to: "##{@dropdown_id}-menu",
+                transition: {"transition-opacity duration-150", "opacity-100", "opacity-0"}
+              )
+              |> JS.add_class("hidden opacity-0", to: "##{@dropdown_id}-menu")
+              |> JS.set_attribute({"aria-expanded", "false"}, to: "##{@dropdown_id}-menu")
+              |> JS.hide(to: "##{@dropdown_id}-backdrop")
             }
-          to={order_link(@column, @meta, @currently_ordered, @order_direction, @base_url_params)}
-          link_type="live_patch"
-        >
-          {get_label(@column)}
-          <.icon
-            name={
-              if @currently_ordered && @order_direction == :desc,
-                do: "hero-chevron-down",
-                else: "hero-chevron-up"
+          >
+          </div>
+          <!-- Sort Button with Dropdown -->
+          <button
+            id={@dropdown_id}
+            type="button"
+            class={
+              [
+                "w-full flex items-center gap-x-1 text-sm font-normal",
+                # Negative margins to compensate for padding
+                "px-3 py-2 -mx-3 -my-2",
+                "hover:bg-stone-50 dark:hover:bg-neutral-800 rounded transition-colors",
+                "focus:outline-hidden focus:bg-stone-100 dark:focus:bg-neutral-700",
+                if(@currently_ordered,
+                  do: "text-stone-800 dark:text-white font-medium",
+                  else: "text-stone-500 dark:text-neutral-500"
+                ),
+                if(@column[:align_right], do: "justify-end", else: "text-start")
+              ]
             }
-            class="w-4 h-4"
-          />
-        </.a>
-      <% else %>
-        <div class={if @column[:align_right], do: "text-right whitespace-nowrap", else: ""}>
-          {get_label(@column)}
-        </div>
-      <% end %>
-      <%= if @column[:filterable] && (@filtered? || !@no_results?) do %>
-        <.inputs_for :let={f2} field={@filter_form[:filters]}>
-          <%= if input_value(f2, :field) == @column.field do %>
-            <.field field={f2[:field]} type="hidden" />
+            aria-haspopup="menu"
+            aria-expanded="false"
+            aria-label={"Sort #{get_label(@column)}"}
+            phx-click={
+              JS.hide(
+                to: "[id$='-menu']:not(##{@dropdown_id}-menu)",
+                transition: {"transition-opacity duration-150", "opacity-100", "opacity-0"}
+              )
+              |> JS.add_class("opacity-0 hidden", to: "[id$='-menu']:not(##{@dropdown_id}-menu)")
+              |> JS.show(to: "##{@dropdown_id}-menu")
+              |> JS.remove_class("hidden opacity-0", to: "##{@dropdown_id}-menu")
+              |> JS.toggle_attribute({"aria-expanded", "true", "false"})
+              |> JS.show(to: "##{@dropdown_id}-backdrop")
+            }
+          >
+            <span>{get_label(@column)}</span>
+            <svg
+              class="shrink-0 size-3.5"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" />
+            </svg>
+          </button>
+          
+    <!-- Dropdown Menu -->
+          <div
+            id={"#{@dropdown_id}-menu"}
+            class="absolute top-full left-0 mt-1 w-44 opacity-0 hidden z-50 bg-white rounded-xl shadow-xl dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700"
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby={@dropdown_id}
+          >
+            <div class="p-1">
+              <!-- Sort Ascending -->
+              <.link
+                patch={order_link(@column, @meta, @currently_ordered, :asc, @base_url_params)}
+                class={[
+                  "w-full flex items-center gap-x-3 py-1.5 px-2 rounded-lg text-[13px] font-normal",
+                  "hover:bg-stone-100 disabled:opacity-50 disabled:pointer-events-none",
+                  "dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-hidden focus:bg-stone-100",
+                  if(@currently_ordered && @order_direction == :asc,
+                    do: "text-stone-900 bg-stone-50 dark:text-white dark:bg-neutral-800",
+                    else: "text-stone-800 dark:text-neutral-300"
+                  )
+                ]}
+              >
+                <.icon name="hero-arrow-up" class="shrink-0 size-3.5" />
+                {gettext("Sort ascending")}
+              </.link>
+              
+    <!-- Sort Descending -->
+              <.link
+                patch={order_link(@column, @meta, @currently_ordered, :desc, @base_url_params)}
+                class={[
+                  "w-full flex items-center gap-x-3 py-1.5 px-2 rounded-lg text-[13px] font-normal",
+                  "hover:bg-stone-100 disabled:opacity-50 disabled:pointer-events-none",
+                  "dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 focus:outline-hidden focus:bg-stone-100",
+                  if(@currently_ordered && @order_direction == :desc,
+                    do: "text-stone-900 bg-stone-50 dark:text-white dark:bg-neutral-800",
+                    else: "text-stone-800 dark:text-neutral-300"
+                  )
+                ]}
+              >
+                <.icon name="hero-arrow-down" class="shrink-0 size-3.5" />
+                {gettext("Sort descending")}
+              </.link>
 
-            <div class="flex items-center gap-2 mt-2">
-              <%= case @column[:type] do %>
-                <% :integer -> %>
-                  <.number_input
-                    form={f2}
-                    field={:value}
-                    phx-debounce="200"
-                    placeholder={get_filter_placeholder(input_value(f2, :op))}
-                    class="!text-xs !py-1"
-                  />
-                <% :float -> %>
-                  <.number_input
-                    form={f2}
-                    field={:value}
-                    phx-debounce="200"
-                    placeholder={get_filter_placeholder(input_value(f2, :op))}
-                    class="!text-xs !py-1"
-                    step={@column[:step] || 1}
-                  />
-                <% :boolean -> %>
-                  <.select
-                    form={f2}
-                    field={:value}
-                    options={[{"True", true}, {"False", false}]}
-                    prompt="-"
-                    class="!text-xs !py-1"
-                    size="sm"
-                  />
-                <% :select -> %>
-                  <.select
-                    form={f2}
-                    field={:value}
-                    options={@column[:options]}
-                    prompt={@column[:prompt] || "-"}
-                    class="!text-xs !py-1"
-                    size="sm"
-                  />
-                <% _ -> %>
-                  <.search_input
-                    form={f2}
-                    field={:value}
-                    phx-debounce="200"
-                    placeholder={get_filter_placeholder(input_value(f2, :op))}
-                    class="!text-xs !py-1"
-                  />
+              <%= if @column[:moveable] do %>
+                <div class="my-1 border-t border-stone-200 dark:border-neutral-800"></div>
+                
+    <!-- Move Left -->
+                <button
+                  type="button"
+                  phx-click="move-column"
+                  phx-value-field={@column[:field]}
+                  phx-value-direction="left"
+                  class="w-full flex items-center gap-x-3 py-1.5 px-2 rounded-lg text-[13px] font-normal text-stone-800 hover:bg-stone-100 disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-300 focus:outline-hidden focus:bg-stone-100 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                >
+                  <.icon name="hero-arrow-left" class="shrink-0 size-3.5" />
+                  {gettext("Move left")}
+                </button>
+                
+    <!-- Move Right -->
+                <button
+                  type="button"
+                  phx-click="move-column"
+                  phx-value-field={@column[:field]}
+                  phx-value-direction="right"
+                  class="w-full flex items-center gap-x-3 py-1.5 px-2 rounded-lg text-[13px] font-normal text-stone-800 hover:bg-stone-100 disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-300 focus:outline-hidden focus:bg-stone-100 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                >
+                  <.icon name="hero-arrow-right" class="shrink-0 size-3.5" />
+                  {gettext("Move right")}
+                </button>
               <% end %>
 
-              <%= if length(@column[:filterable]) > 1 do %>
-                <.dropdown>
-                  <:trigger_element>
-                    <div class="inline-flex items-center justify-center w-full align-middle focus:outline-hidden">
-                      <.icon name="hero-funnel" class="w-4 h-4 text-gray-400 dark:text-gray-600" />
-                      <.icon
-                        name="hero-chevron-down-solid"
-                        class="w-4 h-4 ml-1 -mr-1 text-gray-400 dark:text-gray-100"
-                      />
-                    </div>
-                  </:trigger_element>
-                  <div class="p-3 font-normal normal-case">
-                    <.form_field
-                      type="radio_group"
-                      form={f2}
-                      field={:op}
-                      label="Operation"
-                      options={@column.filterable |> Enum.map(&{get_filter_placeholder(&1), &1})}
-                    />
-                  </div>
-                </.dropdown>
-              <% else %>
-                {PhoenixHTMLHelpers.Form.hidden_input(f2, :op)}
+              <%= if @column[:hideable] != false do %>
+                <div class="my-1 border-t border-stone-200 dark:border-neutral-800"></div>
+                
+    <!-- Hide Column -->
+                <button
+                  type="button"
+                  phx-click="hide-column"
+                  phx-value-field={@column[:field]}
+                  class="w-full flex items-center gap-x-3 py-1.5 px-2 rounded-lg text-[13px] font-normal text-stone-800 hover:bg-stone-100 disabled:opacity-50 disabled:pointer-events-none dark:text-neutral-300 focus:outline-hidden focus:bg-stone-100 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                >
+                  <.icon name="hero-eye-slash" class="shrink-0 size-3.5" />
+                  {gettext("Hide in view")}
+                </button>
               <% end %>
             </div>
-          <% end %>
-        </.inputs_for>
-      <% end %>
+          </div>
+        <% else %>
+          <!-- Non-sortable column -->
+          <div class={[
+            "text-sm font-normal text-stone-500 dark:text-neutral-500",
+            if(@column[:align_right], do: "text-right", else: "")
+          ]}>
+            {get_label(@column)}
+          </div>
+        <% end %>
+        
+    <!-- Filters -->
+        <%= if @column[:filterable] && (@filtered? || !@no_results?) do %>
+          <.inputs_for :let={f2} field={@filter_form[:filters]}>
+            <%= if input_value(f2, :field) == @column.field do %>
+              <.field field={f2[:field]} type="hidden" />
+
+              <div class="flex items-center gap-2 mt-2">
+                <%= case @column[:type] do %>
+                  <% :integer -> %>
+                    <.number_input
+                      form={f2}
+                      field={:value}
+                      phx-debounce="200"
+                      placeholder={get_filter_placeholder(input_value(f2, :op))}
+                      class="!text-xs !py-1 !px-2 !rounded-lg !border-stone-200 dark:!border-neutral-700"
+                    />
+                  <% :float -> %>
+                    <.number_input
+                      form={f2}
+                      field={:value}
+                      phx-debounce="200"
+                      placeholder={get_filter_placeholder(input_value(f2, :op))}
+                      class="!text-xs !py-1 !px-2 !rounded-lg !border-stone-200 dark:!border-neutral-700"
+                      step={@column[:step] || 1}
+                    />
+                  <% :boolean -> %>
+                    <.select
+                      form={f2}
+                      field={:value}
+                      options={[{"True", true}, {"False", false}]}
+                      prompt="-"
+                      class="!text-xs !py-1 !px-2 !rounded-lg !border-stone-200 dark:!border-neutral-700"
+                      size="sm"
+                    />
+                  <% :select -> %>
+                    <.select
+                      form={f2}
+                      field={:value}
+                      options={@column[:options]}
+                      prompt={@column[:prompt] || "-"}
+                      class="!text-xs !py-1 !px-2 !rounded-lg !border-stone-200 dark:!border-neutral-700"
+                      size="sm"
+                    />
+                  <% _ -> %>
+                    <.search_input
+                      form={f2}
+                      field={:value}
+                      phx-debounce="200"
+                      placeholder={get_filter_placeholder(input_value(f2, :op))}
+                      class="!text-xs !py-1 !px-2 !rounded-lg !border-stone-200 dark:!border-neutral-700"
+                    />
+                <% end %>
+
+                <%= if length(@column[:filterable]) > 1 do %>
+                  <.dropdown js_lib="alpine_js">
+                    <:trigger_element>
+                      <button
+                        type="button"
+                        class="inline-flex items-center justify-center p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-neutral-700 focus:outline-hidden"
+                      >
+                        <.icon
+                          name="hero-funnel"
+                          class="w-3.5 h-3.5 text-stone-500 dark:text-neutral-400"
+                        />
+                      </button>
+                    </:trigger_element>
+                    <div class="p-3 font-normal normal-case">
+                      <.form_field
+                        type="radio_group"
+                        form={f2}
+                        field={:op}
+                        label={gettext("Filter type")}
+                        options={@column.filterable |> Enum.map(&{get_filter_placeholder(&1), &1})}
+                      />
+                    </div>
+                  </.dropdown>
+                <% else %>
+                  {PhoenixHTMLHelpers.Form.hidden_input(f2, :op)}
+                <% end %>
+              </div>
+            <% end %>
+          </.inputs_for>
+        <% end %>
+      </div>
     </.th>
     """
   end
@@ -139,21 +285,11 @@ defmodule PetalProWeb.DataTable.Header do
     end
   end
 
-  defp order_link(column, meta, currently_ordered, order_direction, base_url_params) do
+  defp order_link(column, meta, _currently_ordered, target_direction, base_url_params) do
     params =
       Map.merge(base_url_params, %{
         order_by: [column.field, column[:order_by_backup] || :inserted_at],
-        order_directions:
-          cond do
-            currently_ordered && order_direction == :desc ->
-              [:asc, :desc]
-
-            currently_ordered && order_direction == :asc ->
-              [:desc, :desc]
-
-            true ->
-              [:asc, :desc]
-          end
+        order_directions: [target_direction, :desc]
       })
 
     PetalProWeb.DataTable.build_url_query(meta, params)

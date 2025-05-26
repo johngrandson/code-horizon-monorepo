@@ -1,0 +1,38 @@
+<div>
+  <.form
+    for={@form}
+    id="app_module-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+  >
+    <.field type="text" field={@form[:code]} />
+
+    <.field type="text" field={@form[:name]} />
+
+    <.field type="textarea" field={@form[:description]} />
+
+    <.field type="text" field={@form[:version]} />
+
+    <.field
+      type="select"
+      field={@form[:status]}
+      options={Ecto.Enum.values(PetalPro.AppModules.AppModule, :status)}
+      prompt="Choose a value"
+    />
+
+    <.field type="text" field={@form[:price_id]} />
+
+    <.field type="checkbox" field={@form[:is_white_label_ready]} />
+
+    <.field type="checkbox" field={@form[:is_publicly_visible]} />
+
+    <.field type="text" field={@form[:setup_function]} />
+
+    <.field type="text" field={@form[:cleanup_function]} />
+
+    <div class="flex justify-end">
+      <.button type="submit" phx-disable-with="Saving..." label="Save" />
+    </div>
+  </.form>
+</div>

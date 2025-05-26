@@ -39,7 +39,8 @@ defmodule PetalProWeb.AdminLayoutComponent do
           Menus.get_link(:admin_posts, current_user),
           Menus.get_link(:admin_subscriptions, current_user),
           Menus.get_link(:admin_logs, current_user),
-          Menus.get_link(:admin_settings, current_user)
+          Menus.get_link(:admin_settings, current_user),
+          Menus.get_link(:admin_app_modules, current_user)
         ]
       },
       %{

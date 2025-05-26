@@ -32,8 +32,7 @@ defmodule PetalProWeb.OrgLayoutComponent do
     case membership.role do
       :member ->
         [
-          get_link(:org_dashboard, org),
-          get_link(:app_modules, org)
+          get_link(:org_dashboard, org)
         ]
 
       :admin ->
@@ -41,8 +40,7 @@ defmodule PetalProWeb.OrgLayoutComponent do
           [
             get_link(:org_dashboard, org),
             get_link(:org_settings, org),
-            get_link(:org_subscribe, org),
-            get_link(:app_modules, org)
+            get_link(:org_subscribe, org)
           ],
           & &1
         )
@@ -76,14 +74,5 @@ defmodule PetalProWeb.OrgLayoutComponent do
         icon: "hero-shopping-bag"
       }
     end
-  end
-
-  defp get_link(:app_modules, org) do
-    %{
-      name: :app_modules,
-      path: ~p"/app/org/#{org.slug}/app-modules",
-      label: gettext("App Modules"),
-      icon: "hero-cube"
-    }
   end
 end

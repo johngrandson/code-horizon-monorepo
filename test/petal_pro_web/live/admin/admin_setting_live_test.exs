@@ -1,4 +1,4 @@
-defmodule PetalProWeb.Admin.AdminSettingLiveTest do
+defmodule PetalProWeb.AdminSettingLiveTest do
   use PetalProWeb.ConnCase
 
   import PetalPro.SettingsFixtures

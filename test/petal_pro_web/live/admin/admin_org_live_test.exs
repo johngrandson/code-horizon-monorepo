@@ -1,4 +1,4 @@
-defmodule PetalProWeb.Admin.OrgLiveTest do
+defmodule PetalProWeb.AdminOrgLiveTest do
   use PetalProWeb.ConnCase
 
   import PetalPro.OrgsFixtures

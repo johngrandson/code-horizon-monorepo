@@ -236,6 +236,10 @@ defmodule PetalProWeb.DataTable do
   attr :base_url_params, :map, required: false
   attr :phx_hook, :string, required: false
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
+  attr :row_click, :any, default: nil, doc: "Function to handle row clicks"
+  attr :row_class, :any, default: nil, doc: "Function to generate row classes"
+  attr :selectable, :boolean, default: false, doc: "Enable row selection with checkboxes"
+  attr :selected_items, :list, default: [], doc: "List of selected item IDs"
 
   slot :col, required: true do
     attr :label, :string
@@ -246,6 +250,11 @@ defmodule PetalProWeb.DataTable do
     attr :date_format, :string
     attr :order_by_backup, :atom
 
+    attr :primary, :boolean, doc: "Styles text as primary (bold)"
+    attr :secondary, :boolean, doc: "Styles text as secondary (muted)"
+    attr :badge_colors, :map, doc: "Map of value to color classes for badge renderer"
+    attr :badge_icon, :fun, doc: "Function that returns icon component for badge"
+
     attr :type, :atom,
       values: [:integer, :float, :boolean, :select],
       doc: "What type of filter do you want this to be?"
@@ -255,13 +264,14 @@ defmodule PetalProWeb.DataTable do
     attr :prompt, :string, doc: "If type is select, what is the prompt? Defaults to '-'"
 
     attr :renderer, :atom,
-      values: [:plaintext, :checkbox, :date, :datetime, :money],
+      values: [:plaintext, :checkbox, :date, :datetime, :money, :badge, :code, :actions],
       doc: "How do you want your value to be rendered?"
 
     attr :align_right, :boolean, doc: "Aligns the column to the right"
   end
 
   slot :if_empty, required: false
+  slot :bulk_actions, required: false, doc: "Actions to show when items are selected"
 
   def data_table(assigns) do
     filter_changeset = build_filter_changeset(assigns.col, assigns.meta.flop)
@@ -307,10 +317,13 @@ defmodule PetalProWeb.DataTable do
               <% end %>
             </.tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-stone-200 dark:divide-neutral-700">
             <%= if @items == [] do %>
               <.tr>
-                <.td colspan={length(@col)}>
+                <.td
+                  colspan={length(@col)}
+                  class="px-4 py-8 text-center text-sm text-stone-500 dark:text-neutral-400"
+                >
                   {if @if_empty, do: render_slot(@if_empty), else: "No results"}
                 </.td>
               </.tr>
@@ -319,7 +332,7 @@ defmodule PetalProWeb.DataTable do
             <.tr :for={item <- @items}>
               <.td
                 :for={col <- @col}
-                class={"#{if col[:align_right], do: "text-right", else: ""} #{col[:class]}"}
+                class={"px-4 py-4 #{if col[:align_right], do: "text-right", else: ""} #{col[:class]}"}
               >
                 <%= if col[:inner_block] do %>
                   {render_slot(col, item)}
@@ -332,40 +345,50 @@ defmodule PetalProWeb.DataTable do
         </.table>
       </.form>
 
-      <div :if={@items != []} class="flex items-center justify-between mt-5">
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          <div>
-            {gettext("Showing")} {get_first_item_index(@meta)}-{get_last_item_index(@meta)} {gettext(
-              "of"
-            )} {@meta.total_count} {gettext("rows")}
-          </div>
-          <div :if={@page_sizes != []} class="flex gap-2">
-            <div>{gettext("Rows per page")}:</div>
-
-            <%= for page_size <- @page_sizes do %>
-              <%= if @meta.page_size == page_size do %>
-                <div class="font-semibold">{page_size}</div>
-              <% else %>
-                <.link
-                  patch={
-                    build_url_query(
-                      @meta,
-                      Map.merge(@base_url_params, %{page_size: page_size, page: 1})
-                    )
-                  }
-                  class="block text-blue-500 dark:text-blue-400"
-                >
-                  {page_size}
-                </.link>
+      <div :if={@items != []} class="mt-5 flex flex-wrap justify-between items-center gap-4">
+        <!-- Results count and rows per page selector -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <!-- Results count -->
+          <p class="text-sm text-stone-800 dark:text-neutral-200">
+            <span class="font-medium">
+              {get_first_item_index(@meta)}-{get_last_item_index(@meta)}
+            </span>
+            <span class="text-stone-500 dark:text-neutral-500">
+              {gettext("of")} {@meta.total_count} {gettext("results")}
+            </span>
+          </p>
+          
+    <!-- Rows per page selector -->
+          <div :if={@page_sizes != []} class="flex items-center gap-2 text-sm">
+            <span class="text-stone-500 dark:text-neutral-500">{gettext("Rows per page")}:</span>
+            <div class="flex items-center gap-1">
+              <%= for page_size <- @page_sizes do %>
+                <%= if @meta.page_size == page_size do %>
+                  <span class="min-h-9.5 min-w-9.5 flex justify-center items-center bg-stone-100 text-stone-800 py-2 px-3 text-sm rounded-lg dark:bg-neutral-700 dark:text-white">
+                    {page_size}
+                  </span>
+                <% else %>
+                  <.link
+                    patch={
+                      build_url_query(
+                        @meta,
+                        Map.merge(@base_url_params, %{page_size: page_size, page: 1})
+                      )
+                    }
+                    class="min-h-9.5 min-w-9.5 py-2 px-3 inline-flex justify-center items-center text-sm rounded-lg text-stone-800 hover:bg-stone-100 focus:outline-hidden focus:bg-stone-100 dark:text-white dark:hover:bg-white/10 dark:focus:bg-neutral-700 transition-colors"
+                  >
+                    {page_size}
+                  </.link>
+                <% end %>
               <% end %>
-            <% end %>
+            </div>
           </div>
         </div>
-
+        
+    <!-- Pagination component -->
         <%= if @meta.total_pages > 1 do %>
           <.pagination
             link_type="live_patch"
-            class="my-5"
             path={
               build_url_query(@meta, Map.merge(@base_url_params, %{page: ":page"}))
               |> String.replace("%3Apage", ":page")

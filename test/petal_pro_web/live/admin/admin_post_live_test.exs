@@ -1,4 +1,4 @@
-defmodule PetalProWeb.Admin.PostLiveTest do
+defmodule PetalProWeb.AdminPostLiveTest do
   use PetalProWeb.ConnCase
 
   import PetalPro.PostsFixtures

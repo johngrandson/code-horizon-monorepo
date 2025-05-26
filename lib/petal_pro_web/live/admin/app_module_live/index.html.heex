@@ -1,0 +1,149 @@
+<.admin_layout current_page={:admin_app_modules} current_user={@current_user}>
+  <.page_header
+    title={gettext("App modules")}
+    description={gettext("Manage all your existing app modules")}
+  >
+    <:action
+      label={gettext("New App module")}
+      to={~p"/admin/app-modules/new"}
+      color="white"
+      link_type="live_redirect"
+      icon="hero-plus"
+    />
+  </.page_header>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title}>
+      <.live_component
+        module={PetalProWeb.AdminAppModuleLive.FormComponent}
+        id={@app_module.id || :new}
+        action={@live_action}
+        app_module={@app_module}
+        return_to={current_index_path(@index_params)}
+      />
+    </.modal>
+  <% end %>
+  <.data_table meta={@meta} items={@app_modules} class="w-full">
+    <:if_empty>
+      <span>{gettext("No app modules found")}</span>
+    </:if_empty>
+    <:col field={:code} label={gettext("Code")} renderer={:code} sortable />
+    <:col field={:name} label={gettext("Name")} primary sortable />
+    <:col field={:description} label={gettext("Description")} secondary />
+    <:col field={:version} label={gettext("Version")} sortable />
+    <:col
+      field={:status}
+      label={gettext("Status")}
+      renderer={:badge}
+      sortable
+      badge_colors={
+        %{
+          :inactive => "bg-stone-100 text-stone-800 dark:bg-neutral-700 dark:text-neutral-200",
+          :active => "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-200",
+          :suspended => "bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-200"
+        }
+      }
+      badge_icon={
+        fn
+          :inactive ->
+            ~H"""
+            <.icon class="size-5 mr-1" name="hero-pause-circle" />
+            """
+
+          :active ->
+            ~H"""
+            <.icon class="size-5 mr-1" name="hero-check-circle" />
+            """
+
+          :suspended ->
+            ~H"""
+            <.icon class="size-5 mr-1" name="hero-exclamation-triangle" />
+            """
+
+          _ ->
+            nil
+        end
+      }
+    />
+
+    <:col :let={app_module} label={gettext("Actions")} align_right>
+      <div
+        class="relative inline-block text-left"
+        x-data="{ open: false }"
+        @click.away="open = false"
+      >
+        <div>
+          <button
+            type="button"
+            @click="open = !open"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-stone-200 bg-white text-stone-600 shadow-2xs transition-all hover:bg-stone-50 hover:text-stone-800 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+            id="menu-button"
+            aria-expanded="true"
+            aria-haspopup="true"
+          >
+            <span class="sr-only">Open options</span>
+            <.icon name="hero-ellipsis-vertical" class="size-4" />
+          </button>
+        </div>
+
+        <div
+          x-show="open"
+          x-transition:enter="transition ease-out duration-100"
+          x-transition:enter-start="transform opacity-0 scale-95"
+          x-transition:enter-end="transform opacity-100 scale-100"
+          x-transition:leave="transition ease-in duration-75"
+          x-transition:leave-start="transform opacity-100 scale-100"
+          x-transition:leave-end="transform opacity-0 scale-95"
+          class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg focus:outline-none dark:bg-neutral-800 dark:ring-white/10"
+          role="menu"
+          aria-orientation="vertical"
+          tabindex="-1"
+        >
+          <div class="py-1" role="none">
+            <!-- View Action -->
+            <.link
+              navigate={~p"/admin/app-modules/#{app_module}"}
+              class="group flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:focus-visible:bg-slate-800 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-slate-900"
+            >
+              <.icon
+                name="hero-eye"
+                class="size-5 text-slate-500 transition-colors duration-200 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-200"
+              />
+              <span>{gettext("View")}</span>
+            </.link>
+            
+<!-- Edit Action -->
+            <.link
+              patch={~p"/admin/app-modules/#{app_module}/edit"}
+              class="group flex w-full items-center gap-3  px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100 dark:focus-visible:bg-slate-800 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-slate-900"
+            >
+              <.icon
+                name="hero-pencil"
+                class="size-5 text-slate-500 transition-colors duration-200 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200"
+              />
+              <span>{gettext("Edit")}</span>
+            </.link>
+            
+<!-- Divider -->
+            <div class="my-1.5 border-t border-slate-200/80 dark:border-slate-700/80"></div>
+            
+<!-- Delete Action -->
+            <button
+              type="button"
+              phx-click="delete"
+              phx-value-id={app_module.id}
+              data-confirm={gettext("Are you sure you want to delete this module?")}
+              class="group flex w-full items-center gap-3  px-3 py-2.5 text-sm font-medium text-red-600 transition-colors duration-200 hover:bg-red-50 hover:text-red-700 focus:outline-none focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300 dark:focus-visible:bg-red-950/30 dark:focus-visible:ring-red-400 dark:focus-visible:ring-offset-slate-900"
+            >
+              <.icon
+                name="hero-trash"
+                class="size-5 text-red-500 transition-colors duration-200 group-hover:text-red-700 dark:text-red-400 dark:group-hover:text-red-300"
+              />
+              <span>{gettext("Delete")}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </:col>
+  </.data_table>
+</.admin_layout>

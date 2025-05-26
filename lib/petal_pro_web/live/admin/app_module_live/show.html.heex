@@ -1,0 +1,126 @@
+<.admin_layout current_page={:admin_users} current_user={@current_user}>
+  <.page_header title={gettext("App modules")} description={gettext("Manage your app modules")}>
+    <.button
+      link_type="live_patch"
+      label="Edit App module"
+      to={~p"/admin/app-modules/#{@app_module}/show/edit"}
+    />
+
+    <.button link_type="live_redirect" label="Back" to={~p"/admin/app-modules"} />
+  </.page_header>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title}>
+      <.live_component
+        module={PetalProWeb.AppModuleLive.FormComponent}
+        id={@app_module.id || :new}
+        action={@live_action}
+        app_module={@app_module}
+        return_to={~p"/admin/app-modules/#{@app_module}"}
+      />
+    </.modal>
+  <% end %>
+
+  <div class="max-w-lg">
+    <div class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Code
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.code}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Name
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.name}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Description
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.description}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Version
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.version}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Dependencies
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.dependencies}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Status
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.status}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Price
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.price_id}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Is white label ready
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.is_white_label_ready}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Is publicly visible
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.is_publicly_visible}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Setup function
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.setup_function}
+        </div>
+      </div>
+
+      <div class="sm:col-span-1">
+        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Cleanup function
+        </div>
+        <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+          {@app_module.cleanup_function}
+        </div>
+      </div>
+    </div>
+  </div>
+</.admin_layout>

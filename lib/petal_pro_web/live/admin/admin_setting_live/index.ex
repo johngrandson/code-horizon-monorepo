@@ -25,7 +25,7 @@ defmodule PetalProWeb.AdminSettingLive.Index do
   }
 
   @data_table_opts [
-    default_limit: 20,
+    default_limit: 10,
     default_order: %{
       order_by: [:key],
       order_directions: [:asc]

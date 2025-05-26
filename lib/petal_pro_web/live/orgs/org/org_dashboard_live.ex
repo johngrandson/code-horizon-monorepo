@@ -117,8 +117,8 @@ defmodule PetalProWeb.OrgDashboardLive do
 
       <.stat_card
         title={gettext("Pending Invitations")}
-        value="1"
-        icon="hero-clock"
+        value={Membership.pending_invitations_count(@current_org)}
+        icon="hero-user-plus"
         link_text={gettext("View Invitations")}
         navigate={~p"/app/org/#{@current_org.slug}/team"}
       />

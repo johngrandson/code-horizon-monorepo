@@ -76,6 +76,10 @@ defmodule PetalPro.Orgs.Membership do
     Repo.count(from(m in __MODULE__, where: m.org_id == ^org.id))
   end
 
+  def pending_invitations_count(%Org{} = org) do
+    Repo.count(from(m in __MODULE__, where: m.org_id == ^org.id and is_nil(m.user_id)))
+  end
+
   def insert_changeset(org, user, role \\ @default_role) do
     %__MODULE__{
       org_id: org.id,

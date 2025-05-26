@@ -33,6 +33,10 @@ defmodule PetalPro.Orgs do
     |> Repo.get_by!(slug: slug)
   end
 
+  def get_org(slug) when is_binary(slug) do
+    Repo.get_by(Org, slug: slug)
+  end
+
   def get_org!(slug) when is_binary(slug) do
     Repo.get_by!(Org, slug: slug)
   end

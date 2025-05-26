@@ -12,12 +12,7 @@
     />
   </.page_header>
 
-  <.data_table
-    :if={@index_params}
-    meta={@meta}
-    items={@settings}
-    page_size_options={[10, 20, 50, 100]}
-  >
+  <.data_table :if={@index_params} meta={@meta} items={@settings} page_size_options={[10, 20, 50]}>
     <:if_empty>{gettext("No settings found")}</:if_empty>
     <:col :let={setting} field={:key} label={gettext("Key")} sortable filterable={[:=~]}>
       <div class="font-medium text-gray-900 dark:text-white">

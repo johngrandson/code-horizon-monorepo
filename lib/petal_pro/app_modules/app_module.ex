@@ -23,7 +23,7 @@ defmodule PetalPro.AppModules.AppModule do
   Returns a changeset for the Module model.
   """
   def changeset(module, attrs) do
-    # Primeiro, use `cast` para lidar com a maioria dos campos e os defaults.
+    # Use `cast` to handle most fields and defaults.
     changeset =
       module
       |> cast(attrs, [
@@ -41,16 +41,13 @@ defmodule PetalPro.AppModules.AppModule do
       |> validate_required([:code, :name, :version, :status])
       |> unique_constraint(:code)
 
-    # Depois, lide com os campos JSONB separadamente, se eles foram passados nos `attrs`.
-    # Isso é importante para converter strings JSON (de formulários, por exemplo) para os tipos corretos.
-    # Se os campos não estiverem em `attrs` ou forem `nil`, o `cast` inicial já aplicou os defaults do schema.
+    # Handle JSONB fields
     changeset
     |> put_jsonb_field_if_present(:dependencies, attrs, :list)
     |> put_jsonb_field_if_present(:routes_definition, attrs, :map)
   end
 
-  # Helper para processar campos JSONB: decodifica se for string, caso contrário, usa o valor.
-  # Adiciona ao changeset se o campo estiver presente nos `attrs`.
+  # Helper to put JSONB fields in the changeset
   defp put_jsonb_field_if_present(changeset, field_atom, attrs, expected_type) do
     string_key = Atom.to_string(field_atom)
 
@@ -65,16 +62,16 @@ defmodule PetalPro.AppModules.AppModule do
           add_error(changeset, field_atom, reason)
       end
     else
-      # Campo não presente nos `attrs`, o `cast` inicial já lida com o default
       changeset
     end
   end
 
-  # Helper para decodificar valores JSON
+  # Helper to decode JSON values
   defp decode_json_value(value, _expected_type) when is_map(value) or is_list(value), do: {:ok, value}
-  # Permite nil, se o campo for opcional
+  # Handle nil values
   defp decode_json_value(nil, _expected_type), do: {:ok, nil}
 
+  # Handle JSON strings
   defp decode_json_value(json_string, expected_type) when is_binary(json_string) do
     case Jason.decode(json_string) do
       {:ok, parsed} ->
@@ -89,5 +86,6 @@ defmodule PetalPro.AppModules.AppModule do
     end
   end
 
+  # Handle invalid value types
   defp decode_json_value(_value, _expected_type), do: {:error, "invalid value type for JSON field"}
 end
