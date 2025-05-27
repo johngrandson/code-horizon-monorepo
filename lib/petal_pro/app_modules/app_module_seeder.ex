@@ -3,7 +3,8 @@ defmodule PetalPro.AppModules.AppModuleSeeder do
   @moduledoc """
   Seeds initial module data into the database.
   """
-  alias PetalPro.AppModules
+
+  import PetalPro.AppModules
 
   @doc """
   Seeds the predefined modules.
@@ -58,7 +59,7 @@ defmodule PetalPro.AppModules.AppModuleSeeder do
   end
 
   defp seed_app_module(attrs) do
-    case AppModules.create_app_module(attrs) do
+    case create_app_module(attrs) do
       {:ok, module} ->
         IO.puts("Module created: #{module.name}")
 

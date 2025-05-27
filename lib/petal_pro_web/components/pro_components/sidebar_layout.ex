@@ -34,6 +34,10 @@ defmodule PetalProWeb.SidebarLayout do
     default: [],
     doc: "The items that will be displayed in the main menu in the sidebar."
 
+  attr :modules_menu_items, :list,
+    default: [],
+    doc: "The items that will be displayed in the modules menu section of the sidebar."
+
   attr :user_menu_items, :list,
     default: [],
     doc: "The items that will be displayed in the user menu."
@@ -191,6 +195,13 @@ defmodule PetalProWeb.SidebarLayout do
               menu_items={@main_menu_items}
               current_page={@current_page}
               title={@sidebar_title}
+            />
+
+            <.sidebar_menu
+              :if={@modules_menu_items != []}
+              menu_items={@modules_menu_items}
+              current_page={@current_page}
+              title={@modules_menu_title}
             />
 
             <%= if render_slot(@sidebar) do %>

@@ -99,6 +99,9 @@ msgstr "Editar perfil"
 msgid "Name"
 msgstr "Nome"
 
+msgid "Version"
+msgstr "Versão"
+
 #: lib/petal_pro_web/live/user_settings/user_settings_layout_component.ex:16
 #: lib/petal_pro_web/menus.ex:92
 #, elixir-autogen, elixir-format
@@ -2473,3 +2476,26 @@ msgid "invitation"
 msgid_plural "invitations"
 msgstr[0] "convite"
 msgstr[1] "convites"
+
+msgid "Sort ascending"
+msgstr "Ordenar em ordem crescente"
+
+msgid "Sort descending"
+msgstr "Ordenar em ordem decrescente"
+
+msgid "Hide in view"
+msgstr "Ocultar na visualização"
+
+msgid "results"
+msgid_plural "results"
+msgstr[0] "resultado"
+msgstr[1] "resultados"
+
+msgid "Are you sure you want to delete this module?"
+msgstr "Tem certeza de que deseja excluir este módulo?"
+
+msgid "No app modules found"
+msgstr "Nenhum módulo de aplicativo encontrado"
+
+msgid "Virtual Queues"
+msgstr "Filas Virtuais"

@@ -35,7 +35,7 @@
   </.data_table>
 
   <%= if @live_action in [:new, :edit] do %>
-    <.modal title={@page_title} max_width="md">
+    <.modal title={@page_title} max_width="lg">
       <.live_component
         module={PetalProWeb.AdminOrgLive.FormComponent}
         id={@org.id || :new}

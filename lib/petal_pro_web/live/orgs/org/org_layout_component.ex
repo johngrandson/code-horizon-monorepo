@@ -19,13 +19,29 @@ defmodule PetalProWeb.OrgLayoutComponent do
     <.layout
       current_page={@current_page}
       current_user={@current_user}
-      main_menu_items={build_menu(@current_membership, @current_org)}
+      main_menu_items={build_combined_menu(@current_membership, @current_org)}
       type="sidebar"
       sidebar_title={@current_org.name}
     >
       {render_slot(@inner_block)}
     </.layout>
     """
+  end
+
+  defp build_combined_menu(membership, org) do
+    main_menu = build_menu(membership, org)
+    app_modules_menu = build_app_modules_menu(org)
+
+    combined =
+      case app_modules_menu do
+        [] ->
+          main_menu
+
+        modules ->
+          main_menu ++ modules
+      end
+
+    combined
   end
 
   defp build_menu(membership, org) do
@@ -46,6 +62,46 @@ defmodule PetalProWeb.OrgLayoutComponent do
         )
     end
   end
+
+  defp build_app_modules_menu(org) do
+    active_modules = has_active_modules?(org)
+
+    result =
+      case active_modules do
+        %{virtual_queues: true} ->
+          [get_link(:org_virtual_queues, org)]
+
+        _ ->
+          []
+      end
+
+    result
+  end
+
+  defp has_active_modules?(org) do
+    case org.module_subscriptions do
+      %Ecto.Association.NotLoaded{} ->
+        %{}
+
+      subscriptions when is_list(subscriptions) ->
+        subscriptions
+        |> Enum.filter(&subscription_active?/1)
+        |> Enum.reduce(%{}, fn subscription, acc ->
+          Map.put(acc, String.to_atom(subscription.module_code), true)
+        end)
+
+      _ ->
+        %{}
+    end
+  end
+
+  defp subscription_active?(%{active: true, expires_at: nil}), do: true
+
+  defp subscription_active?(%{active: true, expires_at: expires_at}) do
+    DateTime.before?(DateTime.utc_now(), expires_at)
+  end
+
+  defp subscription_active?(_), do: false
 
   defp get_link(:org_dashboard, org) do
     %{
@@ -74,5 +130,14 @@ defmodule PetalProWeb.OrgLayoutComponent do
         icon: "hero-shopping-bag"
       }
     end
+  end
+
+  defp get_link(:org_virtual_queues, org) do
+    %{
+      name: :org_virtual_queues,
+      path: ~p"/app/org/#{org.slug}/virtual-queues",
+      label: gettext("Virtual Queues"),
+      icon: "hero-megaphone"
+    }
   end
 end

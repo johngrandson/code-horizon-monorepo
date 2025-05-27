@@ -12,18 +12,13 @@
     />
   </.page_header>
 
-  <%= if @live_action in [:new, :edit] do %>
-    <.modal title={@page_title}>
-      <.live_component
-        module={PetalProWeb.AdminAppModuleLive.FormComponent}
-        id={@app_module.id || :new}
-        action={@live_action}
-        app_module={@app_module}
-        return_to={current_index_path(@index_params)}
-      />
-    </.modal>
-  <% end %>
-  <.data_table meta={@meta} items={@app_modules} class="w-full">
+  <.data_table
+    :if={@index_params}
+    meta={@meta}
+    items={@app_modules}
+    page_size_options={[10, 20, 30, 50]}
+    class="w-full"
+  >
     <:if_empty>
       <span>{gettext("No app modules found")}</span>
     </:if_empty>
@@ -146,4 +141,16 @@
       </div>
     </:col>
   </.data_table>
+
+  <%= if @live_action in [:new, :edit] do %>
+    <.modal title={@page_title} max_width="lg">
+      <.live_component
+        module={PetalProWeb.AdminAppModuleLive.FormComponent}
+        id={@app_module.id || :new}
+        action={@live_action}
+        app_module={@app_module}
+        return_to={current_index_path(@index_params)}
+      />
+    </.modal>
+  <% end %>
 </.admin_layout>

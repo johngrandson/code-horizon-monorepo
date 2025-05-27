@@ -57,7 +57,12 @@ defmodule PetalProWeb.AdminOrgLive.Show do
     {:noreply,
      socket
      |> put_flash(:info, gettext("%{model} successfully deleted", model: gettext("Membership")))
-     |> assign(:org, socket.assigns.org.slug |> Orgs.get_org!() |> Orgs.preload_org_memberships())}
+     |> assign(
+       :org,
+       socket.assigns.org.slug
+       |> Orgs.get_org!()
+       |> Orgs.preload_org_memberships()
+     )}
   end
 
   @impl true

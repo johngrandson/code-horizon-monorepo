@@ -6,6 +6,7 @@ defmodule PetalPro.Orgs do
   import PetalPro.Events.Modules.Notifications.Broadcaster
   import PetalPro.Events.Modules.Orgs.Broadcaster
 
+  alias PetalPro.AppModules.Subscription
   alias PetalPro.Events.Modules.Notifications.UserMailer
   alias PetalPro.Events.Modules.Notifications.UserNotification
   alias PetalPro.Events.Modules.Notifications.UserNotificationAttrs
@@ -57,6 +58,18 @@ defmodule PetalPro.Orgs do
     Repo.preload(org, memberships: :user)
   end
 
+  def preload_org_module_subscriptions(org) do
+    Repo.preload(org, :module_subscriptions)
+  end
+
+  def get_org_module_subscriptions(org) do
+    Repo.all(
+      from(s in Subscription,
+        where: s.org_id == ^org.id
+      )
+    )
+  end
+
   def list_org_admin_users(%Org{} = org) do
     Repo.all(
       from(m in Membership,
@@ -65,6 +78,10 @@ defmodule PetalPro.Orgs do
         select: %{user_id: u.id, user: u}
       )
     )
+  end
+
+  def get_app_module_subscription!(org, module_code) do
+    Repo.get_by(Subscription, org_id: org.id, module_code: module_code)
   end
 
   def create_org(attrs) do

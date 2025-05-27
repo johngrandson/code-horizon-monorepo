@@ -129,6 +129,9 @@ defmodule PetalProWeb.Router do
     use PetalProWeb.AdminRoutes
     use PetalProApi.Routes
 
+    # App Modules routes
+    use PetalProWeb.VirtualQueuesRoutes
+
     # DevRoutes must always be last
     use PetalProWeb.DevRoutes
   end

@@ -176,6 +176,13 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
   end
 
   @doc """
+  Soft archives all queues for a given organization.
+  """
+  def archive_org_queues(org_id) when is_integer(org_id) do
+    Repo.update_all(from(q in Queue, where: q.org_id == ^org_id), set: [status: :inactive])
+  end
+
+  @doc """
   Permanently deletes a queue and all associated tickets.
   ⚠️  Use with extreme caution - this cannot be undone.
   """

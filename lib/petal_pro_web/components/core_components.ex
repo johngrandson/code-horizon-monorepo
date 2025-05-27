@@ -188,6 +188,7 @@ defmodule PetalProWeb.CoreComponents do
   attr :public_menu_items, :list
   attr :main_menu_items, :list
   attr :user_menu_items, :list
+  attr :modules_menu_items, :list
   attr :avatar_src, :string
   attr :current_user_name, :string
   attr :sidebar_title, :string, default: nil

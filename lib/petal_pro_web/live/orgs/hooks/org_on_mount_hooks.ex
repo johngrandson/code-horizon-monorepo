@@ -58,7 +58,11 @@ defmodule PetalProWeb.OrgOnMountHooks do
 
   defp assign_current_membership(socket, params) do
     assign_new(socket, :current_membership, fn ->
-      params["org_slug"] && Orgs.get_membership!(socket.assigns.current_user, params["org_slug"])
+      if params["org_slug"] do
+        membership = Orgs.get_membership!(socket.assigns.current_user, params["org_slug"])
+
+        %{membership | org: Orgs.preload_org_module_subscriptions(membership.org)}
+      end
     end)
   end
 
