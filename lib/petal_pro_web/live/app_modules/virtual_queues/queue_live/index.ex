@@ -5,27 +5,37 @@ defmodule PetalProWeb.VirtualQueues.QueueLive.Index do
   """
   use PetalProWeb, :live_view
 
+  import PetalProWeb.AppModulesLayoutComponent
+  import PetalProWeb.DataTable.Actions
+
   alias PetalPro.AppModules.VirtualQueues.Queue
   alias PetalPro.AppModules.VirtualQueues.Queues
 
+  require Logger
+
   @data_table_opts [
-    default_limit: 25,
-    default_order: %{order_by: [:name], order_directions: [:asc]},
-    filterable: [:name, :status, :category],
-    sortable: [:name, :status, :current_ticket_number, :last_served_ticket_number, :inserted_at]
+    default_limit: 10,
+    default_order: %{
+      order_by: [:name],
+      order_directions: [:asc]
+    },
+    filterable: [
+      :name,
+      :status,
+      :category
+    ],
+    sortable: [
+      :name,
+      :status,
+      :current_ticket_number,
+      :last_served_ticket_number,
+      :inserted_at
+    ]
   ]
 
   @impl true
-  def mount(_params, _session, %{assigns: %{current_org: org}} = socket) do
-    queues = Queues.list_queues([], org.id)
-
-    socket =
-      socket
-      |> assign(:queues, queues)
-      |> assign(:data_table_opts, @data_table_opts)
-      |> assign(:selected_queue, nil)
-
-    {:ok, socket}
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, index_params: nil)}
   end
 
   @impl true
@@ -48,46 +58,14 @@ defmodule PetalProWeb.VirtualQueues.QueueLive.Index do
   end
 
   defp apply_action(socket, :index, params) do
-    # Handle DataTable parameters for filtering and sorting
-    filters = extract_filters(params)
-    queues = Queues.list_queues(filters, socket.assigns.current_org.id)
-
     socket
-    |> assign(:page_title, "Virtual Queues")
-    |> assign(:selected_queue, nil)
-    |> assign(:queues, queues)
+    |> assign(:page_title, "Listing Queues")
+    |> assign_queues(params)
+    |> assign(index_params: params)
   end
 
-  @impl true
-  def handle_info({VirtualQueuesWeb.QueueLive.FormComponent, {:saved, queue}}, socket) do
-    updated_queues = Queues.list_queues([], socket.assigns.current_org.id)
-
-    socket =
-      socket
-      |> put_flash(:info, "Queue #{queue.name} saved successfully")
-      |> assign(:queues, updated_queues)
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    queue = Queues.get_queue!(String.to_integer(id), socket.assigns.current_org.id)
-
-    case Queues.delete_queue(queue) do
-      {:ok, _} ->
-        updated_queues = Queues.list_queues([], socket.assigns.current_org.id)
-
-        socket =
-          socket
-          |> put_flash(:info, "Queue deleted successfully")
-          |> assign(:queues, updated_queues)
-
-        {:noreply, socket}
-
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Could not delete queue")}
-    end
+  defp current_index_path(socket, index_params) do
+    ~p"/app/org/#{socket.assigns.current_org.slug}/virtual-queues?#{index_params || %{}}"
   end
 
   @impl true
@@ -103,87 +81,154 @@ defmodule PetalProWeb.VirtualQueues.QueueLive.Index do
       end
 
     case result do
-      {:ok, updated_queue} ->
-        updated_queues = Queues.list_queues([], socket.assigns.current_org.id)
-
+      {:ok, _updated_queue} ->
         socket =
           socket
-          |> put_flash(:info, "Queue #{updated_queue.name} #{action}d successfully")
-          |> assign(:queues, updated_queues)
+          |> put_flash(:info, gettext("Queue status updated successfully"))
+          |> assign_queues(socket.assigns.index_params || %{})
 
         {:noreply, socket}
 
       {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Could not update queue status")}
+        {:noreply, put_flash(socket, :error, gettext("Could not update queue status"))}
     end
   end
 
   @impl true
-  def handle_event("filter", %{"filters" => filter_params}, socket) do
-    filters = build_filters(filter_params)
-    queues = Queues.list_queues(filters, socket.assigns.current_org.id)
+  def handle_event("delete", %{"id" => id}, socket) do
+    queue = Queues.get_queue!(String.to_integer(id), socket.assigns.current_org.id)
 
-    {:noreply, assign(socket, :queues, queues)}
-  end
+    case Queues.delete_queue(queue) do
+      {:ok, _} ->
+        socket =
+          socket
+          |> put_flash(:info, gettext("Queue deleted successfully"))
+          |> assign_queues(socket.assigns.index_params || %{})
 
-  # Helper functions
+        {:noreply, socket}
 
-  defp extract_filters(params) do
-    Enum.reduce(params, [], fn
-      {"filter_" <> key, value}, acc when value != "" ->
-        atom_key = String.to_atom(key)
-        [{atom_key, value} | acc]
-
-      _, acc ->
-        acc
-    end)
-  end
-
-  defp build_filters(filter_params) do
-    Enum.reduce(filter_params, [], fn
-      {key, value}, acc when value != "" and value != nil ->
-        case key do
-          "status" -> [{:status, String.to_atom(value)} | acc]
-          "name" -> [{:name, value} | acc]
-          _ -> acc
-        end
-
-      _, acc ->
-        acc
-    end)
-  end
-
-  defp queue_status_badge(status) do
-    case status do
-      :active -> {"Active", "success"}
-      :inactive -> {"Inactive", "gray"}
-      :paused -> {"Paused", "warning"}
-      _ -> {"Unknown", "gray"}
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, gettext("Could not delete queue"))}
     end
   end
 
-  defp queue_stats_summary(queue) do
-    stats = Queues.get_queue_stats(queue)
-
-    %{
-      waiting: stats.waiting,
-      total: stats.total,
-      operational: stats.operational
-    }
+  @impl true
+  def handle_event("update_filters", params, socket) do
+    query_params = PetalProWeb.DataTable.build_filter_params(socket.assigns.meta.flop, params)
+    {:noreply, push_patch(socket, to: ~p"/app/org/#{socket.assigns.current_org.slug}/virtual-queues?#{query_params}")}
   end
 
-  defp can_manage_queue?(queue) do
-    # Add permission logic here if needed
-    Queue.operational?(queue)
+  @impl true
+  def handle_event("close_modal", _, socket) do
+    {:noreply, push_patch(socket, to: current_index_path(socket, socket.assigns.index_params))}
   end
 
-  defp format_last_activity(queue) do
-    # Format the last activity timestamp
-    if queue.updated_at do
-      relative_time = Timex.from_now(queue.updated_at)
-      "Updated #{relative_time}"
+  defp assign_queues(socket, params) do
+    starting_query =
+      Queue
+      |> Queue.by_org(socket.assigns.current_org.id)
+      |> Queue.not_deleted()
+
+    {queues, meta} = PetalProWeb.DataTable.search(starting_query, params, @data_table_opts)
+    assign(socket, queues: queues, meta: meta)
+  end
+
+  defp queue_actions(queue, current_membership, current_org) do
+    base_actions = [
+      %{type: :view, route: ~p"/app/org/#{current_org.slug}/virtual-queues/#{queue}"},
+      %{type: :edit, route: ~p"/app/org/#{current_org.slug}/virtual-queues/#{queue}/edit"}
+    ]
+
+    status_actions = queue_status_actions(queue)
+    delete_actions = queue_delete_actions(queue, current_membership)
+
+    base_actions ++ status_actions ++ delete_actions
+  end
+
+  defp queue_status_actions(queue) do
+    case queue.status do
+      :active ->
+        [
+          %{type: :divider},
+          %{
+            type: :custom,
+            label: gettext("Pause Queue"),
+            icon: "hero-pause",
+            event: "toggle_status",
+            phx_value: %{action: "pause"},
+            class: "text-yellow-600 hover:bg-yellow-50"
+          },
+          %{
+            type: :custom,
+            label: gettext("Deactivate Queue"),
+            icon: "hero-stop",
+            event: "toggle_status",
+            phx_value: %{action: "deactivate"},
+            class: "text-orange-600 hover:bg-orange-50"
+          }
+        ]
+
+      :paused ->
+        [
+          %{type: :divider},
+          %{
+            type: :custom,
+            label: gettext("Resume Queue"),
+            icon: "hero-play",
+            event: "toggle_status",
+            phx_value: %{action: "activate"},
+            class: "text-green-600 hover:bg-green-50"
+          }
+        ]
+
+      :inactive ->
+        [
+          %{type: :divider},
+          %{
+            type: :custom,
+            label: gettext("Activate Queue"),
+            icon: "hero-play",
+            event: "toggle_status",
+            phx_value: %{action: "activate"},
+            class: "text-green-600 hover:bg-green-50"
+          }
+        ]
+    end
+  end
+
+  defp queue_delete_actions(queue, current_membership) do
+    if can_delete_queue?(current_membership, queue) do
+      [
+        %{type: :divider},
+        %{
+          type: :delete,
+          confirm: "Are you sure you want to delete '#{queue.name}'? This cannot be undone."
+        }
+      ]
     else
-      "No recent activity"
+      []
     end
+  end
+
+  # Permission helper (adjust based on your authorization system)
+  defp can_delete_queue?(membership, queue) do
+    membership.role in [:admin] and queue.status == :inactive
+  end
+
+  # Add helper function for status badge
+  defp queue_status_badge(assigns) do
+    {text, color} =
+      case assigns.status do
+        :active -> {gettext("Active"), "success"}
+        :inactive -> {gettext("Inactive"), "gray"}
+        :paused -> {gettext("Paused"), "warning"}
+        _ -> {gettext("Unknown"), "gray"}
+      end
+
+    assigns = assigns |> assign(:text, text) |> assign(:color, color)
+
+    ~H"""
+    <.badge color={@color}>{@text}</.badge>
+    """
   end
 end

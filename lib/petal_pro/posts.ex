@@ -76,6 +76,20 @@ defmodule PetalPro.Posts do
     |> Repo.preload(:author)
   end
 
+  def get_related_posts(current_post, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 4)
+
+    Repo.all(
+      from(p in Post,
+        where: p.id != ^current_post.id and p.last_published <= ^DateTime.utc_now(),
+        where: not is_nil(p.last_published),
+        order_by: [desc: p.last_published],
+        limit: ^limit,
+        select: [:id, :published_title, :published_slug, :published_cover, :published_summary, :published_duration]
+      )
+    )
+  end
+
   @doc """
   Gets a single post.
 

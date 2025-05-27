@@ -2499,3 +2499,69 @@ msgstr "Nenhum módulo de aplicativo encontrado"
 
 msgid "Virtual Queues"
 msgstr "Filas Virtuais"
+
+msgid "Pause Queue"
+msgstr "Pausar Fila"
+
+msgid "Activate Queue"
+msgstr "Ativar Fila"
+
+msgid "Deactivate Queue"
+msgstr "Desativar Fila"
+
+msgid "Resume Queue"
+msgstr "Retomar Fila"
+
+msgid "No queues found"
+msgstr "Nenhuma fila encontrada"
+
+msgid "Manage all your existing queues"
+msgstr "Gerencie todas as suas filas existentes"
+
+msgid "New Queue"
+msgstr "Nova Fila"
+
+msgid "Queues"
+msgstr "Filas"
+
+msgid "Current #"
+msgstr "# Atual"
+
+msgid "Last Served #"
+msgstr "# Atendido"
+
+msgid "Created at"
+msgstr "Criado em"
+
+msgid "Updated at"
+msgstr "Atualizado em"
+
+msgid "You don't have any queues yet, create one to get started."
+msgstr "Você não tem nenhuma fila ainda, crie uma para começar."
+
+msgid "Create New Queue"
+msgstr "Criar Nova Fila"
+
+msgid "Queue status updated successfully"
+msgstr "Status da fila atualizado com sucesso"
+
+msgid "Could not update queue status"
+msgstr "Não foi possível atualizar o status da fila"
+
+msgid "Active"
+msgstr "Ativo"
+
+msgid "Inactive"
+msgstr "Inativo"
+
+msgid "Paused"
+msgstr "Pausado"
+
+msgid "Monthly"
+msgstr "Mensal"
+
+msgid "Annually"
+msgstr "Anualmente"
+
+msgid "Meet The Team"
+msgstr "Nosso Time"

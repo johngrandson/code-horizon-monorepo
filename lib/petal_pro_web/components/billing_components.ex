@@ -21,7 +21,7 @@ defmodule PetalProWeb.BillingComponents do
             x-bind:class="{ 'bg-primary-500 text-white': interval == 'month' }"
           >
             <input type="radio" name="frequency" value="monthly" class="sr-only" />
-            <span>Monthly</span>
+            <span>{gettext("Monthly")}</span>
           </label>
           <label
             class="px-4 py-2 rounded-full cursor-pointer"
@@ -29,7 +29,7 @@ defmodule PetalProWeb.BillingComponents do
             x-bind:class="{ 'bg-primary-500 text-white': interval == 'year' }"
           >
             <input type="radio" name="frequency" value="annually" class="sr-only" />
-            <span>Annually</span>
+            <span>{gettext("Annually")}</span>
           </label>
         </div>
       </div>

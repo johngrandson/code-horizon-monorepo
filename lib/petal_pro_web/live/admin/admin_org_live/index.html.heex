@@ -18,7 +18,14 @@
     items={@orgs}
     page_size_options={[50, 100, 250, 500]}
   >
-    <:if_empty>{gettext("No %{models} found", models: gettext("Organizations"))}</:if_empty>
+    <:if_empty>
+      <.data_empty_state
+        title={gettext("No organizations found")}
+        description={gettext("You don't have any organizations yet, create one to get started.")}
+        create_action={~p"/admin/orgs/new"}
+        create_label={gettext("Create New Organization")}
+      />
+    </:if_empty>
     <:col :let={org} field={:slug} sortable label={gettext("Slug")} filterable={[:=~]}>
       <.link patch={~p"/admin/orgs/#{org}"} class="hover:underline">
         {org.slug}

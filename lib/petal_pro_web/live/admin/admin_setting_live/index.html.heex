@@ -13,7 +13,14 @@
   </.page_header>
 
   <.data_table :if={@index_params} meta={@meta} items={@settings} page_size_options={[10, 20, 50]}>
-    <:if_empty>{gettext("No settings found")}</:if_empty>
+    <:if_empty>
+      <.data_empty_state
+        title={gettext("No settings found")}
+        description={gettext("You don't have any settings yet, create one to get started.")}
+        create_action={~p"/admin/settings/new"}
+        create_label={gettext("Create New Setting")}
+      />
+    </:if_empty>
     <:col :let={setting} field={:key} label={gettext("Key")} sortable filterable={[:=~]}>
       <div class="font-medium text-gray-900 dark:text-white">
         {setting.key}

@@ -17,11 +17,6 @@ defmodule PetalProWeb.VirtualQueuesRoutes do
             {PetalProWeb.AppModuleOnMountHooks, {:require_module, "virtual_queues"}}
           ] do
           # # Queue management routes
-          # live "/virtual-queues", VirtualQueues.QueueLive.Index, :index
-          # live "/virtual-queues/new", VirtualQueues.QueueLive.Index, :new
-          # live "/virtual-queues/:id/edit", VirtualQueues.QueueLive.Index, :edit
-          # live "/virtual-queues/:id", VirtualQueues.QueueLive.Show, :show
-          # live "/virtual-queues/:id/show/edit", VirtualQueues.QueueLive.Show, :edit
 
           # # Queue management actions
           # live "/virtual-queues/:id/manage", VirtualQueues.QueueLive.Manage, :manage
@@ -46,8 +41,12 @@ defmodule PetalProWeb.VirtualQueuesRoutes do
             ] do
             # Organization-specific queue management
             live "/virtual-queues", VirtualQueues.QueueLive.Index, :index
+            live "/virtual-queues/new", VirtualQueues.QueueLive.Index, :new
+            live "/virtual-queues/:queue_id/edit", VirtualQueues.QueueLive.Index, :edit
+            live "/virtual-queues/:queue_id", VirtualQueues.QueueLive.Show, :show
+            live "/virtual-queues/:queue_id/show/edit", VirtualQueues.QueueLive.Show, :edit
             live "/virtual-queues/dashboard", VirtualQueues.DashboardLive, :dashboard
-            live "/virtual-queues/:id/manage", VirtualQueues.QueueLive.Manage, :manage
+            live "/virtual-queues/:queue_id/manage", VirtualQueues.QueueLive.Manage, :manage
           end
         end
       end

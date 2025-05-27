@@ -12,17 +12,6 @@ defmodule PetalProWeb.VirtualQueues.QueueLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        {@title}
-        <:subtitle>
-          <%= if @action == :edit do %>
-            Update queue information and settings
-          <% else %>
-            Create a new virtual queue for your organization
-          <% end %>
-        </:subtitle>
-      </.header>
-
       <.simple_form
         for={@form}
         id="queue-form"
@@ -88,9 +77,9 @@ defmodule PetalProWeb.VirtualQueues.QueueLive.FormComponent do
               phx-target={@myself}
             >
               <%= if @show_advanced do %>
-                <.icon name="heroicons.x_mark" class="w-4 h-4 mr-1" /> Hide
+                <.icon name="hero-x-mark" class="w-4 h-4 mr-1" /> Hide
               <% else %>
-                <.icon name="heroicons.chevron_down" class="w-4 h-4 mr-1" /> Show
+                <.icon name="hero-chevron-down" class="w-4 h-4 mr-1" /> Show
               <% end %>
             </.button>
           </div>

@@ -4,6 +4,7 @@ defmodule PetalProWeb.AdminAppModuleLive.Index do
 
   import PetalProWeb.AdminLayoutComponent
   import PetalProWeb.DataTable
+  import PetalProWeb.DataTable.Actions
   import PetalProWeb.PageComponents
 
   alias PetalPro.AppModules
@@ -61,19 +62,19 @@ defmodule PetalProWeb.AdminAppModuleLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit App module")
+    |> assign(:page_title, gettext("Edit App module"))
     |> assign(:app_module, AppModules.get_app_module!(id))
   end
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, "New App module")
+    |> assign(:page_title, gettext("New App module"))
     |> assign(:app_module, %AppModule{})
   end
 
   defp apply_action(socket, :index, params) do
     socket
-    |> assign(:page_title, "Listing App modules")
+    |> assign(:page_title, gettext("Listing App modules"))
     |> assign_app_modules(params)
     |> assign(index_params: params)
   end
@@ -96,7 +97,7 @@ defmodule PetalProWeb.AdminAppModuleLive.Index do
     socket =
       socket
       |> assign_app_modules(socket.assigns.index_params)
-      |> put_flash(:info, "App module deleted")
+      |> put_flash(:info, gettext("App module deleted"))
 
     {:noreply, socket}
   end
@@ -110,5 +111,17 @@ defmodule PetalProWeb.AdminAppModuleLive.Index do
     starting_query = AppModule
     {app_modules, meta} = PetalProWeb.DataTable.search(starting_query, params, @data_table_opts)
     assign(socket, app_modules: app_modules, meta: meta)
+  end
+
+  defp app_module_actions(app_module) do
+    [
+      %{type: :view, route: ~p"/admin/app-modules/#{app_module}"},
+      %{type: :edit, route: ~p"/admin/app-modules/#{app_module}/edit"},
+      %{type: :divider},
+      %{
+        type: :delete,
+        confirm: gettext("Are you sure you want to delete this module?")
+      }
+    ]
   end
 end

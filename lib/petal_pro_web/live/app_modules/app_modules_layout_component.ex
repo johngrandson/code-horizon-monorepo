@@ -1,4 +1,4 @@
-defmodule PetalProWeb.OrgLayoutComponent do
+defmodule PetalProWeb.AppModulesLayoutComponent do
   @moduledoc """
   A layout for any page scoped to an org. eg "Org dashboard", "Org settings", etc.
   """
@@ -14,7 +14,7 @@ defmodule PetalProWeb.OrgLayoutComponent do
 
   slot(:inner_block)
 
-  def org_layout(assigns) do
+  def app_modules_layout(assigns) do
     ~H"""
     <.layout
       current_page={@current_page}
@@ -23,7 +23,9 @@ defmodule PetalProWeb.OrgLayoutComponent do
       type="sidebar"
       sidebar_title={@current_org.name}
     >
-      {render_slot(@inner_block)}
+      <.container max_width="xl" class="my-4">
+        {render_slot(@inner_block)}
+      </.container>
     </.layout>
     """
   end
@@ -54,9 +56,7 @@ defmodule PetalProWeb.OrgLayoutComponent do
       :admin ->
         Enum.filter(
           [
-            get_link(:org_dashboard, org),
-            get_link(:org_settings, org),
-            get_link(:org_subscribe, org)
+            get_link(:org_dashboard, org)
           ],
           & &1
         )
@@ -107,32 +107,14 @@ defmodule PetalProWeb.OrgLayoutComponent do
     }
   end
 
-  defp get_link(:org_settings, org) do
-    %{
-      name: :org_settings,
-      path: ~p"/app/org/#{org.slug}/edit",
-      label: gettext("Org Settings"),
-      icon: "hero-cog"
-    }
-  end
-
-  defp get_link(:org_subscribe, org) do
+  defp get_link(:org_virtual_queues, org) do
     if Customers.entity() == :org do
       %{
-        name: :org_subscribe,
-        path: ~p"/app/org/#{org.slug}/subscribe",
-        label: gettext("Subscribe"),
-        icon: "hero-shopping-bag"
+        name: :org_virtual_queues,
+        path: ~p"/app/org/#{org.slug}/virtual-queues",
+        label: gettext("Virtual Queues"),
+        icon: "hero-ticket"
       }
     end
-  end
-
-  defp get_link(:org_virtual_queues, org) do
-    %{
-      name: :org_virtual_queues,
-      path: ~p"/app/org/#{org.slug}/virtual-queues",
-      label: gettext("Virtual Queues"),
-      icon: "hero-ticket"
-    }
   end
 end

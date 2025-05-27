@@ -177,12 +177,15 @@ config :petal_pro, :billing_provider_subscription_link, "https://dashboard.strip
 config :petal_pro, :billing_products, [
   %{
     id: "essential",
-    name: "Essential",
-    description: "Essential description",
+    name: "Starter",
+    description:
+      "Perfect for individuals and small teams getting started. Everything you need to launch your project with essential features and reliable support.",
     features: [
-      "Essential feature 1",
-      "Essential feature 2",
-      "Essential feature 3"
+      "Core functionality access",
+      "Email support",
+      "Basic analytics dashboard",
+      "Up to 5 team members",
+      "Standard integrations"
     ],
     plans: [
       %{
@@ -193,7 +196,7 @@ config :petal_pro, :billing_products, [
         allow_promotion_codes: true,
         trial_days: 7,
         items: [
-          %{price: "price_1NLhPDIWVkWpNCp7trePDpmi", quantity: 1}
+          %{price: "price_1RTFkcBTPi69gajjrwKAYWud", quantity: 1}
         ]
       },
       %{
@@ -203,7 +206,7 @@ config :petal_pro, :billing_products, [
         interval: :year,
         allow_promotion_codes: true,
         items: [
-          %{price: "price_1NWBYjIWVkWpNCp7pw4GpjI6", quantity: 1}
+          %{price: "price_1RTFkrBTPi69gajj4jGvTlSV", quantity: 1}
         ]
       }
     ]
@@ -211,12 +214,16 @@ config :petal_pro, :billing_products, [
   %{
     id: "business",
     name: "Business",
-    description: "Business description",
+    description:
+      "Designed for growing businesses that need advanced features, priority support, and scalability. The perfect balance of power and value for professional teams.",
     most_popular: true,
     features: [
-      "Business feature 1",
-      "Business feature 2",
-      "Business feature 3"
+      "All Starter features included",
+      "Priority email & chat support",
+      "Advanced analytics & reporting",
+      "Up to 25 team members",
+      "API access & webhooks",
+      "Custom branding options"
     ],
     plans: [
       %{
@@ -227,7 +234,7 @@ config :petal_pro, :billing_products, [
         allow_promotion_codes: true,
         trial_days: 7,
         items: [
-          %{price: "price_1NaFJNIWVkWpNCp77sx8X1HZ", quantity: 1}
+          %{price: "price_1RTFkcBTPi69gajjrwKAYWud", quantity: 1}
         ]
       },
       %{
@@ -237,7 +244,7 @@ config :petal_pro, :billing_products, [
         interval: :year,
         allow_promotion_codes: true,
         items: [
-          %{price: "price_1NaFJNIWVkWpNCp79dJ3d12W", quantity: 1}
+          %{price: "price_1RTFkrBTPi69gajj4jGvTlSV", quantity: 1}
         ]
       }
     ]
@@ -245,11 +252,16 @@ config :petal_pro, :billing_products, [
   %{
     id: "enterprise",
     name: "Enterprise",
-    description: "Enterprise description",
+    description:
+      "Complete solution for large organizations requiring premium features, dedicated support, advanced security, and custom integrations. Built for mission-critical operations.",
     features: [
-      "Enterprise feature 1",
-      "Enterprise feature 2",
-      "Enterprise feature 3"
+      "All Business features included",
+      "Dedicated account manager",
+      "24/7 phone & priority support",
+      "Unlimited team members",
+      "Advanced security & compliance",
+      "Custom integrations & SSO",
+      "On-premise deployment options"
     ],
     plans: [
       %{

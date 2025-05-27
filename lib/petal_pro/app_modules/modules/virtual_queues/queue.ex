@@ -86,8 +86,8 @@ defmodule PetalPro.AppModules.VirtualQueues.Queue do
 
     # Set appropriate timestamps based on status
     case new_status do
-      :active -> put_change(changeset, :activated_at, DateTime.utc_now())
-      :paused -> put_change(changeset, :paused_at, DateTime.utc_now())
+      :active -> put_change(changeset, :activated_at, DateTime.truncate(DateTime.utc_now(), :second))
+      :paused -> put_change(changeset, :paused_at, DateTime.truncate(DateTime.utc_now(), :second))
       _ -> changeset
     end
   end
@@ -108,7 +108,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Queue do
   """
   def delete_changeset(queue) do
     change(queue, %{
-      deleted_at: DateTime.utc_now(),
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second),
       status: :inactive,
       is_active: false
     })

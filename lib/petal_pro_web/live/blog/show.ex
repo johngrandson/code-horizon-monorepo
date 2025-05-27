@@ -2,8 +2,6 @@ defmodule PetalProWeb.BlogLive.Show do
   @moduledoc false
   use PetalProWeb, :live_view
 
-  import PetalProWeb.PageComponents
-
   alias PetalPro.Posts
 
   @impl true
@@ -18,7 +16,8 @@ defmodule PetalProWeb.BlogLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:post, post)}
+     |> assign(:post, post)
+     |> assign(:related_posts, get_related_posts(post))}
   rescue
     [Ecto.NoResultsError, Hashids.DecodingError] ->
       {:noreply,
@@ -30,6 +29,18 @@ defmodule PetalProWeb.BlogLive.Show do
   @impl true
   def handle_event("close_modal", _, socket) do
     {:noreply, push_patch(socket, to: ~p"/blog/#{socket.assigns.post}")}
+  end
+
+  defp get_related_posts(current_post) do
+    Posts.get_related_posts(current_post, limit: 4)
+  end
+
+  defp hero_background_style(post) do
+    if post.published_cover do
+      "background-image: url('#{post.published_cover}')"
+    else
+      ""
+    end
   end
 
   defp page_title(:show), do: "Show Post"

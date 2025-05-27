@@ -16,6 +16,7 @@
   <%% end %>
 
   <.data_table :if={@index_params} meta={@meta} items={@<%= schema.plural %>}>
+    <!-- TODO: Add new empty state component -->
     <:if_empty>No <%= schema.plural %> found</:if_empty><%= for {col, _} <- schema.attrs do %>
     <:col field={:<%= col %>} sortable /><% end %>
     <:col label="Actions" :let={<%= schema.singular %>} align_right>
