@@ -1,4 +1,4 @@
-defmodule PetalProWeb.AdminAppModuleLive.Index do
+defmodule PetalProWeb.AdminAppModulesLive.Index do
   @moduledoc false
   use PetalProWeb, :live_view
 

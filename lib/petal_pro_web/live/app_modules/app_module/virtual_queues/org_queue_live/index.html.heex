@@ -33,7 +33,7 @@
     <:col field={:name} label={gettext("Name")} primary sortable />
     <:col field={:description} label={gettext("Description")} secondary />
     <:col :let={queue} field={:status} label={gettext("Status")} sortable>
-      <.queue_status_badge status={queue.status} />
+      {queue.status}
     </:col>
     <:col field={:current_ticket_number} label={gettext("Current #")} sortable />
     <:col field={:last_served_ticket_number} label={gettext("Last Served #")} />
@@ -50,7 +50,7 @@
   <%= if @live_action in [:new, :edit] do %>
     <.modal title={@page_title} max_width="md">
       <.live_component
-        module={PetalProWeb.VirtualQueues.QueueLive.FormComponent}
+        module={PetalProWeb.VirtualQueues.OrgQueueLive.FormComponent}
         id={@selected_queue.id || :new}
         action={@live_action}
         queue={@selected_queue}

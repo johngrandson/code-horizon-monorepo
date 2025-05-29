@@ -19,9 +19,9 @@ defmodule PetalProWeb.VirtualQueuesRoutes do
           # # Queue management routes
 
           # # Queue management actions
-          # live "/virtual-queues/:id/manage", VirtualQueues.QueueLive.Manage, :manage
-          # live "/virtual-queues/:id/analytics", VirtualQueues.QueueLive.Analytics, :analytics
-          # live "/virtual-queues/:id/settings", VirtualQueues.QueueLive.Settings, :settings
+          # live "/virtual-queues/:id/manage", VirtualQueues.OrgQueueLive.Manage, :manage
+          # live "/virtual-queues/:id/analytics", VirtualQueues.OrgQueueLive.Analytics, :analytics
+          # live "/virtual-queues/:id/settings", VirtualQueues.OrgQueueLive.Settings, :settings
 
           # # Ticket management within queues
           # live "/virtual-queues/:queue_id/tickets", VirtualQueues.TicketLive.Index, :index
@@ -40,13 +40,12 @@ defmodule PetalProWeb.VirtualQueuesRoutes do
               {PetalProWeb.AppModuleOnMountHooks, {:require_module, "virtual_queues"}}
             ] do
             # Organization-specific queue management
-            live "/virtual-queues", VirtualQueues.QueueLive.Index, :index
-            live "/virtual-queues/new", VirtualQueues.QueueLive.Index, :new
-            live "/virtual-queues/:queue_id/edit", VirtualQueues.QueueLive.Index, :edit
-            live "/virtual-queues/:queue_id", VirtualQueues.QueueLive.Show, :show
-            live "/virtual-queues/:queue_id/show/edit", VirtualQueues.QueueLive.Show, :edit
-            live "/virtual-queues/dashboard", VirtualQueues.DashboardLive, :dashboard
-            live "/virtual-queues/:queue_id/manage", VirtualQueues.QueueLive.Manage, :manage
+            live "/virtual-queues", VirtualQueues.OrgQueueLive.Index, :index
+            live "/virtual-queues/new", VirtualQueues.OrgQueueLive.Index, :new
+            live "/virtual-queues/:queue_id/edit", VirtualQueues.OrgQueueLive.Index, :edit
+            live "/virtual-queues/:queue_id", VirtualQueues.OrgQueueLive.Show, :show
+            live "/virtual-queues/:queue_id/show/edit", VirtualQueues.OrgQueueLive.Show, :edit
+            live "/virtual-queues/:queue_id/manage", VirtualQueues.OrgQueueLive.Manage, :manage
           end
         end
       end
@@ -55,17 +54,24 @@ defmodule PetalProWeb.VirtualQueuesRoutes do
       scope "/", PetalProWeb do
         pipe_through [:browser, :public_layout]
 
-        # Public queue display - customers can view queue status
-        live "/queue/:queue_slug", VirtualQueues.DisplayLive.PublicQueue, :show
-        live "/queue/:queue_slug/join", VirtualQueues.DisplayLive.JoinQueue, :join
-        live "/queue/:queue_slug/status/:ticket_number", VirtualQueues.DisplayLive.TicketStatus, :status
+        live_session :virtual_queues_assigns_org_data,
+          on_mount: [
+            {PetalProWeb.OrgOnMountHooks, :assign_public_org_data}
+          ] do
+          # Public queue display - customers can view queue status
+          live "/queue/:org_slug/", VirtualQueues.DisplayQueueLive.ListQueues, :list
+          live "/queue/:org_slug/:queue_id/join", VirtualQueues.DisplayQueueLive.JoinQueue, :join
+          live "/queue/:org_slug/:queue_id/watch", VirtualQueues.DisplayQueueLive.WatchQueue, :watch
+          live "/queue/:org_slug/:queue_id", VirtualQueues.DisplayQueueLive.PublicQueue, :show
+          live "/queue/:org_slug/:queue_id/status/:ticket_number", VirtualQueues.DisplayQueueLive.TicketStatus, :status
 
-        # Kiosk mode - for touch screens in physical locations
-        live "/kiosk/:queue_slug", VirtualQueues.DisplayLive.Kiosk, :kiosk
-        live "/kiosk/:queue_slug/success", VirtualQueues.DisplayLive.Kiosk, :success
+          # Kiosk mode - for touch screens in physical locations
+          # live "/kiosk/:queue_id", VirtualQueues.DisplayQueueLive.Kiosk, :kiosk
+          # live "/kiosk/:queue_id/success", VirtualQueues.DisplayQueueLive.Kiosk, :success
 
-        # Display board - shows current queue status on large screens
-        live "/display/:queue_slug", VirtualQueues.DisplayLive.Board, :board
+          # Display board - shows current queue status on large screens
+          # live "/display/:queue_id", VirtualQueues.DisplayQueueLive.Board, :board
+        end
       end
 
       # # API routes for mobile apps and integrations

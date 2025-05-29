@@ -1,4 +1,4 @@
-defmodule PetalProWeb.AdminAppModuleLive.Show do
+defmodule PetalProWeb.AdminAppModulesLive.Show do
   @moduledoc false
   use PetalProWeb, :live_view
 

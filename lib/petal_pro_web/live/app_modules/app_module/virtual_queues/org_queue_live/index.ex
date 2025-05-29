@@ -1,4 +1,4 @@
-defmodule PetalProWeb.VirtualQueues.QueueLive.Index do
+defmodule PetalProWeb.VirtualQueues.OrgQueueLive.Index do
   @moduledoc """
   LiveView for listing and managing Virtual Queues.
   Provides CRUD operations and queue overview functionality.
@@ -213,22 +213,5 @@ defmodule PetalProWeb.VirtualQueues.QueueLive.Index do
   # Permission helper (adjust based on your authorization system)
   defp can_delete_queue?(membership, queue) do
     membership.role in [:admin] and queue.status == :inactive
-  end
-
-  # Add helper function for status badge
-  defp queue_status_badge(assigns) do
-    {text, color} =
-      case assigns.status do
-        :active -> {gettext("Active"), "success"}
-        :inactive -> {gettext("Inactive"), "gray"}
-        :paused -> {gettext("Paused"), "warning"}
-        _ -> {gettext("Unknown"), "gray"}
-      end
-
-    assigns = assigns |> assign(:text, text) |> assign(:color, color)
-
-    ~H"""
-    <.badge color={@color}>{@text}</.badge>
-    """
   end
 end

@@ -52,12 +52,12 @@ defmodule PetalProWeb.AdminRoutes do
           live "/settings/:id", AdminSettingLive.Show, :show
           live "/settings/:id/show/edit", AdminSettingLive.Show, :edit
 
-          live "/app-modules", AdminAppModuleLive.Index, :index
-          live "/app-modules/new", AdminAppModuleLive.Index, :new
-          live "/app-modules/:id/edit", AdminAppModuleLive.Index, :edit
+          live "/app-modules", AdminAppModulesLive.Index, :index
+          live "/app-modules/new", AdminAppModulesLive.Index, :new
+          live "/app-modules/:id/edit", AdminAppModulesLive.Index, :edit
 
-          live "/app-modules/:id", AdminAppModuleLive.Show, :show
-          live "/app-modules/:id/show/edit", AdminAppModuleLive.Show, :edit
+          live "/app-modules/:id", AdminAppModulesLive.Show, :show
+          live "/app-modules/:id/show/edit", AdminAppModulesLive.Show, :edit
         end
       end
     end

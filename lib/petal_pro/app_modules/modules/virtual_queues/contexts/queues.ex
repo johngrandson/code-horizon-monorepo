@@ -10,6 +10,16 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
   alias PetalPro.AppModules.VirtualQueues.Tickets
   alias PetalPro.Repo
 
+  require Logger
+
+  def health_check do
+    # TODO: validate the queue connection
+    case Repo.one(from(q in Queue, where: q.is_active == true)) do
+      nil -> :error
+      _ -> :ok
+    end
+  end
+
   @doc """
   Lists all active queues for a given organization with optional filters.
 
@@ -252,7 +262,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
       iex> add_ticket_to_queue(inactive_queue, %{customer_name: "Jane Doe"})
       {:error, :queue_not_operational}
   """
-  def add_ticket_to_queue(%Queue{} = queue, attrs) when is_map(attrs) do
+  def add_ticket_to_queue(%Queue{} = queue, org_id, attrs) when is_map(attrs) do
     # Pre-flight checks before transaction
     cond do
       not Queue.operational?(queue) ->
@@ -262,16 +272,18 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
         {:error, :daily_limit_reached}
 
       true ->
-        create_ticket_transaction(queue, attrs)
+        create_ticket_transaction(queue, org_id, attrs)
     end
   end
 
-  defp create_ticket_transaction(%Queue{} = queue, attrs) do
+  defp create_ticket_transaction(%Queue{} = queue, org_id, attrs) do
     Repo.transaction(fn ->
       # Lock the queue row to prevent race conditions on ticket number generation
       locked_queue =
         Queue
         |> where([q], q.id == ^queue.id)
+        |> Queue.by_org(org_id)
+        |> Queue.not_deleted()
         |> lock("FOR UPDATE")
         |> Repo.one!()
 
@@ -286,7 +298,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
       case locked_queue |> Queue.counter_changeset(%{current_ticket_number: next_ticket_number}) |> Repo.update() do
         {:ok, updated_queue} ->
           # Create the ticket with the newly generated number
-          case Tickets.create_ticket_with_number(attrs, updated_queue, next_ticket_number) do
+          case Tickets.create_ticket_with_number(updated_queue, next_ticket_number, org_id, attrs) do
             {:ok, ticket} -> ticket
             {:error, reason} -> Repo.rollback(reason)
           end
@@ -308,20 +320,22 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
   - `{:error, :queue_not_operational}` - Queue is not in an operational state
   - `{:error, reason}` - Other database or validation errors
   """
-  def call_next_ticket(%Queue{} = queue) do
+  def call_next_ticket(%Queue{} = queue, org_id) do
     if Queue.operational?(queue) do
-      call_next_ticket_transaction(queue)
+      call_next_ticket_transaction(queue, org_id)
     else
       {:error, :queue_not_operational}
     end
   end
 
-  defp call_next_ticket_transaction(%Queue{} = queue) do
+  defp call_next_ticket_transaction(%Queue{} = queue, org_id) do
     Repo.transaction(fn ->
       # Lock the queue to prevent concurrent modifications
       locked_queue =
         Queue
         |> where([q], q.id == ^queue.id)
+        |> Queue.by_org(org_id)
+        |> Queue.not_deleted()
         |> lock("FOR UPDATE")
         |> Repo.one!()
 
@@ -330,6 +344,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Queues do
         Repo.one(
           from(t in Ticket,
             where: t.queue_id == ^locked_queue.id and t.status == :waiting,
+            where: t.org_id == ^org_id,
             order_by: [asc: t.ticket_number],
             limit: 1
           )

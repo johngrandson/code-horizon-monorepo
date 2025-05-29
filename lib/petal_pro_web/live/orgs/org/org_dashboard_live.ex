@@ -39,7 +39,7 @@ defmodule PetalProWeb.OrgDashboardLive do
               current_org={@current_org}
               health_status={@health_status}
             />
-            <div :if={@is_org_admin} class="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+            <div :if={@is_org_admin} class="grid grid-cols-1 xl:grid-cols-1 gap-6 lg:gap-8">
               <.profile_setup_card />
             </div>
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">

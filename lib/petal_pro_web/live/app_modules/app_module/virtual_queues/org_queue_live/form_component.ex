@@ -1,4 +1,4 @@
-defmodule PetalProWeb.VirtualQueues.QueueLive.FormComponent do
+defmodule PetalProWeb.VirtualQueues.OrgQueueLive.FormComponent do
   @moduledoc """
   Form component for creating and editing Virtual Queues.
   Handles validation and submission of queue data.

@@ -11,6 +11,9 @@ defmodule PetalProWeb.OrgOnMountHooks do
 
   alias PetalPro.Orgs
 
+  @doc """
+  Assigns orgs, current membership, and current org for authenticated routes.
+  """
   def on_mount(:assign_org_data, params, _session, socket) do
     socket =
       socket
@@ -18,6 +21,13 @@ defmodule PetalProWeb.OrgOnMountHooks do
       |> assign_current_membership(params)
       |> assign_current_org()
       |> register_multi_org_handlers()
+
+    {:cont, socket}
+  end
+
+  def on_mount(:assign_public_org_data, params, _session, socket) do
+    socket =
+      assign_current_org(socket, :public, params)
 
     {:cont, socket}
   end
@@ -70,6 +80,12 @@ defmodule PetalProWeb.OrgOnMountHooks do
     assign_new(socket, :current_org, fn ->
       membership = socket.assigns.current_membership
       membership && membership.org
+    end)
+  end
+
+  defp assign_current_org(socket, :public, %{"org_slug" => org_slug}) do
+    assign_new(socket, :current_org, fn ->
+      Orgs.get_org!(org_slug)
     end)
   end
 

@@ -74,7 +74,7 @@
   <%= if @live_action in [:new, :edit] do %>
     <.modal title={@page_title} max_width="lg">
       <.live_component
-        module={PetalProWeb.AdminAppModuleLive.FormComponent}
+        module={PetalProWeb.AdminAppModulesLive.FormComponent}
         id={@app_module.id || :new}
         action={@live_action}
         app_module={@app_module}

@@ -1,4 +1,4 @@
-defmodule PetalProWeb.AdminAppModuleLive.FormComponent do
+defmodule PetalProWeb.AdminAppModulesLive.FormComponent do
   @moduledoc false
   use PetalProWeb, :live_component
 

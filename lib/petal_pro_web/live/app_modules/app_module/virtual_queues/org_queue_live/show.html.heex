@@ -1,0 +1,206 @@
+<.app_modules_layout
+  current_page={:org_virtual_queues}
+  current_user={@current_user}
+  current_org={@current_org}
+  current_membership={@current_membership}
+  socket={@socket}
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <.link
+        navigate={~p"/app/org/#{@current_org.slug}/virtual-queues"}
+        class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+      >
+        <.icon name="hero-arrow-left" class="w-5 h-5" />
+      </.link>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+            {@queue.name}
+          </h1>
+          <.badge color={status_color(@queue.status)}>
+            {String.capitalize(to_string(@queue.status))}
+          </.badge>
+        </div>
+        <p :if={@queue.description} class="text-gray-600 dark:text-gray-400 mt-1">
+          {@queue.description}
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <.link
+        navigate={~p"/app/org/#{@current_org.slug}/virtual-queues/#{@queue}/edit"}
+        class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
+      >
+        <.icon name="hero-pencil" class="w-4 h-4 mr-2" /> {gettext("Edit Queue")}
+      </.link>
+      <.link
+        navigate={~p"/queue/#{@current_org.slug}/#{@queue.id}"}
+        target="_blank"
+        class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
+      >
+        <.icon name="hero-arrow-top-right-on-square" class="w-4 h-4 mr-2" /> {gettext(
+          "Public View"
+        )}
+      </.link>
+    </div>
+  </div>
+  
+<!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <.stats_card title="Waiting" value={@stats.waiting_tickets} icon="hero-clock" color="blue" />
+    <.stats_card
+      title="Total Tickets"
+      value={@stats.total_tickets}
+      icon="hero-ticket"
+      color="gray"
+    />
+    <.stats_card
+      title="Served"
+      value={@stats.served_tickets}
+      icon="hero-check-circle"
+      color="green"
+    />
+  </div>
+  
+<!-- Queue Info -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Queue Details -->
+    <.custom_card>
+      <:header>{gettext("Queue Information")}</:header>
+      <div class="space-y-4">
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Ticket #</dt>
+          <dd class="text-lg font-semibold text-gray-900 dark:text-white">
+            {@queue.current_ticket_number}
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Served #</dt>
+          <dd class="text-lg font-semibold text-gray-900 dark:text-white">
+            {@queue.last_served_ticket_number}
+          </dd>
+        </div>
+
+        <div :if={@queue.max_tickets_per_day}>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Daily Ticket Limit</dt>
+          <dd class="text-lg font-semibold text-gray-900 dark:text-white">
+            {@queue.max_tickets_per_day}
+          </dd>
+        </div>
+
+        <div>
+          <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Daily Reset</dt>
+          <dd class="text-lg font-semibold text-gray-900 dark:text-white">
+            {if @queue.daily_reset, do: "Enabled", else: "Disabled"}
+          </dd>
+        </div>
+      </div>
+    </.custom_card>
+    
+<!-- Quick Stats -->
+    <.custom_card>
+      <:header>{gettext("Today's Overview")}</:header>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            {@stats.waiting_tickets}
+          </div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">In Queue</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-600 dark:text-green-400">
+            {@stats.served_tickets}
+          </div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">Served</div>
+        </div>
+      </div>
+    </.custom_card>
+  </div>
+  
+<!-- Action Cards Section -->
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+      {gettext("Queue Management")}
+    </h2>
+    
+<!-- Status Control Actions -->
+    <div class="mb-8">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+        {gettext("Status Control")}
+      </h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        <%= for action <- status_actions(@queue) do %>
+          <button
+            phx-click="toggle_status"
+            phx-value-action={action.action}
+            class="grid place-content-center space-y-4 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+          >
+            <.icon
+              name={action.icon}
+              class={"mx-auto h-12 w-12 #{action_color_class(action.color)}"}
+            />
+            <p class="text-base font-semibold text-gray-900 dark:text-white text-center">
+              {action.label}
+            </p>
+          </button>
+        <% end %>
+      </div>
+    </div>
+    
+<!-- Management Actions -->
+    <div class="mb-8">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+        {gettext("Queue Operations")}
+      </h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Call Next Ticket -->
+        <button
+          phx-click="call_next_ticket"
+          class="grid place-content-center space-y-4 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <.icon
+            name="hero-arrow-right"
+            class="mx-auto h-12 w-12 text-blue-500 dark:text-blue-400"
+          />
+          <p class="text-base font-semibold text-gray-900 dark:text-white text-center">
+            {gettext("Call Next Ticket")}
+          </p>
+        </button>
+        
+<!-- Reset Counters -->
+        <button
+          phx-click="reset_counters"
+          data-confirm="Reset all ticket counters to 0?"
+          class="grid place-content-center space-y-4 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <.icon
+            name="hero-arrow-path"
+            class="mx-auto h-12 w-12 text-orange-500 dark:text-orange-400"
+          />
+          <p class="text-base font-semibold text-gray-900 dark:text-white text-center">
+            {gettext("Reset Counters")}
+          </p>
+        </button>
+        
+<!-- View Analytics -->
+        <.link
+          navigate={~p"/app/org/#{@current_org.slug}/virtual-queues/#{@queue}/analytics"}
+          class="grid place-content-center space-y-4 overflow-hidden rounded-lg border border-gray-200 bg-white p-6 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <.icon
+            name="hero-chart-bar"
+            class="mx-auto h-12 w-12 text-purple-500 dark:text-purple-400"
+          />
+          <p class="text-base font-semibold text-gray-900 dark:text-white text-center">
+            {gettext("View Analytics")}
+          </p>
+        </.link>
+      </div>
+    </div>
+  </div>
+</.app_modules_layout>

@@ -2565,3 +2565,129 @@ msgstr "Anualmente"
 
 msgid "Meet The Team"
 msgstr "Nosso Time"
+
+msgid "Join the queue instantly with QR code"
+msgstr "Entre na fila instantaneamente lendo o QR Code"
+
+msgid "Announcements"
+msgstr "Anúncios"
+
+msgid "Current Serving"
+msgstr "Atendendo Agora"
+
+msgid "Est. Wait"
+msgstr "Tempo de Espera"
+
+msgid "Ahead of You"
+msgstr "Na frente de você"
+
+msgid "Use QR code to join queue quickly"
+msgstr "Use o QR code para entrar na fila"
+
+msgid "Get ticket and join with mobile or device"
+msgstr "Obtenha uma senha e entre com um celular ou dispositivo"
+
+msgid "Use ticket and 4-digit code to track and manage status"
+msgstr "Use a senha e o código de 4 dígitos para rastrear e gerenciar o status"
+
+msgid "Be ahead and plan your turn"
+msgstr "Se antecipe e planeje sua vez"
+
+msgid "Join Queue Now"
+msgstr "Entrar na fila"
+
+msgid "Tickets already called"
+msgstr "Tickets já chamados"
+
+msgid "Current Ticket"
+msgstr "Ticket Atual"
+
+msgid "People in Queue"
+msgstr "Pessoas na fila"
+
+msgid "Avg Wait Time"
+msgstr "Tempo de Espera Médio"
+
+msgid "Service Status"
+msgstr "Status do Serviço"
+
+msgid "Scan QR Code"
+msgstr "Leia o QR Code"
+
+msgid "Get Ticket"
+msgstr "Obtenha uma senha"
+
+msgid "Track Status"
+msgstr "Rastreie o status"
+
+msgid "Wait Your Turn"
+msgstr "Espere sua vez"
+
+msgid "People ahead"
+msgstr "Pessoas na frente"
+
+msgid "Point your camera at the QR code to join the queue"
+msgstr "Aponte sua câmera para o QR Code para entrar na fila"
+
+msgid "Get your ticket and join the queue"
+msgstr "Obtenha sua senha e entre na fila"
+
+msgid "Can't scan? No problem!"
+msgstr "Não consegue escanear? Não tem problema!"
+
+msgid "Send Via SMS"
+msgstr "Enviar por SMS"
+
+msgid "Generate QR Code"
+msgstr "Gerar QR Code"
+
+msgid "Touch to generate a QR code to join this queue"
+msgstr "Toque para ler o QR code e gerar um ticket"
+
+msgid "Queue Management System"
+msgstr "Sistema de Gerenciamento de Filas"
+
+msgid "Recently Served"
+msgstr "Atendidos Recentemente"
+
+msgid "Operating Hours"
+msgstr "Horário de Funcionamento"
+
+msgid "Priority Service"
+msgstr "Atendimento Prioritário"
+
+msgid "Currently Being Served"
+msgstr "Atendendo Agora"
+
+msgid "Next in Line"
+msgstr "Na Fila"
+
+msgid "Waiting"
+msgstr "Esperando"
+
+msgid "Average Wait"
+msgstr "Tempo de Espera Médio"
+
+msgid "Served Today"
+msgstr "Atendidos Hoje"
+
+msgid "In Service"
+msgstr "Em Atendimento"
+
+msgid "Next"
+msgstr "Próximo"
+
+msgid "Available"
+msgstr "Disponível"
+
+msgid "Video Area"
+msgstr "Área de Vídeo"
+
+msgid "Advertisement"
+msgstr "Anúncio"
+
+msgid "Advertisement Content"
+msgstr "Conteúdo de Anúncio"
+
+msgid "All Systems Active"
+msgstr "Todos os Sistemas Online"

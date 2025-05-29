@@ -13,7 +13,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Ticket do
     field :status, Ecto.Enum, values: [:waiting, :called, :serving, :completed, :missed, :cancelled], default: :waiting
     field :customer_name, :string
     # E.g., phone number or email for notifications
-    field :customer_contact, :string
+    field :customer_phone, :string
     # When the ticket was called
     field :called_at, :naive_datetime
     # When the customer started being served
@@ -24,7 +24,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Ticket do
     # Foreign key to the Queue
     belongs_to :queue, VirtualQueues.Queue, type: :integer
     # Optional: Foreign key to the User who obtained the ticket
-    belongs_to :user, PetalPro.Accounts.User, type: :integer, foreign_key: :user_id
+    belongs_to :customer, PetalPro.Accounts.User, type: :integer, foreign_key: :customer_id
 
     timestamps()
   end
@@ -38,9 +38,9 @@ defmodule PetalPro.AppModules.VirtualQueues.Ticket do
       :ticket_number,
       :status,
       :customer_name,
-      :customer_contact,
+      :customer_phone,
       :queue_id,
-      :user_id,
+      :customer_id,
       :called_at,
       :served_at,
       :completed_at

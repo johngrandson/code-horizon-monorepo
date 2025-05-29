@@ -84,8 +84,8 @@ defmodule PetalPro.AppModules.VirtualQueues.Tickets do
   This function is primarily used by the `Queues` context after number generation.
   Includes validation to prevent duplicate ticket numbers.
   """
-  def create_ticket_with_number(attrs, %Queue{} = queue, ticket_number)
-      when is_map(attrs) and is_integer(ticket_number) do
+  def create_ticket_with_number(%Queue{} = queue, ticket_number, org_id, attrs \\ %{})
+      when is_map(attrs) and is_integer(ticket_number) and is_integer(org_id) do
     # Validate ticket number is not already taken
     existing_ticket = get_ticket_by_number(ticket_number, queue.id)
 
@@ -98,6 +98,7 @@ defmodule PetalPro.AppModules.VirtualQueues.Tickets do
         |> Map.put(:ticket_number, ticket_number)
         |> Map.put(:status, :waiting)
         |> Map.put(:created_at, DateTime.utc_now())
+        |> Map.put(:org_id, org_id)
 
       %Ticket{}
       |> Ticket.changeset(attrs_with_queue)
