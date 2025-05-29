@@ -13,6 +13,7 @@ defmodule PetalPro.Application do
       PetalProWeb.Telemetry,
       PetalPro.Repo,
       Settings.Initializer,
+      PetalPro.QueueEventsTimer,
       {DNSCluster, query: Application.get_env(:petal_pro, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: PetalPro.PubSub},
       PetalProWeb.Presence,

@@ -7,56 +7,41 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
 
   import PetalProWeb.Components.QueueDashboard
 
+  alias PetalPro.QueueEventsTimer
+
+  require Logger
+
   @impl true
   def mount(_params, _session, socket) do
+    org_id = socket.assigns.current_org.id
+
     if connected?(socket) do
       :timer.send_interval(1000, self(), :tick)
-      :timer.send_interval(60_000, self(), :toggle_news)
+
+      case QueueEventsTimer.subscribe(org_id) do
+        :ok -> :ok
+        error -> Logger.warning("Failed to subscribe to queue events: #{inspect(error)}")
+      end
     end
 
     socket =
       socket
-      |> assign(:current_time, DateTime.now!("America/Sao_Paulo"))
-      |> assign(:is_dark, true)
-      |> assign(:show_merchandise, false)
-      |> assign(:show_news, false)
-      |> assign(:current_ticket, %{
-        number: "A047",
-        counter: 3,
-        service: "Atendimento Geral"
-      })
-      |> assign(:queue_items, [
-        %{ticket: "A048", status: :waiting},
-        %{ticket: "A049", status: :waiting},
-        %{ticket: "B012", status: :priority}
-      ])
-      |> assign(:counters, [
-        %{id: 1, status: :active, current_ticket: "A047", service: "Atendimento Geral"},
-        %{id: 2, status: :active, current_ticket: "B011", service: "Atendimento Prioritário"},
-        %{id: 3, status: :active, current_ticket: "C004", service: "Atendimento Empresarial"},
-        %{id: 4, status: :break, current_ticket: nil, service: nil},
-        %{id: 5, status: :active, current_ticket: "A046", service: "Atendimento Geral"},
-        %{id: 6, status: :active, current_ticket: "B010", service: "Atendimento Prioritário"},
-        %{id: 7, status: :offline, current_ticket: nil, service: nil},
-        %{id: 8, status: :offline, current_ticket: nil, service: nil}
-      ])
-      |> assign(:stats, %{
-        people_in_queue: 24,
-        average_time: "8min",
-        served_today: 142,
-        active_counters: "6/8"
-      })
-      |> assign(:news_items, [
-        "🔔 Lembrete: O atendimento será encerrado às 17h hoje",
-        "📋 Novos documentos necessários para abertura de conta corrente disponíveis no site",
-        "⏰ Horário especial de funcionamento no feriado: 8h às 12h",
-        "💳 Cartões com chip serão entregues em até 5 dias úteis",
-        "📱 Baixe nosso aplicativo e evite filas desnecessárias",
-        "🏦 Caixas eletrônicos em manutenção: 2, 5 e 7",
-        "📞 Central de atendimento 24h: 0800-123-4567"
-      ])
+      |> assign(:org_id, org_id)
+      |> assign_timer_states()
+      |> assign_queue_data()
+      |> assign_ui_data()
 
     {:ok, socket}
+  end
+
+  # ✅ Add cleanup when LiveView terminates
+  @impl true
+  def terminate(_reason, socket) do
+    if socket.assigns[:org_id] do
+      QueueEventsTimer.unsubscribe(socket.assigns.org_id)
+    end
+
+    :ok
   end
 
   @impl true
@@ -65,8 +50,21 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
   end
 
   @impl true
-  def handle_info(:toggle_news, socket) do
-    {:noreply, assign(socket, :show_news, !socket.assigns.show_news)}
+  def handle_info({:footer_news_state, show_footer_news, org_id}, socket) do
+    if org_id == socket.assigns.org_id do
+      {:noreply, assign(socket, :show_footer_news, show_footer_news)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_info({:merchandise_state, show_merchandise, org_id}, socket) do
+    if org_id == socket.assigns.org_id do
+      {:noreply, assign(socket, :show_merchandise, show_merchandise)}
+    else
+      {:noreply, socket}
+    end
   end
 
   @impl true
@@ -75,20 +73,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
   end
 
   @impl true
-  def handle_event("close_merchandise", _params, socket) do
-    {:noreply, assign(socket, :show_merchandise, false)}
-  end
-
-  @impl true
-  def handle_event("show_merchandise", _params, socket) do
-    {:noreply, assign(socket, :show_merchandise, true)}
-  end
-
-  # Função para simular chamada de próximo ticket
-  @impl true
   def handle_event("call_next", _params, socket) do
-    # Aqui você implementaria a lógica de chamar próximo ticket
-    # Por agora, apenas simulamos mudando o ticket atual
     next_ticket = List.first(socket.assigns.queue_items)
 
     if next_ticket do
@@ -115,6 +100,80 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
     else
       {:noreply, socket}
     end
+  end
+
+  # ✅ Extract timer states with error handling
+  defp assign_timer_states(socket) do
+    %{
+      show_merchandise: show_merchandise,
+      show_footer_news: show_footer_news
+    } = QueueEventsTimer.get_state()
+
+    socket
+    |> assign(:show_merchandise, show_merchandise)
+    |> assign(:show_footer_news, show_footer_news)
+  rescue
+    error ->
+      Logger.warning("Failed to get timer state: #{inspect(error)}")
+
+      socket
+      |> assign(:show_merchandise, false)
+      |> assign(:show_footer_news, false)
+  end
+
+  # Assign queue-related data
+  defp assign_queue_data(socket) do
+    socket
+    |> assign(:current_ticket, %{
+      number: "A047",
+      counter: 3,
+      service: "Atendimento Geral"
+    })
+    |> assign(:queue_items, [
+      %{ticket: "A048", status: :waiting},
+      %{ticket: "A049", status: :waiting},
+      %{ticket: "B012", status: :priority}
+    ])
+    |> assign(:counters, build_counters())
+    |> assign(:stats, %{
+      people_in_queue: 24,
+      average_time: "8min",
+      served_today: 142,
+      active_counters: "6/8"
+    })
+  end
+
+  # Assign UI-related data
+  defp assign_ui_data(socket) do
+    socket
+    |> assign(:current_time, DateTime.now!("America/Sao_Paulo"))
+    |> assign(:is_dark, true)
+    |> assign(:news_items, build_news_items())
+  end
+
+  defp build_counters do
+    [
+      %{id: 1, status: :active, current_ticket: "A047", service: "Atendimento Geral"},
+      %{id: 2, status: :active, current_ticket: "B011", service: "Atendimento Prioritário"},
+      %{id: 3, status: :active, current_ticket: "C004", service: "Atendimento Empresarial"},
+      %{id: 4, status: :break, current_ticket: nil, service: nil},
+      %{id: 5, status: :active, current_ticket: "A046", service: "Atendimento Geral"},
+      %{id: 6, status: :active, current_ticket: "B010", service: "Atendimento Prioritário"},
+      %{id: 7, status: :offline, current_ticket: nil, service: nil},
+      %{id: 8, status: :offline, current_ticket: nil, service: nil}
+    ]
+  end
+
+  defp build_news_items do
+    [
+      "🔔 Lembrete: O atendimento será encerrado às 17h hoje",
+      "📋 Novos documentos necessários para abertura de conta corrente disponíveis no site",
+      "⏰ Horário especial de funcionamento no feriado: 8h às 12h",
+      "💳 Cartões com chip serão entregues em até 5 dias úteis",
+      "📱 Baixe nosso aplicativo e evite filas desnecessárias",
+      "🏦 Caixas eletrônicos em manutenção: 2, 5 e 7",
+      "📞 Central de atendimento 24h: 0800-123-4567"
+    ]
   end
 
   @impl true
@@ -147,15 +206,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
                 else: "bg-gradient-to-r from-gray-700 to-slate-800"
               )
             ]}>
-              <!-- Monitor Icon SVG -->
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
+              <.icon name="hero-computer-desktop" class="w-8 h-8 text-white" />
             </div>
             <div>
               <h1 class={[
@@ -200,27 +251,12 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
               ]}
             >
               <%= if @is_dark do %>
-                <!-- Sun Icon SVG -->
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
+                <.icon name="hero-sun" class="w-5 h-5" />
               <% else %>
-                <!-- Moon Icon SVG -->
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                  />
-                </svg>
+                <.icon name="hero-moon" class="w-5 h-5" />
               <% end %>
             </button>
+
             <button
               phx-click="call_next"
               class={[
@@ -231,7 +267,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
                 )
               ]}
             >
-              <.icon name="hero-arrow-right" />
+              <.icon name="hero-arrow-right" class="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -397,7 +433,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
       </div>
       
     <!-- News Footer -->
-      <.news_footer :if={@show_news} news_items={@news_items} is_dark={@is_dark} />
+      <.news_footer :if={@show_footer_news} news_items={@news_items} is_dark={@is_dark} />
     </div>
     """
   end
