@@ -9,15 +9,15 @@ jobs:
   sync-trello:
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
       - name: Extract Trello Card ID
         id: extract
         run: |
-          # Extract branch name and PR title
           BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
           PR_TITLE="${{ github.event.pull_request.title || '' }}"
-
-          # Search for TRL-123 pattern in branch or title (case insensitive)
-          CARD_ID=$(echo "$BRANCH_NAME $PR_TITLE" | grep -oiE 'TRL-[0-9]+' | head -1 | tr '[:lower:]' '[:upper:]')
+          CARD_ID=$(echo "$BRANCH_NAME $PR_TITLE" | grep -oiE 'CH-[0-9]+' | head -1 | tr '[:lower:]' '[:upper:]')
 
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "card_id=$CARD_ID" >> $GITHUB_OUTPUT
@@ -38,45 +38,71 @@ jobs:
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
 
-          # Verify if the card exists
-          HTTP_STATUS=$(curl -s -o /tmp/trello_response.json -w "%{http_code}" \
-            "https://api.trello.com/1/cards/$CARD_ID?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}")
+          if [[ ! "$CARD_ID" =~ ^CH-[0-9]+$ ]]; then
+            echo "card_exists=false" >> $GITHUB_OUTPUT
+            echo "❌ Invalid card ID format: $CARD_ID (expected: CH-123)"
+            exit 0
+          fi
+
+          echo "🔍 Searching for cards with pattern: [$CARD_ID]"
+          SEARCH_QUERY="%5B${CARD_ID}%5D"
+
+          HTTP_STATUS=$(curl -s -o /tmp/trello_search.json -w "%{http_code}" \
+            "https://api.trello.com/1/search?query=${SEARCH_QUERY}&key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}&cards_limit=50")
+
+          echo "🔍 Search HTTP Status: $HTTP_STATUS"
 
           if [ "$HTTP_STATUS" = "200" ]; then
-            CARD_NAME=$(jq -r '.name // "Unknown"' /tmp/trello_response.json)
-            LIST_ID=$(jq -r '.idList // ""' /tmp/trello_response.json)
-            BOARD_ID=$(jq -r '.idBoard // ""' /tmp/trello_response.json)
+            echo "📋 Search results:"
+            jq -r '.cards[]? | .name' /tmp/trello_search.json | head -5
             
-            echo "card_exists=true" >> $GITHUB_OUTPUT
-            echo "card_name=$CARD_NAME" >> $GITHUB_OUTPUT
-            echo "list_id=$LIST_ID" >> $GITHUB_OUTPUT
-            echo "board_id=$BOARD_ID" >> $GITHUB_OUTPUT
-            echo "✅ Card found: $CARD_NAME"
+            REAL_CARD_ID=$(jq -r --arg pattern "\\[$CARD_ID\\]" '.cards[] | select(.name | test($pattern; "i")) | .id' /tmp/trello_search.json | head -1)
+            
+            if [ -n "$REAL_CARD_ID" ] && [ "$REAL_CARD_ID" != "null" ] && [ "$REAL_CARD_ID" != "" ]; then
+              CARD_NAME=$(jq -r --arg pattern "\\[$CARD_ID\\]" '.cards[] | select(.name | test($pattern; "i")) | .name' /tmp/trello_search.json | head -1)
+              LIST_ID=$(jq -r --arg pattern "\\[$CARD_ID\\]" '.cards[] | select(.name | test($pattern; "i")) | .idList' /tmp/trello_search.json | head -1)
+              BOARD_ID=$(jq -r --arg pattern "\\[$CARD_ID\\]" '.cards[] | select(.name | test($pattern; "i")) | .idBoard' /tmp/trello_search.json | head -1)
+              
+              echo "card_exists=true" >> $GITHUB_OUTPUT
+              echo "real_card_id=$REAL_CARD_ID" >> $GITHUB_OUTPUT
+              echo "card_name=$CARD_NAME" >> $GITHUB_OUTPUT
+              echo "list_id=$LIST_ID" >> $GITHUB_OUTPUT
+              echo "board_id=$BOARD_ID" >> $GITHUB_OUTPUT
+              echo "✅ Card found: $CARD_NAME"
+              echo "📋 Real Card ID: $REAL_CARD_ID"
+            else
+              echo "card_exists=false" >> $GITHUB_OUTPUT
+              echo "❌ No card found with pattern [$CARD_ID]"
+              echo "📋 Available cards in search results:"
+              jq -r '.cards[]? | "- \(.name)"' /tmp/trello_search.json 2>/dev/null | head -10 || echo "No cards found"
+            fi
           else
             echo "card_exists=false" >> $GITHUB_OUTPUT
-            echo "❌ Card $CARD_ID not found or inaccessible (HTTP $HTTP_STATUS)"
-            if [ -f /tmp/trello_response.json ]; then
-              echo "Response: $(cat /tmp/trello_response.json)"
+            echo "❌ Search failed (HTTP $HTTP_STATUS)"
+            if [ -f /tmp/trello_search.json ]; then
+              echo "Response content:"
+              cat /tmp/trello_search.json
             fi
           fi
 
-      - name: Update Card on PR Opened
+      - name: Update Card Description on PR Opened
         if: steps.verify_card.outputs.card_exists == 'true' && steps.extract.outputs.action == 'opened'
+        continue-on-error: true
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
           BRANCH_NAME="${{ github.head_ref }}"
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
 
-          # Create formatted description
-          DESCRIPTION="🔗 **Pull Request:** $PR_URL%0A%0A📋 **Status:** Em Review%0A🌿 **Branch:** \`$BRANCH_NAME\`%0A👤 **Autor:** @$PR_AUTHOR%0A⏰ **Aberto em:** $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # Create description with proper escaping
+          DESCRIPTION="🔗 Pull Request: $PR_URL\n\n📋 Status: Em Review\n🌿 Branch: $BRANCH_NAME\n👤 Autor: @$PR_AUTHOR\n⏰ Aberto em: $TIMESTAMP"
 
           HTTP_STATUS=$(curl -s -o /tmp/update_response.json -w "%{http_code}" \
-            -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
-            -G \
+            -X PUT "https://api.trello.com/1/cards/$REAL_CARD_ID" \
             -d "key=${{ secrets.TRELLO_API_KEY }}" \
             -d "token=${{ secrets.TRELLO_TOKEN }}" \
-            -d "desc=$DESCRIPTION")
+            --data-urlencode "desc=$DESCRIPTION")
 
           if [ "$HTTP_STATUS" = "200" ]; then
             echo "✅ Card description updated successfully"
@@ -87,30 +113,42 @@ jobs:
 
       - name: Move Card to Done on PR Merged
         if: steps.verify_card.outputs.card_exists == 'true' && steps.extract.outputs.is_merged == 'true'
+        continue-on-error: true
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           BOARD_ID="${{ steps.verify_card.outputs.board_id }}"
 
-          # Search for "Done", "Concluído", "Finalizado" or "Complete" list in the board
+          echo "🔄 Attempting to move card to Done list..."
+
           LISTS_RESPONSE=$(curl -s \
             "https://api.trello.com/1/boards/$BOARD_ID/lists?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}")
 
-          DONE_LIST_ID=$(echo "$LISTS_RESPONSE" | jq -r '.[] | select(.name | test("Done|Concluído|Finalizado|Complete"; "i")) | .id' | head -1)
-
-          if [ -n "$DONE_LIST_ID" ] && [ "$DONE_LIST_ID" != "null" ]; then
-            # Move card to Done
-            HTTP_STATUS=$(curl -s -o /tmp/move_response.json -w "%{http_code}" \
-              -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
-              -G \
-              -d "key=${{ secrets.TRELLO_API_KEY }}" \
-              -d "token=${{ secrets.TRELLO_TOKEN }}" \
-              -d "idList=$DONE_LIST_ID")
+          if echo "$LISTS_RESPONSE" | jq -e '.' >/dev/null 2>&1; then
+            echo "📋 Available lists:"
+            echo "$LISTS_RESPONSE" | jq -r '.[].name' | sort
             
-            if [ "$HTTP_STATUS" = "200" ]; then
-              echo "✅ Card moved to Done list successfully"
+            DONE_LIST_ID=$(echo "$LISTS_RESPONSE" | jq -r '.[] | select(.name | test("^(Done|Concluído|Finalizado|Complete|Terminado|Finished)$"; "i")) | .id' | head -1)
+            
+            if [ -n "$DONE_LIST_ID" ] && [ "$DONE_LIST_ID" != "null" ]; then
+              echo "✅ Found Done list: $DONE_LIST_ID"
+              
+              HTTP_STATUS=$(curl -s -o /tmp/move_response.json -w "%{http_code}" \
+                -X PUT "https://api.trello.com/1/cards/$REAL_CARD_ID" \
+                -d "key=${{ secrets.TRELLO_API_KEY }}" \
+                -d "token=${{ secrets.TRELLO_TOKEN }}" \
+                -d "idList=$DONE_LIST_ID")
+              
+              if [ "$HTTP_STATUS" = "200" ]; then
+                echo "✅ Card moved to Done list successfully"
+              else
+                echo "❌ Failed to move card (HTTP $HTTP_STATUS)"
+                if [ -f /tmp/move_response.json ]; then
+                  cat /tmp/move_response.json
+                fi
+              fi
             else
-              echo "❌ Failed to move card (HTTP $HTTP_STATUS)"
-              cat /tmp/move_response.json
+              echo "❌ Done list not found."
+              echo "💡 Create a list named 'Done', 'Concluído', or 'Finalizado' to enable auto-moving"
             fi
           else
             echo "❌ Done list not found. Available lists:"
@@ -119,19 +157,20 @@ jobs:
 
       - name: Add Comment on PR Merged
         if: steps.verify_card.outputs.card_exists == 'true' && steps.extract.outputs.is_merged == 'true'
+        continue-on-error: true
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
           MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
 
-          COMMENT_TEXT="🎉 **Pull Request Merged!**%0A%0A✅ PR: $PR_URL%0A🔄 Merge commit: \`${MERGE_COMMIT:0:7}\`%0A⏰ Merged at: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          COMMENT_TEXT="🎉 Pull Request Merged!\n\n✅ PR: $PR_URL\n🔄 Merge commit: ${MERGE_COMMIT:0:7}\n⏰ Merged at: $TIMESTAMP"
 
           HTTP_STATUS=$(curl -s -o /tmp/comment_response.json -w "%{http_code}" \
-            -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
-            -G \
+            -X POST "https://api.trello.com/1/cards/$REAL_CARD_ID/actions/comments" \
             -d "key=${{ secrets.TRELLO_API_KEY }}" \
             -d "token=${{ secrets.TRELLO_TOKEN }}" \
-            -d "text=$COMMENT_TEXT")
+            --data-urlencode "text=$COMMENT_TEXT")
 
           if [ "$HTTP_STATUS" = "200" ]; then
             echo "✅ Merge comment added successfully"
@@ -142,18 +181,19 @@ jobs:
 
       - name: Add Comment on PR Closed (Not Merged)
         if: steps.verify_card.outputs.card_exists == 'true' && steps.extract.outputs.action == 'closed' && steps.extract.outputs.is_merged == 'false'
+        continue-on-error: true
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
 
-          COMMENT_TEXT="❌ **Pull Request Fechado (Não Merged)**%0A%0A🔗 PR: $PR_URL%0A⏰ Fechado em: $(date -u '+%Y-%m-%d %H:%M UTC')%0A%0A💡 O trabalho pode precisar ser retomado ou reorganizado."
+          COMMENT_TEXT="❌ Pull Request Fechado (Não Merged)\n\n🔗 PR: $PR_URL\n⏰ Fechado em: $TIMESTAMP\n\n💡 O trabalho pode precisar ser retomado ou reorganizado."
 
           HTTP_STATUS=$(curl -s -o /tmp/comment_response.json -w "%{http_code}" \
-            -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
-            -G \
+            -X POST "https://api.trello.com/1/cards/$REAL_CARD_ID/actions/comments" \
             -d "key=${{ secrets.TRELLO_API_KEY }}" \
             -d "token=${{ secrets.TRELLO_TOKEN }}" \
-            -d "text=$COMMENT_TEXT")
+            --data-urlencode "text=$COMMENT_TEXT")
 
           if [ "$HTTP_STATUS" = "200" ]; then
             echo "✅ Closure comment added successfully"
@@ -164,19 +204,20 @@ jobs:
 
       - name: Add Deploy Comment on Push to Main
         if: steps.verify_card.outputs.card_exists == 'true' && (contains(github.ref, 'refs/heads/main') || contains(github.ref, 'refs/heads/master'))
+        continue-on-error: true
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           COMMIT_SHA="${{ github.sha }}"
           COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
 
-          COMMENT_TEXT="🚀 **Deploy Realizado!**%0A%0A🔄 Commit: [\`${COMMIT_SHA:0:7}\`]($COMMIT_URL)%0A⏰ Deploy em: $(date -u '+%Y-%m-%d %H:%M UTC')%0A🌐 Branch: ${{ github.ref_name }}"
+          COMMENT_TEXT="🚀 Deploy Realizado!\n\n🔄 Commit: ${COMMIT_SHA:0:7}\n🔗 Ver commit: $COMMIT_URL\n⏰ Deploy em: $TIMESTAMP\n🌐 Branch: ${{ github.ref_name }}"
 
           HTTP_STATUS=$(curl -s -o /tmp/comment_response.json -w "%{http_code}" \
-            -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
-            -G \
+            -X POST "https://api.trello.com/1/cards/$REAL_CARD_ID/actions/comments" \
             -d "key=${{ secrets.TRELLO_API_KEY }}" \
             -d "token=${{ secrets.TRELLO_TOKEN }}" \
-            -d "text=$COMMENT_TEXT")
+            --data-urlencode "text=$COMMENT_TEXT")
 
           if [ "$HTTP_STATUS" = "200" ]; then
             echo "✅ Deploy comment added successfully"
@@ -185,9 +226,47 @@ jobs:
             cat /tmp/comment_response.json
           fi
 
+      - name: Debug Trello API (if card not found)
+        if: steps.extract.outputs.card_id != '' && steps.verify_card.outputs.card_exists != 'true'
+        continue-on-error: true
+        run: |
+          echo "🔍 Debugging Trello API access..."
+
+          HTTP_STATUS=$(curl -s -o /tmp/trello_me.json -w "%{http_code}" \
+            "https://api.trello.com/1/members/me?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}")
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            MEMBER_NAME=$(jq -r '.fullName // .username // "Unknown"' /tmp/trello_me.json)
+            echo "✅ API connection successful - Logged in as: $MEMBER_NAME"
+            
+            echo "📋 Testing board access..."
+            BOARDS_STATUS=$(curl -s -o /tmp/trello_boards.json -w "%{http_code}" \
+              "https://api.trello.com/1/members/me/boards?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}")
+            
+            if [ "$BOARDS_STATUS" = "200" ]; then
+              echo "Accessible boards:"
+              jq -r '.[] | "- \(.name) (ID: \(.id))"' /tmp/trello_boards.json | head -5
+              
+              echo ""
+              echo "💡 Troubleshooting tips:"
+              echo "1. Ensure your card name contains exactly [${{ steps.extract.outputs.card_id }}]"
+              echo "2. Check if the card is in one of the boards listed above"
+              echo "3. Make sure the board is not archived"
+            else
+              echo "❌ Failed to list boards (HTTP $BOARDS_STATUS)"
+            fi
+          else
+            echo "❌ API connection failed (HTTP $HTTP_STATUS)"
+            echo "Check your TRELLO_API_KEY and TRELLO_TOKEN secrets"
+            if [ -f /tmp/trello_me.json ]; then
+              cat /tmp/trello_me.json
+            fi
+          fi
+
       - name: Workflow Summary
         if: always()
         run: |
+          echo ""
           echo "=== TRELLO SYNC SUMMARY ==="
           echo "Card ID: ${{ steps.extract.outputs.card_id || 'Not found' }}"
           echo "Card Exists: ${{ steps.verify_card.outputs.card_exists || 'Not checked' }}"
@@ -195,4 +274,15 @@ jobs:
           echo "Action: ${{ steps.extract.outputs.action }}"
           echo "Is Merged: ${{ steps.extract.outputs.is_merged }}"
           echo "Branch: ${{ steps.extract.outputs.branch_name }}"
+          echo ""
+          echo "🔍 Event Details:"
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo ""
+          if [ "${{ steps.verify_card.outputs.card_exists }}" = "true" ]; then
+            echo "✅ Trello integration executed successfully"
+          else
+            echo "❌ Trello integration skipped (card not found or pattern missing)"
+          fi
           echo "=========================="
