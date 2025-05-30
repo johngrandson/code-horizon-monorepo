@@ -16,8 +16,8 @@ jobs:
           BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
           PR_TITLE="${{ github.event.pull_request.title || '' }}"
 
-          # Search for TRL-123 pattern in branch or title (case insensitive)
-          CARD_ID=$(echo "$BRANCH_NAME $PR_TITLE" | grep -oiE 'TRL-[0-9]+' | head -1 | tr '[:lower:]' '[:upper:]')
+          # Search for CH-123 pattern in branch or title (case insensitive)
+          CARD_ID=$(echo "$BRANCH_NAME $PR_TITLE" | grep -oiE 'CH-[0-9]+' | head -1 | tr '[:lower:]' '[:upper:]')
 
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "card_id=$CARD_ID" >> $GITHUB_OUTPUT
