@@ -582,6 +582,11 @@ Set up regular database backups using `pg_dump`:
 
 If you're using local file storage, make sure to back up the `priv/static/uploads` directory.
 
+
+### CI/CD
+
+We use GitHub Actions for CI/CD. The workflow is defined in `.github/workflows/` directory.
+
 ## Security
 
 - Keep your dependencies up to date with `mix deps.update --all`
