@@ -73,7 +73,12 @@ jobs:
           AUTHOR="${{ github.event.pull_request.user.login }}"
           BRANCH="${{ github.head_ref }}"
 
-          DESCRIPTION="🔗 Pull Request: $PR_URL\n\n📋 Status: In Review\n🌿 Branch: $BRANCH\n👤 Author: @$AUTHOR\n⏰ Opened: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          DESCRIPTION="**🔗 Pull Request:** $PR_URL
+
+          **📋 Status:** In Review  
+          **🌿 Branch:** $BRANCH  
+          **👤 Author:** @$AUTHOR  
+          **⏰ Opened:** $(date -u '+%Y-%m-%d %H:%M UTC')"
 
           curl -s -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
             -d "key=${{ secrets.TRELLO_API_KEY }}" \
@@ -116,14 +121,25 @@ jobs:
 
           # Determine comment text based on event
           if [ "${{ steps.extract.outputs.is_merged }}" = "true" ]; then
-            TEXT="🎉 Pull Request Merged!\n\n✅ PR: ${{ github.event.pull_request.html_url }}\n🔄 Commit: ${{ github.sha }}\n⏰ $(date -u '+%Y-%m-%d %H:%M UTC')"
-          elif [ "${{ github.event.action }}" = "closed" ]; then
-            TEXT="❌ Pull Request Closed (Not Merged)\n\n🔗 PR: ${{ github.event.pull_request.html_url }}\n⏰ $(date -u '+%Y-%m-%d %H:%M UTC')"
-          elif [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" =~ main|master ]]; then
-            TEXT="🚀 Deployed to Production!\n\n🔄 Commit: ${{ github.sha }}\n🌐 Branch: ${{ github.ref_name }}\n⏰ $(date -u '+%Y-%m-%d %H:%M UTC')"
-          else
-            exit 0
-          fi
+            TEXT="🎉 **Pull Request Merged!**
+
+            **✅ PR:** ${{ github.event.pull_request.html_url }}  
+            **🔄 Commit:** ${{ github.sha }}  
+            **⏰ Merged:** $(date -u '+%Y-%m-%d %H:%M UTC')"
+            elif [ "${{ github.event.action }}" = "closed" ]; then
+              TEXT="❌ **Pull Request Closed (Not Merged)**
+
+            **🔗 PR:** ${{ github.event.pull_request.html_url }}  
+            **⏰ Closed:** $(date -u '+%Y-%m-%d %H:%M UTC')"
+            elif [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" =~ main|master ]]; then
+              TEXT="🚀 **Deployed to Production!**
+
+            **🔄 Commit:** ${{ github.sha }}  
+            **🌐 Branch:** ${{ github.ref_name }}  
+            **⏰ Deployed:** $(date -u '+%Y-%m-%d %H:%M UTC')"
+            else
+              exit 0
+            fi
 
           curl -s -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
             -d "key=$API_KEY" \
