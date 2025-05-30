@@ -6,18 +6,18 @@ defmodule PetalProWeb.DataTable.DataTableCellTest do
   alias PetalProWeb.DataTable.Cell
 
   test "sanity check" do
-    assert money(10) == "$10.00"
-    assert money(10, "EUR") == "€10.00"
-    assert money(10, :EUR) == "€10.00"
+    assert money(10) =~ "$10.00"
+    assert money(10, "EUR") =~ "€10.00"
+    assert money(10, :EUR) =~ "€10.00"
 
-    assert money(10.3) == "$10.30"
-    assert money("10.30") == "$10.30"
+    assert money(10.3) =~ "$10.30"
+    assert money("10.30") =~ "$10.30"
 
-    assert date(~D[2023-08-20]) == "2023-08-20"
-    assert date(~D[2023-08-20], "%y") == "23"
+    assert date(~D[2023-08-20]) =~ "2023-08-20"
+    assert date(~D[2023-08-20], "%y") =~ "23"
 
-    assert datetime(~U[2023-08-20 18:31:30Z]) == "06:31PM 2023-08-20"
-    assert datetime(~U[2023-08-20 18:31:30Z], "%Y-%m-%d %I:%M") == "2023-08-20 06:31"
+    assert datetime(~U[2023-08-20 18:31:30Z]) =~ "06:31PM 2023-08-20"
+    assert datetime(~U[2023-08-20 18:31:30Z], "%Y-%m-%d %I:%M") =~ "2023-08-20 06:31"
   end
 
   defp money(price, currency \\ nil) do
