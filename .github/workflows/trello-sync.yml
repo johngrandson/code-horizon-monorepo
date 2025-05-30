@@ -32,7 +32,7 @@ jobs:
             echo "PR Title: $PR_TITLE"
           fi
 
-      - name: Verify Trello Card Exists
+      - name: Verify If Trello Card Exists
         if: steps.extract.outputs.card_id
         id: verify_card
         run: |
