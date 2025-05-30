@@ -32,8 +32,8 @@ defmodule PetalProWeb.Components.QueueDashboard do
           end
         }
       >
-        <!-- Background Icon -->
         <div class="absolute inset-0 flex items-center justify-center">
+          <!-- Background Icon -->
           <.icon_svg
             name={@icon}
             class={[
@@ -42,9 +42,9 @@ defmodule PetalProWeb.Components.QueueDashboard do
             ]}
           />
         </div>
-        
-    <!-- Content -->
+
         <div class="relative z-10 text-center space-y-4 h-full flex flex-col justify-center">
+          <!-- Content -->
           <div>
             <p class={[
               "text-xl font-medium",
@@ -68,8 +68,12 @@ defmodule PetalProWeb.Components.QueueDashboard do
   attr :queue_items, :list, required: true
   attr :is_dark, :boolean, default: true
   attr :title, :string, required: true
+  attr :max_slots, :integer, default: 5
 
   def queue_display(assigns) do
+    # Create a list with actual items and empty placeholders
+    assigns = assign(assigns, :display_items, create_display_items(assigns.queue_items, assigns.max_slots))
+
     ~H"""
     <div class={[
       "relative p-1 rounded-xl h-full",
@@ -103,89 +107,123 @@ defmodule PetalProWeb.Components.QueueDashboard do
           </h3>
 
           <div class="grid grid-cols-1 gap-3 flex-1">
-            <%= for {item, index} <- Enum.with_index(@queue_items) do %>
-              <div
-                class={[
-                  "p-4 rounded-lg",
-                  if(@is_dark, do: "bg-slate-800/80", else: "bg-gray-50/80")
-                ]}
-                style={
-                  if @is_dark do
-                    "box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.6), 0 12px 25px -6px rgba(0, 0, 0, 0.4);"
-                  else
-                    "box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.25), 0 12px 25px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);"
-                  end
-                }
-              >
-                <div class="flex items-center justify-between h-full">
-                  <div class={[
-                    "w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold",
-                    case item.status do
-                      :priority ->
-                        if(@is_dark,
-                          do: "bg-indigo-800/80 text-indigo-200",
-                          else: "bg-gray-700 text-gray-100"
-                        )
-
-                      :business ->
-                        if(@is_dark,
-                          do: "bg-slate-700/80 text-slate-200",
-                          else: "bg-gray-600 text-gray-100"
-                        )
-
-                      _ ->
-                        if(@is_dark,
-                          do: "bg-slate-600/80 text-slate-200",
-                          else: "bg-gray-500 text-gray-100"
-                        )
+            <%= for {display_item, index} <- Enum.with_index(@display_items) do %>
+              <%= if display_item.type == :item do %>
+                <!-- Actual queue item -->
+                <div
+                  class={[
+                    "p-4 rounded-lg h-24",
+                    if(@is_dark, do: "bg-slate-800/80", else: "bg-gray-50/80")
+                  ]}
+                  style={
+                    if @is_dark do
+                      "box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.6), 0 12px 25px -6px rgba(0, 0, 0, 0.4);"
+                    else
+                      "box-shadow: 0 20px 45px -8px rgba(0, 0, 0, 0.25), 0 12px 25px -6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);"
                     end
-                  ]}>
-                    {index + 1}
-                  </div>
+                  }
+                >
+                  <div class="flex items-center justify-between h-full">
+                    <div class={[
+                      "w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold",
+                      case display_item.item.status do
+                        :priority ->
+                          if(@is_dark,
+                            do: "bg-indigo-800/80 text-indigo-200",
+                            else: "bg-gray-700 text-gray-100"
+                          )
 
-                  <div class={[
-                    "text-6xl font-bold flex-1 text-center",
-                    if(@is_dark, do: "text-slate-100", else: "text-gray-800")
-                  ]}>
-                    {item.ticket}
-                  </div>
+                        :business ->
+                          if(@is_dark,
+                            do: "bg-slate-700/80 text-slate-200",
+                            else: "bg-gray-600 text-gray-100"
+                          )
 
-                  <div class={[
-                    "text-sm px-3 py-1 rounded-full border",
-                    case item.status do
-                      :priority ->
-                        if(@is_dark,
-                          do: "bg-indigo-800/90 text-indigo-200 border-indigo-600",
-                          else: "bg-gray-700 text-gray-100 border-gray-800"
-                        )
+                        _ ->
+                          if(@is_dark,
+                            do: "bg-slate-600/80 text-slate-200",
+                            else: "bg-gray-500 text-gray-100"
+                          )
+                      end
+                    ]}>
+                      {index + 1}
+                    </div>
 
-                      :business ->
-                        if(@is_dark,
-                          do: "bg-slate-700/90 text-slate-200 border-slate-500",
-                          else: "bg-gray-600 text-gray-100 border-gray-700"
-                        )
+                    <div class={[
+                      "text-6xl font-bold flex-1 text-center",
+                      if(@is_dark, do: "text-slate-100", else: "text-gray-800")
+                    ]}>
+                      {display_item.item.ticket}
+                    </div>
 
-                      _ ->
-                        if(@is_dark,
-                          do: "bg-slate-600/90 text-slate-200 border-slate-500",
-                          else: "bg-gray-500 text-gray-100 border-gray-600"
-                        )
-                    end
-                  ]}>
-                    {case item.status do
-                      :priority -> "Prioritário"
-                      :business -> "Empresarial"
-                      _ -> "Normal"
-                    end}
+                    <div class={[
+                      "text-sm px-3 py-1 rounded-full border",
+                      case display_item.item.status do
+                        :priority ->
+                          if(@is_dark,
+                            do: "bg-indigo-800/90 text-indigo-200 border-indigo-600",
+                            else: "bg-gray-700 text-gray-100 border-gray-800"
+                          )
+
+                        :business ->
+                          if(@is_dark,
+                            do: "bg-slate-700/90 text-slate-200 border-slate-500",
+                            else: "bg-gray-600 text-gray-100 border-gray-700"
+                          )
+
+                        _ ->
+                          if(@is_dark,
+                            do: "bg-slate-600/90 text-slate-200 border-slate-500",
+                            else: "bg-gray-500 text-gray-100 border-gray-600"
+                          )
+                      end
+                    ]}>
+                      {case display_item.item.status do
+                        :priority -> "Prioritário"
+                        :business -> "Empresarial"
+                        _ -> "Normal"
+                      end}
+                    </div>
                   </div>
                 </div>
-              </div>
+              <% else %>
+                <!-- Empty placeholder -->
+                <div class={[
+                  "border-2 border-dashed rounded-xl h-24 flex items-center justify-center",
+                  if(@is_dark,
+                    do: "border-gray-600",
+                    else: "border-gray-300"
+                  )
+                ]}>
+                  <span class={[
+                    "text-sm font-medium opacity-50",
+                    if(@is_dark, do: "text-gray-400", else: "text-gray-500")
+                  ]}>
+                    Posição {index + 1}
+                  </span>
+                </div>
+              <% end %>
             <% end %>
           </div>
         </div>
       </div>
     </div>
     """
+  end
+
+  # Helper function to create display items with placeholders
+  defp create_display_items(queue_items, max_slots) do
+    actual_items =
+      queue_items
+      |> Enum.take(max_slots)
+      |> Enum.map(&%{type: :item, item: &1})
+
+    empty_slots = max_slots - length(actual_items)
+
+    empty_items =
+      for _ <- 1..empty_slots, do: %{type: :empty}
+
+    actual_items ++ empty_items
   end
 
   attr :counters, :list, required: true

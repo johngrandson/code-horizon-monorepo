@@ -1,4 +1,4 @@
-defmodule PetalPro.QueueEventsTimer do
+defmodule PetalPro.AppModules.VirtualQueues.QueueEventsTimer do
   @moduledoc """
   Global events timer that broadcasts to all orgs based on their permissions.
   Single source of truth for merchandise and footer news display state.

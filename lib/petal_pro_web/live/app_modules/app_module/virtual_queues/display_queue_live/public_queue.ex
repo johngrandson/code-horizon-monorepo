@@ -7,7 +7,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
 
   import PetalProWeb.Components.QueueDashboard
 
-  alias PetalPro.QueueEventsTimer
+  alias PetalPro.AppModules.VirtualQueues.QueueEventsTimer
 
   require Logger
 
@@ -415,9 +415,9 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
             />
           </div>
         </div>
-        
-    <!-- Queue and Counters -->
+
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <!-- Queue and Counters -->
           <div class="lg:col-span-1">
             <.queue_display title="Próximos na Fila" queue_items={@queue_items} is_dark={@is_dark} />
           </div>

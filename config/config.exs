@@ -110,14 +110,16 @@ config :petal_pro, Oban,
   ]
 
 # Specify which languages you support
-# To create .po files for a language run `mix gettext.merge priv/gettext --locale fr`
+# To create .po files for a language run `mix gettext.merge priv/gettext --locale pt-BR`
 # (fr is France, change to whatever language you want - make sure it's included in the locales config below)
-config :petal_pro, PetalProWeb.Gettext, allowed_locales: ~w(en pt-BR)
+config :petal_pro, PetalProWeb.Gettext, allowed_locales: ~w(en pt-BR), default_locale: "pt-BR"
 
 config :petal_pro, :language_options, [
   %{locale: "pt-BR", flag: "🇧🇷", label: "Português"},
   %{locale: "en", flag: "🇺🇸", label: "English"}
 ]
+
+config :gettext, :default_locale, "pt-BR"
 
 # Social login providers
 # Full list of strategies: https://github.com/ueberauth/ueberauth/wiki/List-of-Strategies
@@ -179,18 +181,23 @@ config :petal_pro, :billing_products, [
     id: "essential",
     name: "Starter",
     description:
-      "Perfect for individuals and small teams getting started. Everything you need to launch your project with essential features and reliable support.",
+      "Ideal para startups e empresas SaaS em estágio inicial que buscam lançar sua plataforma multi-tenant com funcionalidades essenciais e capacidades básicas de personalização.",
     features: [
-      "Core functionality access",
-      "Email support",
-      "Basic analytics dashboard",
-      "Up to 5 team members",
-      "Standard integrations"
+      "Até 2 tenants ativos com isolamento por schema PostgreSQL",
+      "Módulo de Blog com otimização SEO e automação de Newsletter",
+      "White-labeling básico com logos e cores personalizados",
+      "Até 5 usuários administradores com controle de acesso baseado em papéis",
+      "Integrações essenciais (cobrança Stripe, entrega de email)",
+      "Suporte da comunidade com tempo de resposta de 48 horas",
+      "Dashboard em tempo real com Phoenix LiveView",
+      "Ferramentas de conformidade LGPD incluídas",
+      "SSL automático para domínios personalizados",
+      "Backup automático diário dos dados"
     ],
     plans: [
       %{
         id: "essential-monthly",
-        name: "Monthly",
+        name: "Mensal",
         amount: 1900,
         interval: :month,
         allow_promotion_codes: true,
@@ -201,7 +208,7 @@ config :petal_pro, :billing_products, [
       },
       %{
         id: "essential-yearly",
-        name: "Yearly",
+        name: "Anual",
         amount: 19_900,
         interval: :year,
         allow_promotion_codes: true,
@@ -215,20 +222,26 @@ config :petal_pro, :billing_products, [
     id: "business",
     name: "Business",
     description:
-      "Designed for growing businesses that need advanced features, priority support, and scalability. The perfect balance of power and value for professional teams.",
+      "Perfeito para empresas SaaS em crescimento que requerem escalabilidade avançada, white-labeling completo e ecossistema abrangente de módulos para soluções de nível empresarial.",
     most_popular: true,
     features: [
-      "All Starter features included",
-      "Priority email & chat support",
-      "Advanced analytics & reporting",
-      "Up to 25 team members",
-      "API access & webhooks",
-      "Custom branding options"
+      "Até 10 tenants ativos com isolamento completo de dados",
+      "Suíte completa de módulos: Blog, Newsletter, CMS e QMS (Sistema de Gerenciamento de Filas)",
+      "White-labeling completo com domínios personalizados e certificados SSL",
+      "Até 25 usuários administradores com gerenciamento granular de permissões",
+      "Acesso completo à API REST com integrações via webhook",
+      "Templates de layout personalizados e personalização de temas",
+      "Suporte prioritário com garantia de SLA de 24 horas",
+      "Dashboard de analytics avançado com métricas em tempo real",
+      "Cobrança multi-tenant e rastreamento de uso",
+      "Integração SSO pronta (OAuth 2.0, SAML)",
+      "Logs de auditoria e conformidade empresarial",
+      "CDN integrada para performance otimizada"
     ],
     plans: [
       %{
         id: "business-monthly",
-        name: "Monthly",
+        name: "Mensal",
         amount: 4900,
         interval: :month,
         allow_promotion_codes: true,
@@ -239,7 +252,7 @@ config :petal_pro, :billing_products, [
       },
       %{
         id: "business-yearly",
-        name: "Yearly",
+        name: "Anual",
         amount: 49_900,
         interval: :year,
         allow_promotion_codes: true,
@@ -253,20 +266,27 @@ config :petal_pro, :billing_products, [
     id: "enterprise",
     name: "Enterprise",
     description:
-      "Complete solution for large organizations requiring premium features, dedicated support, advanced security, and custom integrations. Built for mission-critical operations.",
+      "Solução corporativa completa para empresas que exigem máxima escalabilidade, segurança avançada, personalização ilimitada e suporte dedicado para operações críticas de negócio.",
     features: [
-      "All Business features included",
-      "Dedicated account manager",
-      "24/7 phone & priority support",
-      "Unlimited team members",
-      "Advanced security & compliance",
-      "Custom integrations & SSO",
-      "On-premise deployment options"
+      "Todas as funcionalidades do plano Business incluídas",
+      "Tenants ilimitados com arquitetura de alta disponibilidade",
+      "Gerente de conta dedicado e suporte técnico especializado",
+      "Suporte por telefone, email e chat com SLA de 4 horas",
+      "Até 100 usuários administradores com hierarquia personalizada",
+      "Segurança avançada com autenticação multi-fator obrigatória",
+      "Integrações personalizadas e desenvolvimento de APIs sob demanda",
+      "Opções de implantação on-premise e cloud híbrida",
+      "Consultoria de arquitetura e code review especializado",
+      "Backup em tempo real com disaster recovery garantido",
+      "Monitoramento 24/7 com alertas proativos",
+      "Conformidade SOX, HIPAA e certificação ISO 27001",
+      "SLA customizado com até 99.99% de uptime garantido",
+      "Training e workshops técnicos para sua equipe"
     ],
     plans: [
       %{
         id: "enterprise-monthly",
-        name: "Monthly",
+        name: "Mensal",
         amount: 9900,
         interval: :month,
         allow_promotion_codes: true,
@@ -276,7 +296,7 @@ config :petal_pro, :billing_products, [
       },
       %{
         id: "enterprise-yearly",
-        name: "Yearly",
+        name: "Anual",
         amount: 99_900,
         interval: :year,
         allow_promotion_codes: true,
