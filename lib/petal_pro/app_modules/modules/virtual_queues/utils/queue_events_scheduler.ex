@@ -1,4 +1,4 @@
-defmodule PetalPro.AppModules.VirtualQueues.QueueEventsTimer do
+defmodule PetalPro.AppModules.VirtualQueues.QueueEventsScheduler do
   @moduledoc """
   Global events timer that broadcasts to all orgs based on their permissions.
   Single source of truth for merchandise and footer news display state.
@@ -10,8 +10,10 @@ defmodule PetalPro.AppModules.VirtualQueues.QueueEventsTimer do
   require Logger
 
   # TODO: move footer_news to queue config
-  @footer_news %{interval: 2_000, display_interval: 2_000}
-  @merchandise %{interval: 60_000 * 30, display_interval: 30_000}
+  # 5s wait, 3s show
+  @footer_news %{interval: 60_000, display_interval: 60_000 * 2}
+  # 10s wait, 4s show
+  @merchandise %{interval: 60_000 * 15, display_interval: 30_000}
 
   defstruct [:show_merchandise, :show_footer_news, :subscribers, :org_count]
 

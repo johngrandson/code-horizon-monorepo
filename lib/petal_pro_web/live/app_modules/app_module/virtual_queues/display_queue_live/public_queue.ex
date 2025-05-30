@@ -7,7 +7,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
 
   import PetalProWeb.Components.QueueDashboard
 
-  alias PetalPro.AppModules.VirtualQueues.QueueEventsTimer
+  alias PetalPro.AppModules.VirtualQueues.QueueEventsScheduler
 
   require Logger
 
@@ -18,7 +18,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
     if connected?(socket) do
       :timer.send_interval(1000, self(), :tick)
 
-      case QueueEventsTimer.subscribe(org_id) do
+      case QueueEventsScheduler.subscribe(org_id) do
         :ok -> :ok
         error -> Logger.warning("Failed to subscribe to queue events: #{inspect(error)}")
       end
@@ -38,7 +38,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
   @impl true
   def terminate(_reason, socket) do
     if socket.assigns[:org_id] do
-      QueueEventsTimer.unsubscribe(socket.assigns.org_id)
+      QueueEventsScheduler.unsubscribe(socket.assigns.org_id)
     end
 
     :ok
@@ -50,18 +50,20 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
   end
 
   @impl true
-  def handle_info({:footer_news_state, show_footer_news, org_id}, socket) do
+  def handle_info({:footer_news_state, _show_footer_news, org_id}, socket) do
     if org_id == socket.assigns.org_id do
-      {:noreply, assign(socket, :show_footer_news, show_footer_news)}
+      socket = assign_timer_states(socket)
+      {:noreply, socket}
     else
       {:noreply, socket}
     end
   end
 
   @impl true
-  def handle_info({:merchandise_state, show_merchandise, org_id}, socket) do
+  def handle_info({:merchandise_state, _show_merchandise, org_id}, socket) do
     if org_id == socket.assigns.org_id do
-      {:noreply, assign(socket, :show_merchandise, show_merchandise)}
+      socket = assign_timer_states(socket)
+      {:noreply, socket}
     else
       {:noreply, socket}
     end
@@ -107,14 +109,14 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.PublicQueue do
     %{
       show_merchandise: show_merchandise,
       show_footer_news: show_footer_news
-    } = QueueEventsTimer.get_state()
+    } = QueueEventsScheduler.get_state()
 
     socket
     |> assign(:show_merchandise, show_merchandise)
     |> assign(:show_footer_news, show_footer_news)
   rescue
     error ->
-      Logger.warning("Failed to get timer state: #{inspect(error)}")
+      Logger.warning("❌ Failed to get timer state: #{inspect(error)}")
 
       socket
       |> assign(:show_merchandise, false)

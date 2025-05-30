@@ -14,7 +14,7 @@ defmodule PetalPro.Application do
       PetalPro.Repo,
       Settings.Initializer,
       # TODO: move this context to an enhancer to wrap the app modules
-      PetalPro.AppModules.VirtualQueues.QueueEventsTimer,
+      PetalPro.AppModules.VirtualQueues.QueueEventsScheduler,
       {DNSCluster, query: Application.get_env(:petal_pro, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: PetalPro.PubSub},
       PetalProWeb.Presence,
