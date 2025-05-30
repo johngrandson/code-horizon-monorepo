@@ -40,6 +40,10 @@ config :phoenix, :plug_init_mode, :runtime
 config :email_checker, validations: [EmailChecker.Check.Format]
 config :petal_pro, :env, :test
 
+config :petal_pro, PetalProWeb.Gettext,
+  allowed_locales: ~w(en pt-BR),
+  default_locale: "en"
+
 config :petal_pro, :sandbox, Ecto.Adapters.SQL.Sandbox
 
 # Disable default settings initialization in tests

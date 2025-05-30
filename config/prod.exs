@@ -20,6 +20,10 @@ config :swoosh, local: false
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :petal_pro, PetalProWeb.Gettext,
+  allowed_locales: ~w(pt-BR en),
+  default_locale: "pt-BR"
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
