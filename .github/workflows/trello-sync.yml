@@ -9,6 +9,9 @@ jobs:
   sync-trello:
     runs-on: ubuntu-latest
     steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Extract Trello Card ID
         id: extract
         run: |
@@ -33,30 +36,50 @@ jobs:
           fi
 
       - name: Verify Trello Card Exists
-        if: steps.extract.outputs.card_id
+        if: steps.extract.outputs.card_id != ''
         id: verify_card
         run: |
           CARD_ID="${{ steps.extract.outputs.card_id }}"
 
-          # Verify if the card exists
+          # Validate card ID format
+          if [[ ! "$CARD_ID" =~ ^CH-[0-9]+$ ]]; then
+            echo "card_exists=false" >> $GITHUB_OUTPUT
+            echo "❌ Invalid card ID format: $CARD_ID (expected: CH-123)"
+            exit 0
+          fi
+
+          # Verify if the card exists using correct Trello API endpoint
           HTTP_STATUS=$(curl -s -o /tmp/trello_response.json -w "%{http_code}" \
             "https://api.trello.com/1/cards/$CARD_ID?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}")
 
+          echo "🔍 HTTP Status: $HTTP_STATUS"
+
           if [ "$HTTP_STATUS" = "200" ]; then
+            # Parse JSON response safely
             CARD_NAME=$(jq -r '.name // "Unknown"' /tmp/trello_response.json)
             LIST_ID=$(jq -r '.idList // ""' /tmp/trello_response.json)
             BOARD_ID=$(jq -r '.idBoard // ""' /tmp/trello_response.json)
             
+            # Escape special characters for GitHub outputs
+            CARD_NAME_ESCAPED=$(echo "$CARD_NAME" | sed 's/"/\\"/g' | sed "s/'/\\'/g")
+            
             echo "card_exists=true" >> $GITHUB_OUTPUT
-            echo "card_name=$CARD_NAME" >> $GITHUB_OUTPUT
+            echo "card_name=$CARD_NAME_ESCAPED" >> $GITHUB_OUTPUT
             echo "list_id=$LIST_ID" >> $GITHUB_OUTPUT
             echo "board_id=$BOARD_ID" >> $GITHUB_OUTPUT
             echo "✅ Card found: $CARD_NAME"
           else
             echo "card_exists=false" >> $GITHUB_OUTPUT
             echo "❌ Card $CARD_ID not found or inaccessible (HTTP $HTTP_STATUS)"
+            
+            # Show detailed error information
             if [ -f /tmp/trello_response.json ]; then
-              echo "Response: $(cat /tmp/trello_response.json)"
+              ERROR_MSG=$(jq -r '.error // ""' /tmp/trello_response.json 2>/dev/null)
+              if [ -n "$ERROR_MSG" ] && [ "$ERROR_MSG" != "null" ] && [ "$ERROR_MSG" != "" ]; then
+                echo "Trello API Error: $ERROR_MSG"
+              else
+                echo "Response: $(cat /tmp/trello_response.json)"
+              fi
             fi
           fi
 
@@ -68,9 +91,10 @@ jobs:
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
           BRANCH_NAME="${{ github.head_ref }}"
 
-          # Create formatted description
+          # Create formatted description with proper URL encoding
           DESCRIPTION="🔗 **Pull Request:** $PR_URL%0A%0A📋 **Status:** Em Review%0A🌿 **Branch:** \`$BRANCH_NAME\`%0A👤 **Autor:** @$PR_AUTHOR%0A⏰ **Aberto em:** $(date -u '+%Y-%m-%d %H:%M UTC')"
 
+          # Update card description using correct Trello API endpoint
           HTTP_STATUS=$(curl -s -o /tmp/update_response.json -w "%{http_code}" \
             -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
             -G \
@@ -82,7 +106,9 @@ jobs:
             echo "✅ Card description updated successfully"
           else
             echo "❌ Failed to update card description (HTTP $HTTP_STATUS)"
-            cat /tmp/update_response.json
+            if [ -f /tmp/update_response.json ]; then
+              cat /tmp/update_response.json
+            fi
           fi
 
       - name: Move Card to Done on PR Merged
@@ -91,30 +117,41 @@ jobs:
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           BOARD_ID="${{ steps.verify_card.outputs.board_id }}"
 
-          # Search for "Done", "Concluído", "Finalizado" or "Complete" list in the board
+          # Get all lists from the board using correct Trello API endpoint
           LISTS_RESPONSE=$(curl -s \
             "https://api.trello.com/1/boards/$BOARD_ID/lists?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_TOKEN }}")
 
-          DONE_LIST_ID=$(echo "$LISTS_RESPONSE" | jq -r '.[] | select(.name | test("Done|Concluído|Finalizado|Complete"; "i")) | .id' | head -1)
+          # Check if API call was successful
+          if echo "$LISTS_RESPONSE" | jq -e '.' >/dev/null 2>&1; then
+            # Find "Done" list (case insensitive, multiple language support)
+            DONE_LIST_ID=$(echo "$LISTS_RESPONSE" | jq -r '.[] | select(.name | test("^(Done|Concluído|Finalizado|Complete|Terminado|Finished)$"; "i")) | .id' | head -1)
 
-          if [ -n "$DONE_LIST_ID" ] && [ "$DONE_LIST_ID" != "null" ]; then
-            # Move card to Done
-            HTTP_STATUS=$(curl -s -o /tmp/move_response.json -w "%{http_code}" \
-              -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
-              -G \
-              -d "key=${{ secrets.TRELLO_API_KEY }}" \
-              -d "token=${{ secrets.TRELLO_TOKEN }}" \
-              -d "idList=$DONE_LIST_ID")
-            
-            if [ "$HTTP_STATUS" = "200" ]; then
-              echo "✅ Card moved to Done list successfully"
+            if [ -n "$DONE_LIST_ID" ] && [ "$DONE_LIST_ID" != "null" ]; then
+              # Move card to Done list using correct Trello API endpoint
+              HTTP_STATUS=$(curl -s -o /tmp/move_response.json -w "%{http_code}" \
+                -X PUT "https://api.trello.com/1/cards/$CARD_ID" \
+                -G \
+                -d "key=${{ secrets.TRELLO_API_KEY }}" \
+                -d "token=${{ secrets.TRELLO_TOKEN }}" \
+                -d "idList=$DONE_LIST_ID")
+              
+              if [ "$HTTP_STATUS" = "200" ]; then
+                echo "✅ Card moved to Done list successfully"
+              else
+                echo "❌ Failed to move card (HTTP $HTTP_STATUS)"
+                if [ -f /tmp/move_response.json ]; then
+                  cat /tmp/move_response.json
+                fi
+              fi
             else
-              echo "❌ Failed to move card (HTTP $HTTP_STATUS)"
-              cat /tmp/move_response.json
+              echo "❌ Done list not found. Available lists:"
+              echo "$LISTS_RESPONSE" | jq -r '.[].name' | sort
+              echo ""
+              echo "💡 Create a list named 'Done', 'Concluído', or 'Finalizado' to enable auto-moving"
             fi
           else
-            echo "❌ Done list not found. Available lists:"
-            echo "$LISTS_RESPONSE" | jq -r '.[].name'
+            echo "❌ Failed to fetch board lists"
+            echo "Response: $LISTS_RESPONSE"
           fi
 
       - name: Add Comment on PR Merged
@@ -124,8 +161,10 @@ jobs:
           PR_URL="${{ github.event.pull_request.html_url }}"
           MERGE_COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
 
+          # Create comment text with proper URL encoding
           COMMENT_TEXT="🎉 **Pull Request Merged!**%0A%0A✅ PR: $PR_URL%0A🔄 Merge commit: \`${MERGE_COMMIT:0:7}\`%0A⏰ Merged at: $(date -u '+%Y-%m-%d %H:%M UTC')"
 
+          # Add comment using correct Trello API endpoint
           HTTP_STATUS=$(curl -s -o /tmp/comment_response.json -w "%{http_code}" \
             -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
             -G \
@@ -137,7 +176,9 @@ jobs:
             echo "✅ Merge comment added successfully"
           else
             echo "❌ Failed to add comment (HTTP $HTTP_STATUS)"
-            cat /tmp/comment_response.json
+            if [ -f /tmp/comment_response.json ]; then
+              cat /tmp/comment_response.json
+            fi
           fi
 
       - name: Add Comment on PR Closed (Not Merged)
@@ -146,8 +187,10 @@ jobs:
           CARD_ID="${{ steps.extract.outputs.card_id }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
 
+          # Create comment text with proper URL encoding
           COMMENT_TEXT="❌ **Pull Request Fechado (Não Merged)**%0A%0A🔗 PR: $PR_URL%0A⏰ Fechado em: $(date -u '+%Y-%m-%d %H:%M UTC')%0A%0A💡 O trabalho pode precisar ser retomado ou reorganizado."
 
+          # Add comment using correct Trello API endpoint
           HTTP_STATUS=$(curl -s -o /tmp/comment_response.json -w "%{http_code}" \
             -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
             -G \
@@ -159,7 +202,9 @@ jobs:
             echo "✅ Closure comment added successfully"
           else
             echo "❌ Failed to add comment (HTTP $HTTP_STATUS)"
-            cat /tmp/comment_response.json
+            if [ -f /tmp/comment_response.json ]; then
+              cat /tmp/comment_response.json
+            fi
           fi
 
       - name: Add Deploy Comment on Push to Main
@@ -169,8 +214,10 @@ jobs:
           COMMIT_SHA="${{ github.sha }}"
           COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
 
+          # Create comment text with proper URL encoding and markdown links
           COMMENT_TEXT="🚀 **Deploy Realizado!**%0A%0A🔄 Commit: [\`${COMMIT_SHA:0:7}\`]($COMMIT_URL)%0A⏰ Deploy em: $(date -u '+%Y-%m-%d %H:%M UTC')%0A🌐 Branch: ${{ github.ref_name }}"
 
+          # Add comment using correct Trello API endpoint
           HTTP_STATUS=$(curl -s -o /tmp/comment_response.json -w "%{http_code}" \
             -X POST "https://api.trello.com/1/cards/$CARD_ID/actions/comments" \
             -G \
@@ -182,7 +229,9 @@ jobs:
             echo "✅ Deploy comment added successfully"
           else
             echo "❌ Failed to add deploy comment (HTTP $HTTP_STATUS)"
-            cat /tmp/comment_response.json
+            if [ -f /tmp/comment_response.json ]; then
+              cat /tmp/comment_response.json
+            fi
           fi
 
       - name: Workflow Summary
