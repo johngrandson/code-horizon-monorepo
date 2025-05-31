@@ -2,6 +2,8 @@ defmodule PetalPro.Orgs.Org do
   @moduledoc false
   use PetalPro.Schema
 
+  import Ecto.Query
+
   alias PetalPro.Accounts.User
   alias PetalPro.AppModules.Subscription
   alias PetalPro.Billing.Customers.Customer
@@ -138,5 +140,14 @@ defmodule PetalPro.Orgs.Org do
     else
       changeset
     end
+  end
+
+  @doc """
+  Query for orgs that a user belongs to.
+  """
+  def by_user(query \\ __MODULE__, user) do
+    from o in query,
+      join: m in assoc(o, :memberships),
+      where: m.user_id == ^user.id
   end
 end
