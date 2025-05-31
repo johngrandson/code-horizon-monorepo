@@ -54,6 +54,14 @@ defmodule PetalPro.Orgs do
     Repo.exists?(from o in Org, where: o.id == ^id)
   end
 
+  def can_edit_org?(:edit, user) do
+    Membership.is_org_admin?(user)
+  end
+
+  def can_delete_org?(:delete, user) do
+    Membership.is_org_admin?(user)
+  end
+
   def preload_org_memberships(org) do
     Repo.preload(org, memberships: :user)
   end

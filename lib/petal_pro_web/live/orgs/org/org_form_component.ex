@@ -45,6 +45,11 @@ defmodule PetalProWeb.OrgFormComponent do
     save_org(socket, socket.assigns.action, org_params)
   end
 
+  @impl true
+  def handle_event("close_modal", _, socket) do
+    {:noreply, push_patch(socket, to: ~p"/app/orgs")}
+  end
+
   defp save_org(socket, :edit, org_params) do
     case Orgs.update_org(socket.assigns.org, org_params) do
       {:ok, _org} ->

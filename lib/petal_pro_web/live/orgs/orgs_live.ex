@@ -5,6 +5,7 @@ defmodule PetalProWeb.OrgsLive do
   use PetalProWeb, :live_view
 
   import PetalPro.Events.Modules.Orgs.Subscriber
+  import PetalProWeb.Components.ActionDropdown
 
   alias PetalPro.Orgs
   alias PetalPro.Orgs.Membership
@@ -51,6 +52,42 @@ defmodule PetalProWeb.OrgsLive do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_event("dropdown_action", %{"action" => action, "id" => id}, socket) do
+    org = Orgs.get_org_by_id(id)
+
+    if org do
+      handle_org_action(action, org, socket)
+    else
+      socket = put_flash(socket, :error, "Organization not found")
+      {:noreply, socket}
+    end
+  end
+
+  defp handle_org_action(action, org, socket) do
+    socket =
+      case action do
+        "edit_org" ->
+          push_patch(socket, to: ~p"/app/org/#{org.slug}/edit")
+
+        "delete" ->
+          case Orgs.delete_org(org) do
+            {:ok, _org} ->
+              socket
+              |> put_flash(:info, "Organization deleted successfully")
+              |> push_navigate(to: ~p"/app/orgs")
+
+            {:error, _changeset} ->
+              put_flash(socket, :error, "Failed to delete organization")
+          end
+
+        _ ->
+          socket
+      end
+
+    {:noreply, socket}
+  end
+
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, gettext("New organization"))
@@ -63,17 +100,16 @@ defmodule PetalProWeb.OrgsLive do
     |> assign(:org, nil)
   end
 
-  @impl true
-  def handle_event("close_modal", _, socket) do
-    {:noreply, push_patch(socket, to: ~p"/app/orgs")}
-  end
-
   defp assign_invitations(socket) do
     assign(socket, :invitations, Orgs.list_invitations_by_user(socket.assigns.current_user))
   end
 
   defp assign_orgs(socket) do
     assign(socket, :orgs, Orgs.list_orgs(socket.assigns.current_user))
+  end
+
+  defp get_org_tags(org) do
+    if org.is_enterprise, do: ["Enterprise"], else: ["Regular"]
   end
 
   @impl true
@@ -176,96 +212,208 @@ defmodule PetalProWeb.OrgsLive do
               </div>
             </div>
           <% else %>
-            <div class="gap-6 mb-8">
-              <%= if @orgs != [] do %>
-                <%= for org <- @orgs do %>
-                  <.link
-                    navigate={~p"/app/org/#{org.slug}"}
-                    class="block p-4 mb-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all dark:bg-neutral-900 dark:border-neutral-700 dark:hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <div class="relative sm:flex sm:justify-between sm:gap-x-4">
-                      <div>
-                        <div class="flex items-center gap-x-4">
-                          <div class="relative shrink-0">
+            <!-- Enhanced Grid Layout for Organization Cards -->
+            <div class="pt-2 md:pt-4 pb-10">
+              <div class="w-full max-w-5xl mx-auto">
+                <!-- Grid -->
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
+                  <%= for org <- @orgs do %>
+                    <!-- Enhanced Organization Card -->
+                    <div class="flex flex-col bg-white border border-gray-200 rounded-xl dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all duration-300">
+                      <!-- Header with gradient background -->
+                      <figure class="shrink-0 relative h-24 overflow-hidden rounded-t-xl">
+                        <svg
+                          class="w-full h-24 rounded-t-xl"
+                          preserveAspectRatio="xMidYMid slice"
+                          width="576"
+                          height="120"
+                          viewBox="0 0 576 120"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_org_#{org.id})">
+                            <rect width="576" height="120" fill="#B2E7FE" />
+                            <rect
+                              x="289.678"
+                              y="-90.3"
+                              width="102.634"
+                              height="391.586"
+                              transform="rotate(59.5798 289.678 -90.3)"
+                              fill="#FF8F5D"
+                            />
+                            <rect
+                              x="41.3926"
+                              y="-0.996094"
+                              width="102.634"
+                              height="209.864"
+                              transform="rotate(-31.6412 41.3926 -0.996094)"
+                              fill="#3ECEED"
+                            />
+                            <rect
+                              x="66.9512"
+                              y="40.4817"
+                              width="102.634"
+                              height="104.844"
+                              transform="rotate(-31.6412 66.9512 40.4817)"
+                              fill="#4C48FF"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id={"clip0_org_#{org.id}"}>
+                              <rect width="576" height="120" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </figure>
+                      
+    <!-- Avatar Section -->
+                      <div class="-mt-8 px-4 mb-3">
+                        <div class="relative flex items-center gap-x-3">
+                          <div class="relative w-20">
                             <%= if org.avatar_url do %>
                               <img
-                                class="shrink-0 size-9.5 sm:w-11.5 sm:h-11.5 rounded-full object-cover"
+                                class="shrink-0 size-20 ring-4 ring-white rounded-3xl dark:ring-neutral-800 object-cover"
                                 src={org.avatar_url}
                                 alt={org.name}
                               />
                             <% else %>
-                              <.avatar />
-                            <% end %>
-                            <%= if org.is_enterprise do %>
-                              <.pro_badge />
-                            <% end %>
-                          </div>
-
-                          <div class="grow flex flex-col">
-                            <div class="inline-flex items-center gap-x-2">
-                              <h3 class="font-medium text-gray-800 dark:text-neutral-200">
-                                {org.name}
-                              </h3>
-                              <div class="flex items-center gap-x-1.5 py-0.5 px-2 border border-gray-200 dark:border-neutral-700 rounded-md">
-                                <span class="w-1 h-3 rounded-full bg-teal-600 dark:bg-teal-400" />
-                                <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
-                                  <%= if @is_org_admin do %>
-                                    {gettext("Admin")}
-                                  <% else %>
-                                    {gettext("Member")}
-                                  <% end %>
+                              <div class="shrink-0 size-20 ring-4 ring-white rounded-3xl dark:ring-neutral-800 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <span class="text-white font-bold text-5xl">
+                                  {String.first(org.name)}
                                 </span>
                               </div>
-                            </div>
+                            <% end %>
 
-                            <div class="inline-flex items-center gap-x-2">
-                              <svg
-                                class="shrink-0 size-3 sm:size-3.5 text-gray-500 dark:text-neutral-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                            <%= if org.is_enterprise do %>
+                              <div class="absolute -bottom-3 inset-x-0 text-center">
+                                <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-semibold uppercase rounded-md bg-gradient-to-tr from-lime-500 to-teal-500 text-white">
+                                  Pro
+                                </span>
+                              </div>
+                            <% end %>
+                          </div>
+                          
+    <!-- Action Buttons -->
+                          <div class="absolute bottom-2 end-0">
+                            <div class="h-full flex justify-end items-end gap-x-2">
+                              <!-- Favorite Button -->
+                              <button
+                                type="button"
+                                phx-click="toggle_favorite"
+                                phx-value-org_id={org.id}
+                                class="hs-tooltip flex justify-center items-center gap-x-3 size-8 text-sm border border-gray-200 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:hover:text-neutral-200 dark:focus:text-neutral-200 transition-all duration-200"
                               >
-                                <path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3" />
-                                <line x1="8" y1="12" x2="16" y2="12" />
-                              </svg>
-                              <p
-                                class="text-xs sm:text-sm text-gray-500 dark:text-neutral-500"
-                                title={org.slug}
-                              >
-                                {org.slug}
-                              </p>
+                                <.icon name="hero-star" class="w-3.5 h-3.5" />
+                                <span class="sr-only">Add to favorites</span>
+                              </button>
+
+                              <div class="hover:pointer-events-auto">
+                                <.action_dropdown
+                                  id={"org-#{org.id}"}
+                                  entity_id={org.id}
+                                  entity_type={:org}
+                                  can_edit?={Orgs.can_edit_org?(:edit, @current_user)}
+                                  can_delete?={Orgs.can_delete_org?(:delete, @current_user)}
+                                  edit_url={~p"/app/org/#{org.slug}/edit"}
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
+                      
+    <!-- Card Body -->
+                      <div class="p-4 h-full">
+                        <h2 class="mb-2 font-medium text-gray-800 dark:text-neutral-300 truncate">
+                          {org.name}
+                        </h2>
+                        
+    <!-- Organization Details List -->
+                        <dl class="grid grid-cols-2 gap-x-2 mb-3">
+                          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
+                            {gettext("Role")}:
+                          </dt>
+                          <dd class="py-1 inline-flex justify-end items-center gap-x-2 text-end font-medium text-sm text-gray-800 dark:text-neutral-200">
+                            <div class="flex items-center gap-x-1.5 py-0.5 px-2 border border-gray-200 dark:border-neutral-700 rounded-md">
+                              <span class="w-1 h-3 rounded-full bg-teal-600 dark:bg-teal-400" />
+                              <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
+                                <%= if @is_org_admin do %>
+                                  {gettext("Admin")}
+                                <% else %>
+                                  {gettext("Member")}
+                                <% end %>
+                              </span>
+                            </div>
+                          </dd>
 
-                      <div class="mt-2 sm:mt-0">
-                        <div class="flex justify-end items-center gap-x-4">
-                          <div class="py-2 px-3 flex items-center justify-center sm:justify-start text-primary-600 dark:text-primary-400">
-                            <span class="text-xs font-medium">{gettext("View organization")}</span>
-                            <.icon
-                              name="hero-arrow-right"
-                              class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"
-                            />
-                          </div>
-                        </div>
+                          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
+                            {gettext("Slug")}:
+                          </dt>
+                          <dd class="py-1 inline-flex items-center gap-x-2 text-end font-medium text-sm text-gray-800 dark:text-neutral-200 truncate">
+                            {org.slug}
+                          </dd>
+
+                          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
+                            {gettext("Status")}:
+                          </dt>
+                          <dd class="py-1 inline-flex justify-end items-center gap-x-2 text-end">
+                            <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
+                              {gettext("Active")}
+                            </span>
+                          </dd>
+                          
+    <!-- Tags Group -->
+                          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
+                            {gettext("Tier")}:
+                          </dt>
+                          <dd class="py-1 inline-flex justify-end items-center gap-x-2 text-end">
+                            <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
+                              <%= for tag <- get_org_tags(org) do %>
+                                <span class="py-1 px-2.5 inline-flex items-center gap-x-1 text-xs rounded-md bg-white border border-gray-200 text-gray-800 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200">
+                                  {tag}
+                                </span>
+                              <% end %>
+                            </span>
+                          </dd>
+                        </dl>
+                      </div>
+                      
+    <!-- Card Footer -->
+                      <div class="py-3 px-4 flex items-center gap-x-3 border-t border-gray-200 dark:border-neutral-700">
+                        <.link
+                          navigate={~p"/app/org/#{org.slug}"}
+                          class="w-full flex justify-center items-center gap-x-1.5 py-2 px-2.5 border border-transparent bg-teal-600 font-medium text-[13px] text-white hover:bg-teal-700 rounded-md disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-teal-700 dark:border-transparent dark:bg-teal-500 dark:hover:bg-teal-600 dark:focus:bg-teal-600 transition-all duration-200"
+                        >
+                          {gettext("View organization")}
+                          <.icon name="hero-arrow-top-right-on-square" class="w-3.5 h-3.5" />
+                        </.link>
                       </div>
                     </div>
-                  </.link>
+                    <!-- End Enhanced Organization Card -->
+                  <% end %>
+                </div>
+                <!-- End Grid -->
+
+                <!-- Pagination Footer (if needed) -->
+                <%= if length(@orgs) > 9 do %>
+                  <div class="mt-5">
+                    <div class="grid grid-cols-2 items-center gap-y-2 sm:gap-y-0 sm:gap-x-5">
+                      <p class="text-sm text-gray-800 dark:text-neutral-200">
+                        <span class="font-medium">{length(@orgs)}</span>
+                        <span class="text-gray-500 dark:text-neutral-500">
+                          {gettext("organizations")}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                 <% end %>
-              <% end %>
+              </div>
             </div>
           <% end %>
         <% end %>
       </.container>
 
-      <%= if @live_action == :new do %>
+      <%= if @live_action in [:new] do %>
         <.modal max_width="lg" title={@page_title}>
           <.live_component
             module={PetalProWeb.OrgFormComponent}
