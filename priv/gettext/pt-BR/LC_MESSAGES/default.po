@@ -2691,3 +2691,6 @@ msgstr "Conteúdo de Anúncio"
 
 msgid "All Systems Active"
 msgstr "Todos os Sistemas Online"
+
+msgid "Add to favorites"
+msgstr "Adicionar aos favoritos"

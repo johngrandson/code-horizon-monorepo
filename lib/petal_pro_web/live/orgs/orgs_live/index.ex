@@ -402,20 +402,21 @@ defmodule PetalProWeb.OrgsLive.Index do
               </div>
             <% end %>
           </div>
-          
-    <!-- Action Buttons -->
+
           <div class="absolute bottom-2 end-0">
-            <div class="h-full flex justify-end items-end gap-x-2">
+            <!-- Action Buttons -->
+            <div class="flex justify-end items-end gap-x-2">
               <!-- Favorite Button -->
-              <button
-                type="button"
+              <.button
                 phx-click="toggle_favorite"
+                data-tippy-content={gettext("Add to favorites")}
+                phx-hook="TippyHook"
                 phx-value-org_id={@org.id}
-                class="hs-tooltip flex justify-center items-center gap-x-3 size-8 text-sm border border-gray-200 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:hover:text-neutral-200 dark:focus:text-neutral-200 transition-all duration-200"
+                class="flex justify-center items-center bg-transparent border p-2 border-gray-200 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:hover:text-neutral-200 dark:focus:text-neutral-200 transition-all duration-200"
               >
                 <.icon name="hero-star" class="w-3.5 h-3.5" />
                 <span class="sr-only">Add to favorites</span>
-              </button>
+              </.button>
 
               <div class="hover:pointer-events-auto">
                 <.org_actions socket={@socket} org={@org} />
