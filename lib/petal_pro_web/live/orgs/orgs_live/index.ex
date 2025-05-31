@@ -288,26 +288,24 @@ defmodule PetalProWeb.OrgsLive.Index do
   defp render_organizations(assigns) do
     ~H"""
     <div class="pt-2 md:pt-4 pb-10">
-      <div class="w-full max-w-5xl mx-auto">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
-          <%= for org <- @orgs do %>
-            <.organization_card org={org} is_org_admin={@is_org_admin} socket={@socket} />
-          <% end %>
-        </div>
-
-        <%= if length(@orgs) > 9 do %>
-          <div class="mt-5">
-            <div class="grid grid-cols-2 items-center gap-y-2 sm:gap-y-0 sm:gap-x-5">
-              <p class="text-sm text-gray-800 dark:text-neutral-200">
-                <span class="font-medium">{length(@orgs)}</span>
-                <span class="text-gray-500 dark:text-neutral-500">
-                  {gettext("organizations")}
-                </span>
-              </p>
-            </div>
-          </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
+        <%= for org <- @orgs do %>
+          <.organization_card org={org} is_org_admin={@is_org_admin} socket={@socket} />
         <% end %>
       </div>
+
+      <%= if length(@orgs) > 9 do %>
+        <div class="mt-5">
+          <div class="grid grid-cols-2 items-center gap-y-2 sm:gap-y-0 sm:gap-x-5">
+            <p class="text-sm text-gray-800 dark:text-neutral-200">
+              <span class="font-medium">{length(@orgs)}</span>
+              <span class="text-gray-500 dark:text-neutral-500">
+                {gettext("organizations")}
+              </span>
+            </p>
+          </div>
+        </div>
+      <% end %>
     </div>
     """
   end
