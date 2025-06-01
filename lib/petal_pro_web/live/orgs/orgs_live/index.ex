@@ -5,6 +5,7 @@ defmodule PetalProWeb.OrgsLive.Index do
   use PetalProWeb, :live_view
 
   import PetalPro.Events.Modules.Orgs.Subscriber
+  import PetalProWeb.Components.OrgCard
 
   alias PetalPro.Orgs
   alias PetalPro.Orgs.Membership
@@ -13,13 +14,13 @@ defmodule PetalProWeb.OrgsLive.Index do
   require Logger
 
   @data_table_opts [
-    default_limit: 50,
+    default_limit: 9,
     default_order: %{
       order_by: [:name],
       order_directions: [:asc]
     },
-    sortable: [:id, :slug, :name, :address, :inserted_at],
-    filterable: [:id, :slug, :name, :address]
+    sortable: [:id, :slug, :name, :inserted_at],
+    filterable: [:id, :slug, :name]
   ]
 
   @impl true
@@ -29,6 +30,7 @@ defmodule PetalProWeb.OrgsLive.Index do
     socket =
       socket
       |> assign(index_params: nil)
+      |> assign(base_url_params: %{})
       |> assign(:is_org_admin, is_org_admin)
       |> assign_invitations()
       |> register_subscriber()
@@ -54,36 +56,58 @@ defmodule PetalProWeb.OrgsLive.Index do
   end
 
   defp apply_action(socket, :index, params) do
+    base_params = extract_base_params(params)
+
     socket
     |> assign(:page_title, gettext("Organizations"))
     |> assign_orgs(params)
     |> assign(index_params: params)
+    |> assign(base_url_params: base_params)
   end
 
-  defp current_index_path(index_params) do
-    ~p"/app/orgs?#{index_params || %{}}"
+  defp extract_base_params(params) do
+    Map.drop(params, ["page", "page_size", "filters", "order_by", "order_directions"])
+  end
+
+  defp current_index_path(socket) when is_map(socket) do
+    meta = socket.assigns[:meta]
+
+    if meta do
+      current_params = build_current_params(meta)
+      ~p"/app/orgs?#{current_params}"
+    else
+      ~p"/app/orgs"
+    end
+  end
+
+  defp current_index_path(index_params) when is_map(index_params) do
+    ~p"/app/orgs?#{index_params}"
+  end
+
+  defp current_index_path(nil) do
+    ~p"/app/orgs"
+  end
+
+  defp build_current_params(meta) do
+    DataTable.build_params_from_meta(meta)
   end
 
   @impl true
   def handle_info({:invitation_sent, %{invitation_id: _invitation_id, org_id: _org_id}}, socket) do
-    socket =
-      assign_invitations(socket)
-
+    socket = assign_invitations(socket)
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:invitation_deleted, %{invitation_id: _invitation_id, org_id: _org_id}}, socket) do
-    socket =
-      assign_invitations(socket)
-
+    socket = assign_invitations(socket)
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("update_filters", %{"filters" => filter_params}, socket) do
-    query_params = DataTable.build_filter_params(socket.assigns.meta, filter_params)
-    {:noreply, push_patch(socket, to: current_index_path(query_params))}
+    query_params = DataTable.build_filter_params(socket.assigns.meta, socket.assigns.base_url_params, filter_params)
+    {:noreply, push_patch(socket, to: ~p"/app/orgs?#{query_params}")}
   end
 
   @impl true
@@ -91,10 +115,10 @@ defmodule PetalProWeb.OrgsLive.Index do
     org = Orgs.get_org_by_id!(id)
     {:ok, _} = Orgs.delete_org(org)
 
+    socket = handle_post_delete_pagination(socket)
+
     socket =
-      socket
-      |> assign_orgs(socket.assigns.index_params)
-      |> put_flash(:info, gettext("%{model} successfully deleted", model: gettext("Organization")))
+      put_flash(socket, :info, gettext("%{model} successfully deleted", model: gettext("Organization")))
 
     {:noreply, socket}
   end
@@ -104,57 +128,67 @@ defmodule PetalProWeb.OrgsLive.Index do
     {:noreply, patch_back_to_index(socket)}
   end
 
+  defp handle_post_delete_pagination(socket) do
+    current_meta = socket.assigns.meta
+    current_params = build_current_params(current_meta)
+
+    socket = assign_orgs(socket, current_params)
+    new_meta = socket.assigns.meta
+
+    # Check if we need to adjust pagination
+    cond do
+      # If we deleted the last item on the current page and we're not on page 1
+      new_meta.total_count > 0 &&
+        length(socket.assigns.orgs) == 0 &&
+          current_meta.current_page > 1 ->
+        # Go to previous page
+        adjusted_params = Map.put(current_params, "page", current_meta.current_page - 1)
+        assign_orgs(socket, adjusted_params)
+
+      # If we have no items left and we were filtering, stay where we are
+      new_meta.total_count == 0 ->
+        socket
+
+      # Otherwise, stay on current page
+      true ->
+        socket
+    end
+  end
+
   defp assign_invitations(socket) do
     assign(socket, :invitations, Orgs.list_invitations_by_user(socket.assigns.current_user))
   end
 
   defp assign_orgs(socket, params) do
-    starting_query =
-      Orgs.Org.by_user(socket.assigns.current_user)
+    starting_query = Orgs.Org.by_user(socket.assigns.current_user)
 
     {orgs, meta} = DataTable.search(starting_query, params, @data_table_opts)
-    assign(socket, orgs: orgs, meta: meta)
+
+    socket
+    |> assign(orgs: orgs, meta: meta)
+    |> update_index_params(params)
   end
 
-  defp get_org_tags(org) do
-    if org.is_enterprise, do: [gettext("Enterprise")], else: [gettext("Regular")]
+  defp update_index_params(socket, params) do
+    assign(socket, index_params: params)
   end
 
   defp patch_back_to_index(socket) do
-    push_patch(socket, to: ~p"/app/orgs?#{socket.assigns[:index_params] || %{}}")
-  end
+    cond do
+      # If we have meta, use it to preserve current state
+      socket.assigns[:meta] ->
+        path = current_index_path(socket)
+        push_patch(socket, to: path)
 
-  defp org_actions(assigns) do
-    ~H"""
-    <div
-      class="flex justify-center items-center gap-x-3 size-8 text-sm border border-gray-200 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-100 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:hover:text-neutral-200 dark:focus:text-neutral-200 transition-all duration-200"
-      id={"org_actions_container_#{@org.id}"}
-    >
-      <.dropdown
-        class="dark:shadow-lg"
-        options_container_id={"org_options_#{@org.id}"}
-        menu_items_wrapper_class="dark:border dark:border-gray-600"
-      >
-        <.dropdown_menu_item link_type="live_redirect" to={~p"/app/org/#{@org.slug}"}>
-          <.icon name="hero-information-circle" class="w-5 h-5" /> {gettext("View")}
-        </.dropdown_menu_item>
+      # If we have index_params, use them
+      socket.assigns[:index_params] ->
+        path = current_index_path(socket.assigns.index_params)
+        push_patch(socket, to: path)
 
-        <.dropdown_menu_item link_type="live_patch" to={~p"/app/org/#{@org.slug}/edit"}>
-          <.icon name="hero-pencil" class="w-5 h-5" /> {gettext("Edit")}
-        </.dropdown_menu_item>
-
-        <.dropdown_menu_item
-          link_type="a"
-          to="#"
-          phx-click="delete"
-          phx-value-id={@org.id}
-          data-confirm={gettext("Are you sure?")}
-        >
-          <.icon name="hero-trash" class="w-5 h-5" /> {gettext("Delete")}
-        </.dropdown_menu_item>
-      </.dropdown>
-    </div>
-    """
+      # Fallback to base path
+      true ->
+        push_patch(socket, to: ~p"/app/orgs")
+    end
   end
 
   @impl true
@@ -172,7 +206,7 @@ defmodule PetalProWeb.OrgsLive.Index do
 
   defp render_header(assigns) do
     ~H"""
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
       <.page_header
         title={gettext("Organizations")}
         description={gettext("Manage your organizations")}
@@ -243,64 +277,96 @@ defmodule PetalProWeb.OrgsLive.Index do
     """
   end
 
-  defp render_organizations(%{orgs: []} = assigns) do
-    ~H"""
-    <div class="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700 p-8 mb-8">
-      <div class="text-center">
-        <.icon
-          name="hero-building-office-2"
-          class="w-16 h-16 mx-auto text-gray-400 dark:text-neutral-500"
-        />
-
-        <.h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-          {gettext("No organizations yet")}
-        </.h3>
-
-        <p class="mt-2 text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          <%= if @is_org_admin do %>
-            {gettext(
-              "Create your first organization to collaborate with your team and manage resources together."
-            )}
-          <% else %>
-            {gettext(
-              "Join an organization to collaborate with your team and manage resources together."
-            )}
-          <% end %>
-        </p>
-
-        <%= if @is_org_admin do %>
-          <.button
-            link_type="live_redirect"
-            color="primary"
-            size="lg"
-            to={~p"/app/orgs/new"}
-            class="mt-6 transition-all hover:scale-105"
-          >
-            <.icon name="hero-plus" class="w-5 h-5 mr-2" />
-            {gettext("Create your first organization")}
-          </.button>
-        <% end %>
-      </div>
-    </div>
-    """
-  end
-
   defp render_organizations(assigns) do
     ~H"""
     <div class="pt-2 md:pt-4 pb-10">
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
-        <%= for org <- @orgs do %>
-          <.organization_card org={org} is_org_admin={@is_org_admin} socket={@socket} />
-        <% end %>
-      </div>
+      <.data_cards
+        meta={@meta}
+        items={@orgs}
+        grid_cols="grid-cols-1 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4"
+        base_url_params={@base_url_params}
+        class="space-y-6"
+      >
+        <!-- Filter Slot -->
+        <:filter :let={form}>
+          <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-gray-200 dark:border-neutral-700">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
+              {gettext("Filters")}
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <.input
+                  field={form[:name]}
+                  type="text"
+                  placeholder={gettext("Search by name...")}
+                  label={gettext("Organization Name")}
+                />
+              </div>
+              <div>
+                <.input
+                  field={form[:status]}
+                  type="select"
+                  options={[
+                    {gettext("All"), ""},
+                    {gettext("Active"), "active"},
+                    {gettext("Inactive"), "inactive"}
+                  ]}
+                  label={gettext("Status")}
+                />
+              </div>
+              <div>
+                <.input
+                  field={form[:role]}
+                  type="select"
+                  options={[
+                    {gettext("All Roles"), ""},
+                    {gettext("Admin"), "admin"},
+                    {gettext("Member"), "member"}
+                  ]}
+                  label={gettext("My Role")}
+                />
+              </div>
+            </div>
+          </div>
+        </:filter>
 
-      <%= if length(@orgs) > 9 do %>
+        <:card :let={org}>
+          <!-- Card Slot - Using the separate OrgCard component -->
+          <.org_card org={org} current_user={@current_user} socket={@socket} />
+        </:card>
+
+        <:if_empty>
+          <!-- Empty State Slot -->
+          <div class="text-center py-16">
+            <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-3xl flex items-center justify-center">
+              <.icon name="hero-building-office-2" class="w-12 h-12 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+              {gettext("No organizations yet")}
+            </h3>
+            <p class="text-gray-500 dark:text-neutral-400 max-w-md mx-auto mb-6">
+              {gettext(
+                "Create your first organization to start collaborating with your team and managing projects."
+              )}
+            </p>
+            <.link
+              navigate={~p"/app/orgs/new"}
+              class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+            >
+              <.icon name="hero-plus" class="w-4 h-4" />
+              {gettext("Create Organization")}
+            </.link>
+          </div>
+        </:if_empty>
+      </.data_cards>
+
+      <%= if length(@orgs) > 0 do %>
         <div class="mt-5">
           <div class="grid grid-cols-2 items-center gap-y-2 sm:gap-y-0 sm:gap-x-5">
             <p class="text-sm text-gray-800 dark:text-neutral-200">
-              <span class="font-medium">{length(@orgs)}</span>
+              <span class="font-medium">{@meta.total_count}</span>
               <span class="text-gray-500 dark:text-neutral-500">
-                {gettext("organizations")}
+                {ngettext("organization", "organizations", @meta.total_count)}
               </span>
             </p>
           </div>
@@ -326,173 +392,4 @@ defmodule PetalProWeb.OrgsLive.Index do
   end
 
   defp render_modal(_assigns), do: nil
-
-  defp organization_card(assigns) do
-    ~H"""
-    <div class="flex flex-col bg-white border border-gray-200 rounded-xl dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all duration-300">
-      <!-- Header with gradient background -->
-      <figure class="shrink-0 relative h-24 overflow-hidden rounded-t-xl">
-        <svg
-          class="w-full h-24 rounded-t-xl"
-          preserveAspectRatio="xMidYMid slice"
-          width="576"
-          height="120"
-          viewBox="0 0 576 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g clip-path={"url(##{@org.id}_clip0)"}>
-            <rect width="576" height="120" fill="#B2E7FE" />
-            <rect
-              x="289.678"
-              y="-90.3"
-              width="102.634"
-              height="391.586"
-              transform="rotate(59.5798 289.678 -90.3)"
-              fill="#FF8F5D"
-            />
-            <rect
-              x="41.3926"
-              y="-0.996094"
-              width="102.634"
-              height="209.864"
-              transform="rotate(-31.6412 41.3926 -0.996094)"
-              fill="#3ECEED"
-            />
-            <rect
-              x="66.9512"
-              y="40.4817"
-              width="102.634"
-              height="104.844"
-              transform="rotate(-31.6412 66.9512 40.4817)"
-              fill="#4C48FF"
-            />
-          </g>
-          <defs>
-            <clipPath id={"#{@org.id}_clip0"}>
-              <rect width="576" height="120" fill="white" />
-            </clipPath>
-          </defs>
-        </svg>
-      </figure>
-      
-    <!-- Avatar Section -->
-      <div class="-mt-8 px-4 mb-3">
-        <div class="relative flex items-center gap-x-3">
-          <div class="relative w-20">
-            <%= if @org.avatar_url do %>
-              <img
-                class="shrink-0 size-20 ring-4 ring-white rounded-3xl dark:ring-neutral-800 object-cover"
-                src={@org.avatar_url}
-                alt={@org.name}
-              />
-            <% else %>
-              <div class="shrink-0 size-20 ring-4 ring-white rounded-3xl dark:ring-neutral-800 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <span class="text-white font-bold text-5xl">
-                  {String.first(@org.name)}
-                </span>
-              </div>
-            <% end %>
-
-            <%= if @org.is_enterprise do %>
-              <div class="absolute -bottom-3 inset-x-0 text-center">
-                <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-semibold uppercase rounded-md bg-gradient-to-tr from-lime-500 to-teal-500 text-white">
-                  Pro
-                </span>
-              </div>
-            <% end %>
-          </div>
-
-          <div class="absolute bottom-2 end-0">
-            <!-- Action Buttons -->
-            <div class="flex justify-end items-end gap-x-2">
-              <!-- Favorite Button -->
-              <.button
-                phx-click="toggle_favorite"
-                data-tippy-content={gettext("Add to favorites")}
-                phx-hook="TippyHook"
-                phx-value-org_id={@org.id}
-                class="flex justify-center items-center bg-transparent border p-2 border-gray-200 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:hover:text-neutral-200 dark:focus:text-neutral-200 transition-all duration-200"
-              >
-                <.icon name="hero-star" class="w-3.5 h-3.5" />
-                <span class="sr-only">Add to favorites</span>
-              </.button>
-
-              <div class="hover:pointer-events-auto">
-                <.org_actions socket={@socket} org={@org} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-    <!-- Card Body -->
-      <div class="p-4 h-full">
-        <h2 class="mb-2 font-medium text-gray-800 dark:text-neutral-300 truncate">
-          {@org.name}
-        </h2>
-        
-    <!-- Organization Details List -->
-        <dl class="grid grid-cols-2 gap-x-2 mb-3">
-          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
-            {gettext("Role")}:
-          </dt>
-          <dd class="py-1 inline-flex justify-end items-center gap-x-2 text-end font-medium text-sm text-gray-800 dark:text-neutral-200">
-            <div class="flex items-center gap-x-1.5 py-0.5 px-2 border border-gray-200 dark:border-neutral-700 rounded-md">
-              <span class="w-1 h-3 rounded-full bg-teal-600 dark:bg-teal-400" />
-              <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
-                <%= if @is_org_admin do %>
-                  {gettext("Admin")}
-                <% else %>
-                  {gettext("Member")}
-                <% end %>
-              </span>
-            </div>
-          </dd>
-
-          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
-            {gettext("Slug")}:
-          </dt>
-          <dd class="py-1 inline-flex items-center gap-x-2 text-end font-medium text-sm text-gray-800 dark:text-neutral-200 truncate">
-            {@org.slug}
-          </dd>
-
-          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
-            {gettext("Status")}:
-          </dt>
-          <dd class="py-1 inline-flex justify-end items-center gap-x-2 text-end">
-            <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
-              {gettext("Active")}
-            </span>
-          </dd>
-          
-    <!-- Tags Group -->
-          <dt class="py-1 text-sm text-gray-500 dark:text-neutral-500">
-            {gettext("Tier")}:
-          </dt>
-          <dd class="py-1 inline-flex justify-end items-center gap-x-2 text-end">
-            <span class="font-medium text-[13px] text-gray-800 dark:text-neutral-200">
-              <%= for tag <- get_org_tags(@org) do %>
-                <span class="py-1 px-2.5 inline-flex items-center gap-x-1 text-xs rounded-md bg-white border border-gray-200 text-gray-800 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-200">
-                  {tag}
-                </span>
-              <% end %>
-            </span>
-          </dd>
-        </dl>
-      </div>
-      
-    <!-- Card Footer -->
-      <div class="py-3 px-4 flex items-center gap-x-3 border-t border-gray-200 dark:border-neutral-700">
-        <.link
-          navigate={~p"/app/org/#{@org.slug}"}
-          class="w-full flex justify-center items-center gap-x-1.5 py-2 px-2.5 border border-transparent bg-teal-600 font-medium text-[13px] text-white hover:bg-teal-700 rounded-md disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-teal-700 dark:border-transparent dark:bg-teal-500 dark:hover:bg-teal-600 dark:focus:bg-teal-600 transition-all duration-200"
-        >
-          {gettext("View organization")}
-          <.icon name="hero-arrow-top-right-on-square" class="w-3.5 h-3.5" />
-        </.link>
-      </div>
-    </div>
-    """
-  end
 end

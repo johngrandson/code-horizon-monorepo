@@ -67,8 +67,13 @@ defmodule PetalProWeb.OrgDashboardLive do
               <.avatar class="w-full h-full" />
             <% end %>
           </div>
-          <%= if @org.is_enterprise do %>
-            <.pro_badge class="absolute top-14" />
+
+          <%= if Map.get(@org, :is_enterprise, false) do %>
+            <div class="absolute -bottom-0 inset-x-0 text-center">
+              <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-semibold uppercase rounded-md text-white shadow-sm">
+                <.pro_badge />
+              </span>
+            </div>
           <% end %>
         </div>
 

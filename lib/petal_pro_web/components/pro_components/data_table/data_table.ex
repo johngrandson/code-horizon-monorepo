@@ -215,9 +215,11 @@ defmodule PetalProWeb.DataTable do
   - Can order_by joined table fields (e.g. customer.user.name)
   - Date picker for filters
   """
+
   use Phoenix.Component
-  use Gettext, backend: PetalProWeb.Gettext
   use PetalComponents
+  use PetalProWeb, :verified_routes
+  use Gettext, backend: PetalProWeb.Gettext
 
   import PetalComponents.Pagination
   import PetalComponents.Table
@@ -239,8 +241,6 @@ defmodule PetalProWeb.DataTable do
   attr :class, :string, default: nil, doc: "CSS class to add to the table"
   attr :row_click, :any, default: nil, doc: "Function to handle row clicks"
   attr :row_class, :any, default: nil, doc: "Function to generate row classes"
-  attr :selectable, :boolean, default: false, doc: "Enable row selection with checkboxes"
-  attr :selected_items, :list, default: [], doc: "List of selected item IDs"
 
   slot :col, required: true do
     attr :label, :string
@@ -744,5 +744,282 @@ defmodule PetalProWeb.DataTable do
   """
   def search(queryable, flop_or_params, opts \\ []) do
     Flop.validate_and_run!(queryable, flop_or_params, opts)
+  end
+
+  @doc """
+  Enhanced data table component with better styling and features.
+  """
+
+  attr :meta, Flop.Meta, required: true
+  attr :items, :list, required: true
+  attr :page_size_options, :list, default: [10, 20, 50]
+  attr :base_url_params, :map, default: %{}
+  attr :phx_hook, :string, default: nil
+  attr :class, :string, default: nil, doc: "CSS class to add to the cards container"
+
+  attr :grid_cols, :string,
+    default: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+    doc: "Grid columns configuration for responsive layout"
+
+  attr :show_bulk_actions, :boolean, default: false, doc: "Enable bulk selection and actions"
+
+  slot :filter, required: false, doc: "Custom filter form layout" do
+    attr :let, :any
+  end
+
+  slot :card, required: true, doc: "Custom card layout for each item" do
+    attr :let, :any
+  end
+
+  slot :bulk_actions, required: false, doc: "Actions to show when items are selected"
+
+  slot :if_empty, required: false, doc: "Content to show when no items are found"
+
+  def data_cards(assigns) do
+    # Build filter changeset from current Flop filters
+    filter_changeset = build_generic_filter_changeset(assigns.meta.flop)
+    assigns = assign(assigns, :filter_changeset, filter_changeset)
+
+    assigns = assign(assigns, :filtered?, Enum.any?(assigns.meta.flop.filters, fn x -> x.value end))
+    assigns = assign(assigns, :selected_items, [])
+
+    ~H"""
+    <div class={@class}>
+      <!-- Filter Form -->
+      <.form
+        :let={filter_form}
+        id="data-cards-filter-form"
+        for={@filter_changeset}
+        as={:filters}
+        phx-change="update_filters"
+        phx-submit="update_filters"
+        phx-hook={@phx_hook}
+      >
+        <div :if={@filter != []} class="mb-6">
+          {render_slot(@filter, filter_form)}
+        </div>
+      </.form>
+      
+    <!-- Bulk Actions Bar -->
+      <div
+        :if={@show_bulk_actions && @bulk_actions != [] && @selected_items != []}
+        class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
+              {length(@selected_items)} {gettext("items selected")}
+            </span>
+            <button
+              type="button"
+              phx-click="clear_selection"
+              class="text-sm text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100"
+            >
+              {gettext("Clear selection")}
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            {render_slot(@bulk_actions)}
+          </div>
+        </div>
+      </div>
+      
+    <!-- Cards Grid -->
+      <div :if={@items != []} class={"grid gap-6 #{@grid_cols}"}>
+        <div :for={item <- @items} class="relative group">
+          <!-- Selection Checkbox (if bulk actions enabled) -->
+          <div
+            :if={@show_bulk_actions}
+            class="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          >
+            <input
+              type="checkbox"
+              phx-click="toggle_selection"
+              phx-value-item-id={item.id}
+              class="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+          </div>
+          
+    <!-- Card Content with Enhanced Styling -->
+          <div class="h-full bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg dark:bg-neutral-800 dark:border-neutral-700 transition-all duration-300 hover:-translate-y-1">
+            {render_slot(@card, item)}
+          </div>
+        </div>
+      </div>
+      
+    <!-- Enhanced Empty State -->
+      <div :if={@items == []} class="py-16">
+        {if @if_empty, do: render_slot(@if_empty), else: render_enhanced_empty_state(@filtered?)}
+      </div>
+      
+    <!-- Enhanced Pagination and Controls -->
+      <div :if={@items != []} class="mt-8">
+        <!-- Results Summary and Page Size Selector -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 p-4 bg-gray-50 dark:bg-neutral-800/50 rounded-lg border border-gray-200 dark:border-neutral-700">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div class="flex items-center gap-2 text-sm">
+              <.icon name="hero-document-text" class="w-4 h-4 text-gray-500 dark:text-neutral-400" />
+              <span class="font-medium text-gray-900 dark:text-white">
+                {get_first_item_index(@meta)}-{get_last_item_index(@meta)}
+              </span>
+              <span class="text-gray-500 dark:text-neutral-400">
+                {gettext("of")} {@meta.total_count} {gettext("results")}
+              </span>
+            </div>
+
+            <div :if={@filtered?} class="flex items-center gap-2">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+              <span class="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                {gettext("Filtered results")}
+              </span>
+            </div>
+          </div>
+          
+    <!-- Page Size Selector -->
+          <div :if={@page_size_options != []} class="flex items-center gap-3">
+            <span class="text-sm text-gray-600 dark:text-neutral-400">
+              {gettext("Items per page")}:
+            </span>
+            <div class="flex items-center bg-white dark:bg-neutral-700 rounded-lg overflow-hidden">
+              <%= for page_size <- @page_size_options do %>
+                <%= if @meta.page_size == page_size do %>
+                  <span class="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium">
+                    {page_size}
+                  </span>
+                <% else %>
+                  <.link
+                    patch={
+                      build_url_query(
+                        @meta,
+                        Map.merge(@base_url_params, %{page_size: page_size, page: 1})
+                      )
+                    }
+                    class="px-3 py-1.5 text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                  >
+                    {page_size}
+                  </.link>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        
+    <!-- Pagination Controls -->
+        <%= if @meta.total_pages > 1 do %>
+          <div class="flex justify-center">
+            <.pagination
+              link_type="live_patch"
+              path={
+                build_url_query(@meta, Map.merge(@base_url_params, %{page: ":page"}))
+                |> String.replace("%3Apage", ":page")
+              }
+              current_page={@meta.current_page}
+              total_pages={@meta.total_pages}
+              class="rounded-lg"
+            />
+          </div>
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
+  # Generic filter changeset builder
+  defp build_generic_filter_changeset(flop) do
+    # Convert existing Flop filters to our filter format
+    filters =
+      Enum.map(flop.filters || [], fn filter ->
+        %Filter{
+          field: filter.field,
+          op: filter.op,
+          value: filter.value
+        }
+      end)
+
+    filter_set = %FilterSet{filters: filters}
+    FilterSet.changeset(filter_set)
+  end
+
+  # Enhanced empty state with better messaging based on filter status
+  defp render_enhanced_empty_state(filtered?) do
+    assigns = %{filtered?: filtered?}
+
+    ~H"""
+    <div class="text-center py-16">
+      <div class="relative">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-5">
+          <div class="w-32 h-32 border-8 border-gray-300 rounded-full"></div>
+          <div class="absolute w-24 h-24 border-4 border-gray-400 rounded-full"></div>
+          <div class="absolute w-16 h-16 border-2 border-gray-500 rounded-full"></div>
+        </div>
+        
+    <!-- Icon and Content -->
+        <div class="relative">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-neutral-700 dark:to-neutral-800 rounded-2xl flex items-center justify-center shadow-inner">
+            <%= if @filtered? do %>
+              <.icon name="hero-funnel" class="w-10 h-10 text-gray-400 dark:text-neutral-500" />
+            <% else %>
+              <.icon
+                name="hero-rectangle-stack"
+                class="w-10 h-10 text-gray-400 dark:text-neutral-500"
+              />
+            <% end %>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+            <%= if @filtered? do %>
+              {gettext("No results found")}
+            <% else %>
+              {gettext("No items yet")}
+            <% end %>
+          </h3>
+
+          <p class="text-gray-500 dark:text-neutral-400 max-w-md mx-auto leading-relaxed">
+            <%= if @filtered? do %>
+              {gettext(
+                "We couldn't find any items matching your current filters. Try adjusting your search criteria or clearing the filters."
+              )}
+            <% else %>
+              {gettext("There are no items to display. Items will appear here once they are created.")}
+            <% end %>
+          </p>
+
+          <%= if @filtered? do %>
+            <div class="mt-6">
+              <button
+                type="button"
+                phx-click="clear_filters"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              >
+                <.icon name="hero-x-mark" class="w-4 h-4" />
+                {gettext("Clear all filters")}
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Build current URL parameters from Flop meta struct.
+  Useful for maintaining current state during operations like delete.
+  """
+  def build_params_from_meta(%Flop.Meta{} = meta) do
+    flop = meta.flop
+    opts = meta.opts || []
+
+    # Convert flop back to params format
+    flop
+    |> to_query(opts)
+    |> Map.new(fn {k, v} -> {Atom.to_string(k), v} end)
+  end
+
+  # Alternative helper for building params with base URL params
+  def build_params_from_meta(meta, base_params) when is_map(base_params) do
+    current_params = build_params_from_meta(meta)
+    Map.merge(base_params, current_params)
   end
 end

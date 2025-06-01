@@ -2694,3 +2694,9 @@ msgstr "Todos os Sistemas Online"
 
 msgid "Add to favorites"
 msgstr "Adicionar aos favoritos"
+
+msgid "Search organizations..."
+msgstr "Procurar organizações..."
+
+msgid "All plans"
+msgstr "Todos os planos"
