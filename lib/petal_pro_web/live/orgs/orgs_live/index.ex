@@ -135,7 +135,7 @@ defmodule PetalProWeb.OrgsLive.Index do
     cond do
       # If we deleted the last item on the current page and we're not on page 1
       new_meta.total_count > 0 &&
-        length(socket.assigns.orgs) == 0 &&
+        Enum.empty?(socket.assigns.orgs) &&
           current_meta.current_page > 1 ->
         # Go to previous page
         adjusted_params = Map.put(current_params, "page", current_meta.current_page - 1)
