@@ -2549,7 +2549,7 @@ msgid "Could not update queue status"
 msgstr "Não foi possível atualizar o status da fila"
 
 msgid "Active"
-msgstr "Ativo"
+msgstr "Ativa"
 
 msgid "Inactive"
 msgstr "Inativo"
