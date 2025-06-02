@@ -8,7 +8,6 @@ defmodule PetalProWeb.OrgsLive.Index do
   import PetalProWeb.Components.OrgCard
 
   alias PetalPro.Orgs
-  alias PetalPro.Orgs.Membership
   alias PetalProWeb.DataTable
 
   require Logger
@@ -25,13 +24,10 @@ defmodule PetalProWeb.OrgsLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    is_org_admin = Membership.is_org_admin?(socket.assigns.current_user)
-
     socket =
       socket
       |> assign(index_params: nil)
       |> assign(base_url_params: %{})
-      |> assign(:is_org_admin, is_org_admin)
       |> assign_invitations()
       |> register_subscriber()
 
@@ -51,7 +47,7 @@ defmodule PetalProWeb.OrgsLive.Index do
 
   defp apply_action(socket, :new, _params) do
     socket
-    |> assign(:page_title, gettext("New %{model}", model: gettext("Organization")))
+    |> assign(:page_title, "New Organization")
     |> assign(:org, %Orgs.Org{})
   end
 
@@ -211,7 +207,7 @@ defmodule PetalProWeb.OrgsLive.Index do
         title={gettext("Organizations")}
         description={gettext("Manage your organizations")}
       />
-      <%= if @current_user.confirmed_at && @is_org_admin do %>
+      <%= if @current_user.confirmed_at do %>
         <.button
           link_type="live_redirect"
           color="primary"

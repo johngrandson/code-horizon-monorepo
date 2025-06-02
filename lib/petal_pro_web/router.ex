@@ -103,6 +103,16 @@ defmodule PetalProWeb.Router do
 
       scope "/org/:org_slug" do
         live "/", OrgDashboardLive
+      end
+    end
+
+    live_session :org_admin_required,
+      on_mount: [
+        {PetalProWeb.UserOnMountHooks, :require_authenticated_user},
+        {PetalProWeb.OrgOnMountHooks, :assign_org_data},
+        {PetalProWeb.OrgOnMountHooks, :require_org_admin}
+      ] do
+      scope "/org/:org_slug" do
         live "/edit", EditOrgLive
         live "/team", OrgTeamLive, :index
         live "/team/invite", OrgTeamLive, :invite

@@ -9,12 +9,15 @@ defmodule PetalProWeb.Components.OrgCard do
 
   import PetalProWeb.CoreComponents
 
+  alias PetalPro.Orgs.Membership
+
   attr :org, :map, required: true
   attr :current_user, :map, required: true
   attr :socket, :any, default: nil
 
   def org_card(assigns) do
-    assigns = assign(assigns, :is_org_admin, is_org_admin?(assigns.org, assigns.current_user))
+    assigns =
+      assign(assigns, :is_org_admin, Membership.current_user_role_in_org_is_admin?(assigns.current_user, assigns.org))
 
     ~H"""
     <div class="flex flex-col h-full">
@@ -155,19 +158,6 @@ defmodule PetalProWeb.Components.OrgCard do
               {@org.slug}
             </dd>
           </div>
-          
-    <!-- Member Count -->
-          <div class="flex items-center justify-between">
-            <dt class="text-sm text-gray-500 dark:text-neutral-400">
-              {gettext("Members")}
-            </dt>
-            <dd class="flex items-center gap-1.5">
-              <.icon name="hero-users" class="w-3 h-3 text-gray-400" />
-              <span class="text-sm font-medium text-gray-900 dark:text-white">
-                {Map.get(@org, :member_count, 0)}
-              </span>
-            </dd>
-          </div>
         </dl>
         
     <!-- Tags/Features -->
@@ -232,16 +222,6 @@ defmodule PetalProWeb.Components.OrgCard do
       </.dropdown>
     </div>
     """
-  end
-
-  # Helper function to check if user is org admin
-  defp is_org_admin?(org, _user) do
-    # Check if user has admin role in this organization
-    # This would typically query the membership table
-    case Map.get(org, :current_membership) do
-      %{role: :admin} -> true
-      _ -> false
-    end
   end
 
   # Helper function to get organization tags/features

@@ -267,6 +267,4 @@ defmodule PetalProWeb.AdminChartDataHelper do
         Enum.empty?(dataset.data) or Enum.all?(dataset.data, fn value -> value in [nil, 0] end)
       end)
   end
-
-  defp empty?(_), do: true
 end
