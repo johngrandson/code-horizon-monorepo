@@ -68,7 +68,13 @@ defmodule PetalProWeb.OrgTeamLive do
   end
 
   defp apply_action(socket, :invite, _params) do
-    assign(socket, :page_title, gettext("Invite new member"))
+    if PetalPro.Billing.Limits.can_invite_user?(socket.assigns.current_org.id) do
+      assign(socket, :page_title, gettext("Invite new member"))
+    else
+      socket
+      |> put_flash(:error, gettext("You have reached the maximum number of users for your plan."))
+      |> push_navigate(to: ~p"/app/org/#{socket.assigns.current_org.slug}/team")
+    end
   end
 
   defp apply_action(socket, :edit_membership, %{"id" => id}) do

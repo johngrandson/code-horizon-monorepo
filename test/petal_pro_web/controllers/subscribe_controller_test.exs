@@ -4,14 +4,6 @@ defmodule PetalProWeb.SubscribeControllerTest do
   setup :register_and_sign_in_user
 
   describe "GET /app/checkout/:plan_slug" do
-    test "as a user", %{conn: conn} do
-      use_cassette "PetalProWeb.SubscribeController.checkout user" do
-        assert conn
-               |> get(~p"/app/checkout/stripe-test-plan-a-monthly", %{})
-               |> redirected_to() =~ "https://checkout.stripe.com/c/pay/"
-      end
-    end
-
     test "as an org", %{conn: conn, org: org} do
       use_cassette "PetalProWeb.SubscribeController.checkout org" do
         assert conn

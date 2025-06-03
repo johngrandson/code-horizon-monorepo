@@ -34,7 +34,7 @@ stripe_api_key = Application.get_env(:stripity_stripe, :api_key)
 stripe_signing_secret = Application.get_env(:stripity_stripe, :signing_secret)
 
 config :stripity_stripe,
-  api_key: System.get_env("STRIPE_SECRET") || stripe_api_key,
+  api_key: System.get_env("STRIPE_SECRET_KEY") || stripe_api_key,
   signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET") || stripe_signing_secret
 
 config :petal_pro, :stripe_production_mode, System.get_env("STRIPE_PRODUCTION_MODE") == "true"

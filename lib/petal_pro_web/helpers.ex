@@ -23,6 +23,10 @@ defmodule PetalProWeb.Helpers do
   def home_path(nil), do: "/"
   def home_path(_current_user), do: ~p"/app"
 
+  def org_path(org_slug), do: ~p"/app/org/#{org_slug}"
+
+  def org_team_path(org_slug), do: ~p"/app/org/#{org_slug}/team"
+
   # Always use this when rendering a user's name
   # This way, if you want to change to something like "user.first_name user.last_name", you only have to change one place
   def user_name(nil), do: nil

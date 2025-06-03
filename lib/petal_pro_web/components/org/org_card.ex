@@ -158,6 +158,15 @@ defmodule PetalProWeb.Components.OrgCard do
               {@org.slug}
             </dd>
           </div>
+
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-gray-500 dark:text-neutral-400">
+              {gettext("Subscription")}
+            </dt>
+            <dd class="text-sm font-mono text-gray-700 dark:text-neutral-300 truncate max-w-32">
+              <.badge label={@org.plan} />
+            </dd>
+          </div>
         </dl>
         
     <!-- Tags/Features -->
@@ -183,7 +192,7 @@ defmodule PetalProWeb.Components.OrgCard do
       <div class="p-4 border-t border-gray-200 dark:border-neutral-700">
         <.link
           navigate={~p"/app/org/#{@org.slug}"}
-          class="w-full flex justify-center items-center gap-2 py-2.5 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium text-sm rounded-lg shadow-sm transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          class="w-full flex justify-center items-center gap-2 py-2.5 px-4 bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm rounded-lg shadow-sm transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           {gettext("View organization")}
           <.icon name="hero-arrow-top-right-on-square" class="w-4 h-4" />
