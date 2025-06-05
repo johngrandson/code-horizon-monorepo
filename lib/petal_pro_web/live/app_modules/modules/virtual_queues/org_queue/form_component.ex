@@ -5,8 +5,8 @@ defmodule PetalProWeb.VirtualQueues.OrgQueueLive.FormComponent do
   """
   use PetalProWeb, :live_component
 
+  alias PetalPro.AppModules.VirtualQueues.Queries.Queues
   alias PetalPro.AppModules.VirtualQueues.Queue
-  alias PetalPro.AppModules.VirtualQueues.Queues
 
   @impl true
   def render(assigns) do

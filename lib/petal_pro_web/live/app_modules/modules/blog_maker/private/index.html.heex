@@ -1,0 +1,397 @@
+<.app_modules_layout
+  current_page={:org_blog_maker}
+  current_user={@current_user}
+  current_org={@current_org}
+  current_membership={@current_membership}
+  socket={@socket}
+>
+  <div class="overflow-hidden">
+    <div class="flex justify-between items-center">
+      <.page_header
+        title={gettext("Content Management")}
+        description={gettext("Manage your blog posts, articles, and other published content")}
+      />
+
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <.button
+          color="white"
+          variant="outline"
+          link_type="live_redirect"
+          to={~p"/blog-maker/#{@current_org.slug}"}
+          class="flex items-center gap-2 whitespace-nowrap"
+        >
+          <.icon name="hero-signal" class="w-4 h-4" />
+          <span>{gettext("View Blog")}</span>
+        </.button>
+
+        <.button
+          link_type="live_patch"
+          to={~p"/app/org/#{@current_org.slug}/blog-maker/new"}
+          class="flex items-center gap-2 whitespace-nowrap"
+        >
+          <.icon name="hero-plus" class="w-4 h-4" />
+          <span>{gettext("New Post")}</span>
+        </.button>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 shadow-lg sm:rounded-lg border border-gray-200 dark:border-gray-700 custom-scrollbar-container">
+      <div class="p-5 border-b border-gray-200 dark:border-gray-700 overflow-visible">
+        <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+          <form class="flex flex-wrap gap-4 items-end flex-1">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  for="category-filter"
+                >
+                  {gettext("Category")}
+                </label>
+                <select
+                  id="category-filter"
+                  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                  phx-change="filter"
+                  name="category"
+                >
+                  <option value="">{gettext("All categories")}</option>
+                  <!-- Add options dynamically here -->
+                </select>
+              </div>
+
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  for="status-filter"
+                >
+                  {gettext("Status")}
+                </label>
+                <select
+                  id="status-filter"
+                  class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-700 dark:bg-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                  phx-change="filter"
+                  name="status"
+                >
+                  <option value="">{gettext("All statuses")}</option>
+                  <option value="published">{gettext("Published")}</option>
+                  <option value="draft">{gettext("Draft")}</option>
+                  <option value="scheduled">{gettext("Scheduled")}</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  for="search-filter"
+                >
+                  {gettext("Search")}
+                </label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <.icon name="hero-magnifying-glass" class="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="search-filter"
+                    class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-md"
+                    placeholder={gettext("Search posts...")}
+                    phx-change="search"
+                    phx-debounce="300"
+                    name="search"
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-3 bg-gray-50 dark:bg-gray-800 flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {@stream_items_count} {gettext("posts")} displayed
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <.button
+            color="white"
+            variant="outline"
+            size="sm"
+            phx-click="bulk_delete"
+            disabled={true}
+            class="flex items-center gap-1 whitespace-nowrap"
+            data-confirm={
+              gettext(
+                "Are you sure you want to delete the selected posts? This action cannot be undone."
+              )
+            }
+          >
+            <.icon name="hero-trash" class="w-3 h-3" />
+            <span>{gettext("Delete Selected")}</span>
+          </.button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <.table
+          id="posts"
+          class="w-full text-sm text-left text-gray-500 dark:text-gray-400 min-w-full table-fixed"
+          rows={@streams.posts}
+          row_click={fn {_id, post} -> JS.navigate(~p"/admin/posts/#{post}") end}
+        >
+          <:col label="" class="p-4 w-10">
+            <div class="flex items-center">
+              <input
+                phx-click="toggle_select_post"
+                type="checkbox"
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              />
+              <label class="sr-only">{gettext("Select post")}</label>
+            </div>
+          </:col>
+
+          <:col :let={{_id, post}} label={gettext("Content")} class="px-6 py-4 w-96">
+            <div class="flex gap-3">
+              <div class="flex-shrink-0">
+                <%= if post.cover do %>
+                  <img
+                    src={post.cover}
+                    class="object-cover w-24 h-16 rounded-md shadow-sm"
+                    alt={post.title}
+                  />
+                <% else %>
+                  <div class="flex items-center justify-center w-24 h-16 rounded-md dark:bg-gray-700 bg-gray-100">
+                    <.icon name="hero-photo" class="w-10 h-10 text-gray-400" />
+                  </div>
+                <% end %>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 mb-1">
+                  {post.category || gettext("No category")}
+                </div>
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  {post.title}
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
+                  {post.slug}
+                </p>
+              </div>
+            </div>
+          </:col>
+
+          <:col
+            :let={{_id, post}}
+            label={gettext("Last Modified")}
+            class="px-6 py-4 w-44 hidden xl:table-cell"
+            row_class="hidden xl:table-cell"
+          >
+            <%= if post.last_published do %>
+              <div id={"processed-#{post.id}"} class="flex flex-col">
+                <span class="font-medium">
+                  {Timex.format!(post.last_published, "{h12}:{m}:{s} {AM}")}
+                </span>
+                <span class="text-xs text-gray-500">
+                  {Timex.format!(post.last_published, "{D} {Mshort} {YYYY}")}
+                </span>
+                <span class="text-xs text-gray-400 italic">
+                  {Timex.from_now(post.last_published)}
+                </span>
+              </div>
+            <% else %>
+              <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                {gettext("Never published")}
+              </span>
+            <% end %>
+          </:col>
+
+          <:col :let={{_id, post}} label={gettext("Status")} class="px-6 py-4 w-44">
+            <%= if post.go_live do %>
+              <div id={"published-#{post.id}"} class="flex items-center gap-2">
+                <div class="relative flex w-3 h-3 place-self-center -top-2">
+                  <span class={[
+                    "absolute inline-flex h-full w-full rounded-full opacity-75",
+                    if(is_live(post), do: "animate-ping bg-green-500", else: "bg-amber-400")
+                  ]} />
+                  <span class={[
+                    "relative inline-flex rounded-full h-3 w-3",
+                    if(is_live(post), do: "bg-green-500", else: "bg-amber-400")
+                  ]} />
+                </div>
+
+                <%= if is_live(post) do %>
+                  <div class="flex flex-col">
+                    <span class="font-medium text-green-700 dark:text-green-400">
+                      {gettext("Live")}
+                    </span>
+                    <span class="text-xs text-gray-500">
+                      {gettext("Since")} {Timex.format!(post.go_live, "{D} {Mshort}")}
+                    </span>
+                  </div>
+                <% else %>
+                  <div class="flex flex-col">
+                    <span class="font-medium text-amber-700 dark:text-amber-400">
+                      {gettext("Scheduled")}
+                    </span>
+                    <span class="text-xs text-gray-500">
+                      {gettext("Goes live")} {Timex.from_now(post.go_live)}
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="flex items-center gap-2">
+                <div class="relative flex w-3 h-3 place-self-center">
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-gray-400"></span>
+                </div>
+                <span class="font-medium text-gray-500">
+                  {gettext("Draft")}
+                </span>
+              </div>
+            <% end %>
+          </:col>
+
+          <:col :let={{_id, post}} label={gettext("Actions")} class="px-6 py-4 w-44">
+            <div class="flex items-center justify-end gap-2">
+              <.button
+                size="xs"
+                color="white"
+                variant="outline"
+                link_type="live_patch"
+                to={~p"/blog/#{post.slug}"}
+                class="flex items-center gap-1"
+                disabled={!is_live(post)}
+                title={
+                  if is_live(post),
+                    do: gettext("View published post"),
+                    else: gettext("Post not published yet")
+                }
+              >
+                <.icon name="hero-eye" class="w-4 h-4 py-2" />
+                <span class="whitespace-nowrap">{gettext("View")}</span>
+              </.button>
+
+              <.button
+                size="xs"
+                color="white"
+                variant="outline"
+                link_type="live_patch"
+                to={~p"/admin/posts/#{post}/show/edit"}
+                class="flex items-center gap-1"
+                title={gettext("Edit post")}
+              >
+                <.icon name="hero-pencil-square" class="w-4 h-4 py-2" />
+                <span class="whitespace-nowrap">{gettext("Edit")}</span>
+              </.button>
+
+              <.button
+                size="xs"
+                color="white"
+                variant="outline"
+                class="flex items-center gap-1"
+                phx-click={
+                  JS.hide(to: "#post_options_#{post.id}")
+                  |> JS.push("delete")
+                }
+                phx-value-id={post.id}
+                data-confirm={
+                  gettext(
+                    "Are you sure you want to delete this post? This action cannot be undone."
+                  )
+                }
+                title={gettext("Delete post")}
+              >
+                <.icon name="hero-trash" class="w-4 h-4 py-2 text-red-500" />
+              </.button>
+            </div>
+          </:col>
+        </.table>
+      </div>
+
+      <%= if @stream_empty do %>
+        <div class="py-12 text-center">
+          <.icon name="hero-document-text" class="mx-auto h-12 w-12 text-gray-400" />
+          <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+            {gettext("No posts found")}
+          </h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {gettext("Start by creating a new post.")}
+          </p>
+          <div class="mt-6">
+            <.button link_type="live_patch" to={~p"/admin/posts/new"}>
+              <.icon name="hero-plus" class="w-4 h-4 mr-2" /> {gettext("New Post")}
+            </.button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <style>
+      /* Custom scrollbar styling */
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+      }
+
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+      }
+
+      /* Firefox scrollbar styling */
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #c1c1c1 #f1f1f1;
+      }
+
+      /* Dark mode scrollbar */
+      .dark .custom-scrollbar::-webkit-scrollbar-track {
+        background: #374151;
+      }
+
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #4b5563;
+      }
+
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
+
+      .dark .custom-scrollbar {
+        scrollbar-color: #4b5563 #374151;
+      }
+
+      /* Container styles */
+      .custom-scrollbar-container {
+        max-height: calc(100vh - 12rem);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Table styles to prevent column size issues */
+      .custom-scrollbar .data-table {
+        table-layout: fixed;
+      }
+    </style>
+  </div>
+
+  <%= if @live_action in [:new] do %>
+    <.modal title={gettext("New Post")} max_width="md">
+      <.live_component
+        module={PetalProWeb.AdminPostLive.NewComponent}
+        id={@post.id || :new}
+        action={@live_action}
+        post={@post}
+        return_to={~p"/admin/posts"}
+      />
+    </.modal>
+  <% end %>
+</.app_modules_layout>

@@ -108,3 +108,7 @@
   }
 
 */
+
+.pc-breadcrumb {
+  @apply text-gray-400;
+}

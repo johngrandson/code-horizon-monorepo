@@ -1,0 +1,39 @@
+<div>
+  <.form for={@form} id="new-form" phx-target={@myself} phx-change="validate" phx-submit="save">
+    <.field type="hidden" field={@form[:author_id]} />
+
+    <.field
+      type="text"
+      field={@form[:category]}
+      class="pc-card__category pc-card__category--primary"
+      label_class="hidden"
+      placeholder="Category"
+    />
+
+    <.field
+      type="textarea"
+      field={@form[:title]}
+      class="text-3xl font-bold"
+      label_class="hidden"
+      placeholder="Title"
+      rows="2"
+    />
+
+    <.field
+      type="textarea"
+      field={@form[:summary]}
+      class="font-semibold"
+      label_class="hidden"
+      placeholder="Summary"
+    />
+
+    <div class="flex justify-end">
+      <.button
+        size="sm"
+        type="submit"
+        phx-disable-with="Saving..."
+        label={gettext("Save and Continue")}
+      />
+    </div>
+  </.form>
+</div>

@@ -134,6 +134,7 @@ defmodule PetalProWeb.Router do
 
     # App Modules routes
     use PetalProWeb.VirtualQueuesRoutes
+    use PetalProWeb.BlogMakerRoutes
 
     # DevRoutes must always be last
     use PetalProWeb.DevRoutes
