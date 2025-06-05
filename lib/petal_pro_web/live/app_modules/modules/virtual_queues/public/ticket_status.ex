@@ -2,7 +2,7 @@ defmodule PetalProWeb.VirtualQueues.DisplayQueueLive.TicketStatus do
   @moduledoc false
   use PetalProWeb, :live_view
 
-  alias PetalPro.AppModules.VirtualQueues.Queues
+  alias PetalPro.AppModules.VirtualQueues.Queries.Queues
   alias PetalPro.Orgs
 
   @impl true

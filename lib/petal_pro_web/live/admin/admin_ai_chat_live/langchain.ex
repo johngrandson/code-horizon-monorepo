@@ -128,7 +128,7 @@ defmodule PetalProWeb.AdminAiChatLive.LangChain do
     )
   end
 
-  @spec add_message(LLMChain.t(), String.t()) :: LLMChain.t()
+  @spec add_message(LLMChain.t(), String.t()) :: %{assistant: LLMChain.t(), message: String.t()}
   def add_message(llm_chain, message) do
     with {:ok, llm_chain} <-
            llm_chain

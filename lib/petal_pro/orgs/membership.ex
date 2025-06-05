@@ -48,6 +48,11 @@ defmodule PetalPro.Orgs.Membership do
     Repo.exists?(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.role == @admin_role))
   end
 
+  def current_user_role_in_org_is_admin?(%User{} = user, %Org{} = org) do
+    Repo.one(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.org_id == ^org.id, select: ms.role)) ==
+      @admin_role
+  end
+
   def current_user_role_in_org(%User{} = user, %Org{} = org) do
     Repo.one(from(ms in __MODULE__, where: ms.user_id == ^user.id and ms.org_id == ^org.id, select: ms.role))
   end

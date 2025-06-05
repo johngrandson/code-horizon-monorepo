@@ -4,7 +4,6 @@ defmodule PetalProWeb.AdminSubscriptionsLive do
 
   import PetalProWeb.AdminLayoutComponent
 
-  alias PetalPro.Accounts.User
   alias PetalPro.Billing.Customers.Customer
   alias PetalPro.Billing.Subscriptions
   alias PetalPro.Billing.Subscriptions.Subscription
@@ -80,8 +79,6 @@ defmodule PetalProWeb.AdminSubscriptionsLive do
   end
 
   defp customer_name(%Customer{org: %Org{} = org}), do: org.name
-  defp customer_name(%Customer{user: %User{} = user}), do: user.name
 
   defp customer_type(%Customer{org: %Org{}}), do: "org"
-  defp customer_type(%Customer{user: %User{}}), do: "user"
 end

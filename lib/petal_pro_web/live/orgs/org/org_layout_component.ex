@@ -68,6 +68,9 @@ defmodule PetalProWeb.OrgLayoutComponent do
       %{virtual_queues: true} ->
         [get_link(:org_virtual_queues, org)]
 
+      %{blog_maker: true} ->
+        [get_link(:org_blog_maker, org)]
+
       _ ->
         []
     end
@@ -133,6 +136,15 @@ defmodule PetalProWeb.OrgLayoutComponent do
       path: ~p"/app/org/#{org.slug}/virtual-queues",
       label: gettext("Virtual Queues"),
       icon: "hero-ticket"
+    }
+  end
+
+  defp get_link(:org_blog_maker, org) do
+    %{
+      name: :org_blog_maker,
+      path: ~p"/app/org/#{org.slug}/blog-maker",
+      label: gettext("Blog Maker"),
+      icon: "hero-chat-bubble-bottom-center-text"
     }
   end
 end

@@ -98,23 +98,26 @@ defmodule PetalProWeb.Router do
 
       live "/ai-chat", UserAiChatLive
 
-      live "/orgs", OrgsLive, :index
+      live "/orgs", OrgsLive.Index, :index
+      live "/orgs/new", OrgsLive.Index, :new
 
       scope "/org/:org_slug" do
         live "/", OrgDashboardLive
+      end
+    end
+
+    live_session :org_admin_required,
+      on_mount: [
+        {PetalProWeb.UserOnMountHooks, :require_authenticated_user},
+        {PetalProWeb.OrgOnMountHooks, :assign_org_data},
+        {PetalProWeb.OrgOnMountHooks, :require_org_admin}
+      ] do
+      scope "/org/:org_slug" do
         live "/edit", EditOrgLive
         live "/team", OrgTeamLive, :index
         live "/team/invite", OrgTeamLive, :invite
         live "/team/memberships/:id/edit", OrgTeamLive, :edit_membership
       end
-    end
-
-    # Admin-only routes
-    live_session :admin_required,
-      on_mount: [
-        {PetalProWeb.UserOnMountHooks, :require_admin_user}
-      ] do
-      live "/orgs/new", OrgsLive, :new
     end
   end
 
@@ -131,6 +134,7 @@ defmodule PetalProWeb.Router do
 
     # App Modules routes
     use PetalProWeb.VirtualQueuesRoutes
+    use PetalProWeb.BlogMakerRoutes
 
     # DevRoutes must always be last
     use PetalProWeb.DevRoutes

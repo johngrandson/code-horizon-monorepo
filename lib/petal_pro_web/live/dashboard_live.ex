@@ -7,6 +7,8 @@ defmodule PetalProWeb.DashboardLive do
   alias PetalPro.Orgs
   alias PetalPro.Orgs.Membership
 
+  require Logger
+
   @impl true
   def mount(_params, _session, socket) do
     orgs = Membership.list_orgs(socket.assigns.current_user)
@@ -31,6 +33,12 @@ defmodule PetalProWeb.DashboardLive do
   @impl true
   def handle_info({:invitation_deleted, _payload}, socket) do
     {:noreply, assign_invitations(socket)}
+  end
+
+  @impl true
+  def handle_info(message, socket) do
+    Logger.error("Unknown info: #{inspect(message)}")
+    {:noreply, socket}
   end
 
   defp assign_invitations(socket) do

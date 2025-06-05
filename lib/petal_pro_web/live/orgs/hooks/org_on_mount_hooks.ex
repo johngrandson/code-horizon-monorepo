@@ -11,6 +11,8 @@ defmodule PetalProWeb.OrgOnMountHooks do
 
   alias PetalPro.Orgs
 
+  require Logger
+
   @doc """
   Assigns orgs, current membership, and current org for authenticated routes.
   """

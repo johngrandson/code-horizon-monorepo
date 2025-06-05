@@ -29,6 +29,14 @@ defmodule PetalPro.Billing.Subscriptions do
     |> Repo.first()
   end
 
+  def get_active_subscription_for_org(org_id) do
+    Subscription
+    |> by_org_id(org_id)
+    |> by_status(["active", "trialing"])
+    |> order_by_period_desc()
+    |> Repo.first()
+  end
+
   def active_count(customer_id) do
     Subscription
     |> by_customer_id(customer_id)
@@ -55,6 +63,12 @@ defmodule PetalPro.Billing.Subscriptions do
     |> Repo.update()
   end
 
+  defp by_org_id(query, org_id) do
+    from s in query,
+      join: c in assoc(s, :customer),
+      where: c.org_id == ^org_id
+  end
+
   defp by_customer_id(query, customer_id) do
     from s in query, where: s.billing_customer_id == ^customer_id
   end
@@ -76,8 +90,15 @@ defmodule PetalPro.Billing.Subscriptions do
         billing_provider: billing_provider,
         billing_provider_session: billing_provider_session
       }) do
+    user_info =
+      if user do
+        "#{user.name} "
+      else
+        "An unknown user "
+      end
+
     PetalPro.Slack.message("""
-    :scream_cat: #{user.name} has clicked a subscribe button for "#{plan.id}"...
+    :scream_cat: #{user_info}has clicked a subscribe button for "#{plan.id}" in org #{org.name}...
     """)
 
     Logs.log_async("billing.after_click_subscribe_button", %{

@@ -54,6 +54,22 @@ defmodule PetalPro.Orgs do
     Repo.exists?(from o in Org, where: o.id == ^id)
   end
 
+  def count_org_users(org_id) do
+    Repo.one(from(m in Membership, where: m.org_id == ^org_id, select: count(m.id)))
+  end
+
+  def count_org_invitations(org_id) do
+    Repo.one(from(i in Invitation, where: i.org_id == ^org_id and is_nil(i.user_id), select: count(i.id)))
+  end
+
+  def can_edit_org?(:edit, user) do
+    Membership.is_org_admin?(user)
+  end
+
+  def can_delete_org?(:delete, user) do
+    Membership.is_org_admin?(user)
+  end
+
   def preload_org_memberships(org) do
     Repo.preload(org, memberships: :user)
   end

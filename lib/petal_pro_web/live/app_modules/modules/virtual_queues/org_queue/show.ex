@@ -6,7 +6,7 @@ defmodule PetalProWeb.VirtualQueues.OrgQueueLive.Show do
   import PetalProWeb.AppModulesLayoutComponent
   import PetalProWeb.Cards
 
-  alias PetalPro.AppModules.VirtualQueues.Queues
+  alias PetalPro.AppModules.VirtualQueues.Queries.Queues
 
   require Logger
 

@@ -1,4 +1,4 @@
-defmodule PetalPro.AppModules.VirtualQueues.Queues do
+defmodule PetalPro.AppModules.VirtualQueues.Queries.Queues do
   @moduledoc """
   Context module for managing Virtual Queues.
   Handles CRUD operations for queues and orchestrates ticket creation/calling logic.

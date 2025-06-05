@@ -8,8 +8,8 @@ defmodule PetalProWeb.VirtualQueues.OrgQueueLive.Index do
   import PetalProWeb.AppModulesLayoutComponent
   import PetalProWeb.DataTable.Actions
 
+  alias PetalPro.AppModules.VirtualQueues.Queries.Queues
   alias PetalPro.AppModules.VirtualQueues.Queue
-  alias PetalPro.AppModules.VirtualQueues.Queues
 
   require Logger
 
